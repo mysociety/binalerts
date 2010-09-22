@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+import binalerts.views
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -6,7 +7,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
     # Example:
-    # (r'^bins/', include('bins.foo.urls')),
+     (r'^', binalerts.views.frontpage),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

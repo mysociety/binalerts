@@ -13,8 +13,12 @@ class FrontPageTest(TestCase):
         response = c.get('/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Enter your postcode')
-        self.assertEqual(response.template.name, 'frontpage')
+        self.assertContains(response, 'Please enter your postcode')
+        self.assertEqual(response.template.name, 'binalerts/frontpage.html')
+
+
+
+
 
 # Example doctest in case we need it later
 __test__ = {"doctest": """
