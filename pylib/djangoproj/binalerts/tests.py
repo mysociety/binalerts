@@ -14,14 +14,21 @@ class FrontPageTest(TestCase):
     def setUp(self):
         self.c = Client()
 
-    def test_frontpage_asks_for_postcode(self):
+    def test_asks_for_postcode(self):
         response = self.c.get('/')
 
         self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.template.name, 'binalerts/frontpage.html')
         self.assertContains(response, 'Please enter your postcode')
         self.assertContains(response, '<input type="text" name="postcode" id="id_postcode" />')
         self.assertContains(response, '<input type="submit" value="Go" />')
+
+    def test_error_if_not_postcode(self):
+        response = self.c.post('/', { 'postcode': 'notapostcode' })
+
         self.assertEqual(response.template.name, 'binalerts/frontpage.html')
+        self.assertContains(response, 'Sorry')
 
 
 # Example doctest in case we need it later
