@@ -11,16 +11,17 @@ from django.test import TestCase
 from django.test import Client
 
 class FrontPageTest(TestCase):
+    def setUp(self):
+        self.c = Client()
+
     def test_frontpage_asks_for_postcode(self):
-        c = Client()
-        response = c.get('/')
+        response = self.c.get('/')
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Please enter your postcode')
         self.assertContains(response, '<input type="text" name="postcode" id="id_postcode" />')
         self.assertContains(response, '<input type="submit" value="Go" />')
         self.assertEqual(response.template.name, 'binalerts/frontpage.html')
-
 
 
 # Example doctest in case we need it later
