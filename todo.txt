@@ -22,8 +22,6 @@ Give an option of two times (9am, 6pm)
 Administrivia
 =============
 
-Set up South
-
 Enable admin
 
 
