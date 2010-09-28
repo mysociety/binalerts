@@ -1,0 +1,25 @@
++from django.core.urlresolvers import reverse
++                return HttpResponseRedirect(reverse(switch_on_postcode, kwargs=dict(target_postcode=postcode)))
+
+Tests
+=====
+
+Valid postcodes redirect to page for appropriate street
+Page for appropriate street shows when bin is collected there
+
+When cobrand set to Barnet:
+    * looks like Barnet site
+    * only Barnet postcodes allowed
+
+
+Administrivia
+=============
+
+Add copyright messages everywhere
+
+Set up South
+
+Enable admin
+
+
+
