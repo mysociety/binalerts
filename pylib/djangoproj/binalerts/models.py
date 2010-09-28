@@ -6,4 +6,6 @@
 
 from django.db import models
 
-# Create your models here.
+class BinCollection(models.Model):
+    pass
+

@@ -1,6 +1,11 @@
 +from django.core.urlresolvers import reverse
 +                return HttpResponseRedirect(reverse(switch_on_postcode, kwargs=dict(target_postcode=postcode)))
 
+    $ ./manage.py startmigration appname --auto
+    $ ./manage.py migrate
+
+
+
 Tests
 =====
 
@@ -11,6 +16,8 @@ When cobrand set to Barnet:
     * looks like Barnet site
     * only Barnet postcodes allowed
 
+
+Give an option of two times (9am, 6pm)
 
 Administrivia
 =============
