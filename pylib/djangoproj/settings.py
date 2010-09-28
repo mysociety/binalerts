@@ -1,4 +1,8 @@
-# Django settings for djangoproj project.
+# settings.py:
+# Django settings for binalerts project.
+#
+# Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
+# Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
 # Some special mysociety preamble in order to get hold of our config
 # file conf/general

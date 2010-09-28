@@ -1,3 +1,9 @@
+# urls.py:
+# Mapping from URLs to view functions for Bin Alerts.
+#
+# Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
+# Email: francis@mysociety.org; WWW: http://www.mysociety.org/
+
 from django.conf.urls.defaults import *
 import binalerts.views
 

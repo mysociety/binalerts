@@ -1,3 +1,10 @@
+# views.py:
+# Views for Bin Alerts. 
+#
+# Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
+# Email: francis@mysociety.org; WWW: http://www.mysociety.org/
+
+
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 

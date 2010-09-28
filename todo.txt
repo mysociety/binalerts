@@ -15,8 +15,6 @@ When cobrand set to Barnet:
 Administrivia
 =============
 
-Add copyright messages everywhere
-
 Set up South
 
 Enable admin

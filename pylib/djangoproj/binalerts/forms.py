@@ -1,3 +1,9 @@
+# forms.py:
+# Forms for Bin Alerts.
+#
+# Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
+# Email: francis@mysociety.org; WWW: http://www.mysociety.org/
+
 from django import forms
 from django.contrib.localflavor.uk.forms import UKPostcodeField
 

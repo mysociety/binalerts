@@ -1,8 +1,11 @@
-"""
-Integration-style tests for binalerts. These tests think of things from the web
-frontend point of view. They are designed to make sure the application behaves
-as required to the user.
-"""
+# urls.py:
+# Integration-style tests for Bin Alerts. 
+#
+# These tests think of things from the web frontend point of view. They are
+# designed to make sure the application behaves as required to the user.
+#
+# Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
+# Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
 # Various tips on testing forms:
 # http://stackoverflow.com/questions/2257958/django-unit-testing-for-form-edit
