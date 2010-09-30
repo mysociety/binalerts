@@ -26,10 +26,10 @@ def frontpage(request):
     else:
         form = LocationForm() # An unbound form
 
-    return render_to_response('binalerts/frontpage.html', { 'form': form })
+    return render_to_response('frontpage.html', { 'form': form })
 
 def show_street(request, url_name):
     bin_collection = BinCollection.objects.get(street_url_name = url_name)
-    return render_to_response('binalerts/street.html', { 'bin_collection': bin_collection })
+    return render_to_response('street.html', { 'bin_collection': bin_collection })
 
 

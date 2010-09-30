@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Bin collection days{% endblock %}
+
+{% block content %}
+
+<h1>Bin collection days</h1>
+
+<p>Please type the name of your street:</p>
+
+<form action="/" method="post">
+    {{ form.as_p }}
+    <input type="submit" value="Go" />
+</form>
+
+{% endblock %}

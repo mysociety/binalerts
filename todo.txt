@@ -31,6 +31,8 @@ Give an option of two times for alerts (9am, 6pm)
 Improvements
 ============
 
+Change "query" to say something nicer
+
 For green waste, Athenaeum Road is "Tuesday/Thursday". Deal better with that. (There are 16 examples)
 
 Different blocks of flats on one street can have different days.

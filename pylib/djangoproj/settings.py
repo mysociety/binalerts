@@ -8,7 +8,7 @@
 # file conf/general
 import os
 import sys
-package_dir = os.path.abspath(os.path.split(__file__)[0])
+package_dir = os.path.abspath(os.path.realpath(os.path.dirname(__file__)))
 
 paths = (
     os.path.normpath(package_dir + "/../../pylib"),

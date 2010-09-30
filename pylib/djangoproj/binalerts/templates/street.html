@@ -1,0 +1,17 @@
+
+
+{% extends 'base.html' %}
+
+{% block title %}Bin collection days for {{ bin_collection.street_name }}{% endblock %}
+
+{% block content %}
+
+<h1>
+    {{ bin_collection.street_name }} bin collections
+</h1>
+
+<p>
+    Collection day is <strong>{{ bin_collection.get_collection_day_display }}</strong>.
+</p>
+
+{% endblock %}
