@@ -18,7 +18,7 @@ from django import forms
 
 class LocationForm(forms.Form):
     query = forms.CharField(error_messages = {
-        'required': 'Please enter the name of the street you live in',
+        'required': "Enter either all or part of the name of the street. e.g. Abbey",
     })
 
 
