@@ -29,7 +29,6 @@ def frontpage(request):
     return render_to_response('binalerts/frontpage.html', { 'form': form })
 
 def show_street(request, url_name):
-    raise BaseException("incomplete " + url_name)
-
+    return render_to_response('binalerts/street.html', { })
 
 
