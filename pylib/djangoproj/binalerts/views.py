@@ -13,6 +13,8 @@ from binalerts.forms import LocationForm
 from binalerts.models import BinCollection
 
 def frontpage(request):
+    streets = None
+
     if request.method == 'POST': 
         form = LocationForm(request.POST) 
         if form.is_valid(): 
@@ -21,12 +23,14 @@ def frontpage(request):
 
             if len(streets) == 1:
                 return HttpResponseRedirect(reverse('show_street', kwargs = { 'url_name' : streets[0].street_url_name })) 
+            elif len(streets) > 1:
+                pass
             else:
                 raise BaseException("incomplete")
     else:
         form = LocationForm() # An unbound form
 
-    return render_to_response('frontpage.html', { 'form': form })
+    return render_to_response('frontpage.html', { 'form': form, 'streets': streets })
 
 def show_street(request, url_name):
     bin_collection = BinCollection.objects.get(street_url_name = url_name)

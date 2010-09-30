@@ -45,7 +45,14 @@ class StreetSearchTest(BinAlertsTestCase):
 
     # def test_makes_suggestions_if_no_street_found(self):
 
-    # def test_offers_list_if_many_streets_found(self):
+    def test_offers_list_if_many_streets_found(self):
+        response = self.c.post('/', { 'query': 'Abb' })
+
+        self.assertContains(response, "Abbots Road")
+        self.assertContains(response, "Abbey View")
+        self.assertNotContains(response, "Alyth Gardens")
+
+        self.assertContains(response, '<a href="/street/abbots_road">')
 
     def test_redirects_if_exactly_one_street_found(self):
         response = self.c.post('/', { 'query': 'Alyth Gardens' })

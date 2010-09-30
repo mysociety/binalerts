@@ -13,4 +13,12 @@
     <input type="submit" value="Go" />
 </form>
 
+{% if streets %}
+    <ul>
+        {% for street in streets %}
+            <li> <a href="{% url show_street street.street_url_name  %}">{{ street.street_name }}</a> </li>
+        {% endfor %}
+    <ul>
+{% endif %}
+
 {% endblock %}
