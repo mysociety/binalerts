@@ -6,19 +6,23 @@
 
 <h1>Bin collection days</h1>
 
-<p>Please type the name of your street:</p>
 
 <form action="/" method="post">
-    {{ form.as_p }}
+    {{ form.query.errors }}
+    <p>
+        <label for="id_query"> Please type the name of your street: </label>
+    </p>
+    {{ form.query }}
     <input type="submit" value="Go" />
 </form>
 
 {% if streets %}
+    <h2>Did you mean...</h2>
     <ul>
         {% for street in streets %}
             <li> <a href="{% url show_street street.street_url_name  %}">{{ street.street_name }}</a> </li>
         {% endfor %}
-    <ul>
+    </ul>
 {% endif %}
 
 {% endblock %}

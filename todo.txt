@@ -41,6 +41,8 @@ Different blocks of flats on one street can have different days.
 Administrivia
 =============
 
+Validate some HTML
+
 Get ./manage.py test to work for auth app, which it doesn't
 
 Use wrapper template for display
