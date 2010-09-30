@@ -5,18 +5,23 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 
 from binalerts.forms import LocationForm
+from binalerts.models import BinCollection
 
 def frontpage(request):
-    if request.method == 'POST': # If the form has been submitted...
-        form = LocationForm(request.POST) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
-            # Process the data in form.cleaned_data
-            # ...
-            return HttpResponseRedirect('/thanks/') # Redirect after POST
+    if request.method == 'POST': 
+        form = LocationForm(request.POST) 
+        if form.is_valid(): 
+            query = form.cleaned_data['query']
+            streets = BinCollection.objects.find_by_street_name(query)
+
+            if len(streets) == 1:
+                return HttpResponseRedirect(reverse(switch_on_postcode, street_url_name = streets[0].street_url_name)) 
+            else:
+                raise BaseException("incomplete")
     else:
         form = LocationForm() # An unbound form
 

@@ -12,10 +12,14 @@ Tests
 Valid postcodes redirect to page for appropriate street
 Page for appropriate street shows when bin is collected there
 
+Types of waste - green waste
+Use postcode as disambiguator for some streets
+
 When cobrand set to Barnet:
     * looks like Barnet site
     * only Barnet postcodes allowed
 
+Ajaxify
 
 Give an option of two times (9am, 6pm)
 

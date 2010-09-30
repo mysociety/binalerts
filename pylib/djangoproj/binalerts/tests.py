@@ -13,7 +13,9 @@
 from django.test import TestCase
 from django.test import Client
 
-class FrontPageTest(TestCase):
+class StreetSearchTest(TestCase):
+    fixtures = ['bogus_barnet_sample.json']
+
     def setUp(self):
         self.c = Client()
 
@@ -33,6 +35,14 @@ class FrontPageTest(TestCase):
 
         self.assertEqual(response.template.name, 'binalerts/frontpage.html')
         self.assertContains(response, 'errorlist')
+
+    # def test_makes_suggestions_if_no_street_found(self):
+
+    # def test_offers_list_if_many_streets_found(self):
+
+    def test_redirects_if_exactly_one_street_found(self):
+        response = self.c.post('/', { 'query': 'Alyth Gardens' })
+        self.assertRedirects(response, '/street/alyth_gardens')
 
 
 # Example doctest in case we need it later

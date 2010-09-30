@@ -6,6 +6,14 @@
 
 from django.db import models
 
+class BinCollectionManager(models.Manager):
+    def find_by_street_name(self, street_name):
+        return self.filter(street_name__icontains=street_name)
+
 class BinCollection(models.Model):
-    pass
+    street_name = models.CharField(max_length=200)
+    street_url_name = models.CharField(max_length=200)
+
+    objects = BinCollectionManager()
+
 
