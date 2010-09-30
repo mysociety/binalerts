@@ -1,6 +1,6 @@
 [
-    {"pk": 1, "model": "binalerts.bincollection", "fields": {"street_name": "Abbey View", "street_url_name": "abbey_view"}}, 
-    {"pk": 2, "model": "binalerts.bincollection", "fields": {"street_name": "Abbots Road", "street_url_name": "abbots_road"}}, 
-    {"pk": 3, "model": "binalerts.bincollection", "fields": {"street_name": "Alyth Gardens", "street_url_name": "alyth_gardens"}}
+    {"pk": 1, "model": "binalerts.bincollection", "fields": {"street_name": "Abbey View", "street_url_name": "abbey_view", "collection_day": 5 }}, 
+    {"pk": 2, "model": "binalerts.bincollection", "fields": {"street_name": "Abbots Road", "street_url_name": "abbots_road", "collection_day": 5 }}, 
+    {"pk": 3, "model": "binalerts.bincollection", "fields": {"street_name": "Alyth Gardens", "street_url_name": "alyth_gardens", "collection_day": 2 }}
 ]
 

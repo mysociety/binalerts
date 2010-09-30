@@ -44,10 +44,6 @@ class StreetSearchTest(TestCase):
         response = self.c.post('/', { 'query': 'Alyth Gardens' })
         self.assertRedirects(response, '/street/alyth_gardens')
     
-class StreetPage(TestCase):
-    def setUp(self):
-        self.c = Client()
-
     def test_show_bin_collection_day_on_street_page(self):
         response = self.c.get('/street/alyth_gardens')
         self.assertContains(response, 'Tuesday')
