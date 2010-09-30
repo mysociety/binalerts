@@ -17,9 +17,10 @@ import binalerts.views
 
 urlpatterns = patterns('',
      # Bin alerts
-     (r'^$', binalerts.views.frontpage),
+     url(r'^$', binalerts.views.frontpage, name='frontpage'),
+     url(r'^street/(?P<url_name>.+)$', binalerts.views.show_street, name='show_street'),
 
      # Admin
-     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-     (r'^admin/', include(admin.site.urls)),
+     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+     url(r'^admin/', include(admin.site.urls)),
 )

@@ -16,4 +16,7 @@ class BinCollection(models.Model):
 
     objects = BinCollectionManager()
 
+    def __unicode__(self):
+        return self.street_name
+
 

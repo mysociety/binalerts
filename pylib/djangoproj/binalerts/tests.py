@@ -14,7 +14,7 @@ from django.test import TestCase
 from django.test import Client
 
 class StreetSearchTest(TestCase):
-    fixtures = ['bogus_barnet_sample.json']
+    fixtures = ['barnet_sample.json']
 
     def setUp(self):
         self.c = Client()
