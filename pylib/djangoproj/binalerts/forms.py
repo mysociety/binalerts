@@ -6,20 +6,18 @@
 
 from django import forms
 
-# from django.contrib.localflavor.uk.forms import UKPostcodeField
-
-# Due to a bug in UKPostcodeField, can't override error message. This is 
-# fixed in: http://code.djangoproject.com/ticket/12017
-# So remove this extra class when we have a recent enough Django.
-# class MyUKPostcodeField(UKPostcodeField):
-#     default_error_messages = {
-#        'invalid': 'Sorry, we need your complete UK postcode to work out when your bins are emptied.'
-#    }
+from binalerts.models import BinCollection
 
 class LocationForm(forms.Form):
     query = forms.CharField(error_messages = {
         'required': "Enter either all or part of the name of the street. e.g. Abbey",
     })
+
+    def clean_query(self):
+        query = self.cleaned_data['query']
+        streets = BinCollection.objects.find_by_street_name(query)
+        self.cleaned_data['streets'] = streets
+        return query
 
 
 

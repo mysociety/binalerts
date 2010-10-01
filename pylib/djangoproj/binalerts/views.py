@@ -19,7 +19,7 @@ def frontpage(request):
         form = LocationForm(request.POST) 
         if form.is_valid(): 
             query = form.cleaned_data['query']
-            streets = BinCollection.objects.find_by_street_name(query)
+            streets = form.cleaned_data['streets']
 
             if len(streets) == 1:
                 return HttpResponseRedirect(reverse('show_street', kwargs = { 'url_name' : streets[0].street_url_name })) 
