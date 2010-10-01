@@ -20,11 +20,16 @@ DAY_OF_WEEK_CHOICES = (
     (6, 'Saturday')
 )
 
+COLLECTION_TYPE_CHOICES = (
+    ('G', 'Green Garden and Kitchen Waste'),
+)
+
 class BinCollection(models.Model):
     street_name = models.CharField(max_length=200)
     street_url_name = models.CharField(max_length=200)
 
     collection_day = models.IntegerField(choices = DAY_OF_WEEK_CHOICES)
+    collection_type = models.CharField(max_length = 10, choices = COLLECTION_TYPE_CHOICES)
 
     objects = BinCollectionManager()
 

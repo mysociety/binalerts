@@ -9,8 +9,6 @@
 Tests
 =====
 
-Page for appropriate street shows when bin is collected there
-
 Types of waste - green waste
 Use postcode part as disambiguator for some streets
 
@@ -43,15 +41,13 @@ Some kind of tri-based fuzzy matching
 Administrivia
 =============
 
+Factor out street into its own model, separate from collection?
+
 Validate some HTML
 
 Get ./manage.py test to work for auth app, which it doesn't
 
-Use wrapper template for display
-
 Change url_name to be a SlugField
-
-Move templates to be under app?
 
 
 

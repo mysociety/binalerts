@@ -65,6 +65,8 @@ class StreetSearchTest(BinAlertsTestCase):
 class StreetPageTest(BinAlertsTestCase):
     def test_show_bin_collection_day_on_street_page(self):
         response = self.c.get('/street/alyth_gardens')
+
+        self.assertContains(response, 'Green Garden')
         self.assertContains(response, 'Tuesday')
 
 
