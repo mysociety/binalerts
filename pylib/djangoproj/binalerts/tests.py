@@ -19,12 +19,13 @@ class BinAlertsTestCase(TestCase):
     def setUp(self):
         self.c = Client()
 
-class StreetSearchTest(BinAlertsTestCase):
+# Cobranding style
+class BarnetStylingTest(BinAlertsTestCase):
     def test_looks_like_barnet_site(self):
         response = self.c.get('/')
         self.assertContains(response, "/barnet/css/basic.css")
 
-
+# Searching for a street
 class StreetSearchTest(BinAlertsTestCase):
     def test_asks_for_street(self):
         response = self.c.get('/')
@@ -70,7 +71,7 @@ class StreetSearchTest(BinAlertsTestCase):
         response = self.c.post('/', { 'query': 'Alyth Gardens' })
         self.assertRedirects(response, '/street/alyth_gardens')
 
-
+# Display info about a street
 class StreetPageTest(BinAlertsTestCase):
     def test_show_bin_collection_day_on_street_page(self):
         response = self.c.get('/street/alyth_gardens')
