@@ -15,8 +15,13 @@ class LocationForm(forms.Form):
 
     def clean_query(self):
         query = self.cleaned_data['query']
+
         streets = BinCollection.objects.find_by_street_name(query)
+        if len(streets) == 0:
+            raise forms.ValidationError("No street found with that name. Try typing a smaller part of it. e.g. Nor")
+
         self.cleaned_data['streets'] = streets
+
         return query
 
 

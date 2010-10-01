@@ -43,10 +43,10 @@ class StreetSearchTest(BinAlertsTestCase):
         self.assertTemplateUsed(response, 'frontpage.html')
         self.assertContains(response, 'errorlist')
 
-#    def test_makes_suggestions_if_no_street_found(self):
-#        response = self.c.post('/', { 'query': 'Xyz' })
-#
-#        self.assertContains(response, "No street found with that exact name. Try typing a smaller part of it")
+    def test_makes_suggestions_if_no_street_found(self):
+        response = self.c.post('/', { 'query': 'Xyz' })
+
+        self.assertContains(response, "No street found with that name. Try typing a smaller part of it")
 
     def test_offers_list_if_many_streets_found(self):
         response = self.c.post('/', { 'query': 'Abb' })
