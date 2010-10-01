@@ -20,7 +20,7 @@
     <h2>Did you mean...</h2>
     <ul>
         {% for street in streets %}
-            <li> <a href="{% url show_street street.street_url_name  %}">{{ street.street_name }}</a> </li>
+            <li> <a href="{% url show_street street.street_url_name  %}">{{ street.street_name }} ({{ street.street_partial_postcode }})</a> </li>
         {% endfor %}
     </ul>
 {% endif %}

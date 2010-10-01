@@ -27,13 +27,15 @@ COLLECTION_TYPE_CHOICES = (
 class BinCollection(models.Model):
     street_name = models.CharField(max_length=200)
     street_url_name = models.CharField(max_length=200)
+    street_partial_postcode = models.CharField(max_length=5) # e.g. NW4
 
     collection_day = models.IntegerField(choices = DAY_OF_WEEK_CHOICES)
     collection_type = models.CharField(max_length = 10, choices = COLLECTION_TYPE_CHOICES)
 
+
     objects = BinCollectionManager()
 
     def __unicode__(self):
-        return "%s (%s)" % (self.street_name, self.get_collection_day_display())
+        return "%s %s (%s)" % (self.street_name, self.street_partial_postcode, self.get_collection_day_display())
 
 

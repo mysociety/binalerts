@@ -57,6 +57,15 @@ class StreetSearchTest(BinAlertsTestCase):
 
         self.assertContains(response, '<a href="/street/abbots_road">')
 
+    def test_shows_postcode_in_list_when_two_streets_have_same_name(self):
+        response = self.c.post('/', { 'query': 'Ashurst Road' })
+
+        self.assertContains(response, "Ashurst Road (N12)")
+        self.assertContains(response, "Ashurst Road (EN4)")
+
+        self.assertContains(response, '<a href="/street/ashurst_road_n12">')
+        self.assertContains(response, '<a href="/street/ashurst_road_en4">')
+
     def test_redirects_if_exactly_one_street_found(self):
         response = self.c.post('/', { 'query': 'Alyth Gardens' })
         self.assertRedirects(response, '/street/alyth_gardens')
@@ -68,6 +77,11 @@ class StreetPageTest(BinAlertsTestCase):
 
         self.assertContains(response, 'Green Garden')
         self.assertContains(response, 'Tuesday')
+
+    def test_shows_postcode_when_two_streets_have_same_name(self):
+        response = self.c.get('/street/ashurst_road_en4')
+        self.assertContains(response, "EN4")
+
 
 
 # Example doctest in case we need it later

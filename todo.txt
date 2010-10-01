@@ -9,8 +9,6 @@
 Tests
 =====
 
-Use postcode part as disambiguator for some streets
-
 Load in PDF file
 
 Ajaxify
@@ -31,6 +29,8 @@ For green waste, Athenaeum Road is "Tuesday/Thursday". Deal better with that. (T
 Different blocks of flats on one street can have different days.
 
 Some kind of tri-based fuzzy matching
+
+Store date that data was valid for (last updated)
 
 
 Administrivia

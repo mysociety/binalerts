@@ -1,6 +1,57 @@
 [
-    {"pk": 1, "model": "binalerts.bincollection", "fields": {"street_name": "Abbey View", "street_url_name": "abbey_view", "collection_day": 5, "collection_type": "G" }}, 
-    {"pk": 2, "model": "binalerts.bincollection", "fields": {"street_name": "Abbots Road", "street_url_name": "abbots_road", "collection_day": 5, "collection_type": "G" }}, 
-    {"pk": 3, "model": "binalerts.bincollection", "fields": {"street_name": "Alyth Gardens", "street_url_name": "alyth_gardens", "collection_day": 2, "collection_type": "G" }}
+    {
+        "pk": 1, 
+        "model": "binalerts.bincollection", 
+        "fields": {
+            "street_partial_postcode": "XX0", 
+            "street_name": "Abbey View", 
+            "street_url_name": "abbey_view", 
+            "collection_day": 5, 
+            "collection_type": "G"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "binalerts.bincollection", 
+        "fields": {
+            "street_partial_postcode": "XX0", 
+            "street_name": "Abbots Road", 
+            "street_url_name": "abbots_road", 
+            "collection_day": 5, 
+            "collection_type": "G"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "binalerts.bincollection", 
+        "fields": {
+            "street_partial_postcode": "XX0", 
+            "street_name": "Alyth Gardens", 
+            "street_url_name": "alyth_gardens", 
+            "collection_day": 2, 
+            "collection_type": "G"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "binalerts.bincollection", 
+        "fields": {
+            "street_partial_postcode": "N12", 
+            "street_name": "Ashurst Road", 
+            "street_url_name": "ashurst_road_n12", 
+            "collection_day": 4, 
+            "collection_type": "G"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "binalerts.bincollection", 
+        "fields": {
+            "street_partial_postcode": "EN4", 
+            "street_name": "Ashurst Road", 
+            "street_url_name": "ashurst_road_en4", 
+            "collection_day": 2, 
+            "collection_type": "G"
+        }
+    }
 ]
-
