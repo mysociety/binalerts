@@ -9,12 +9,7 @@
 Tests
 =====
 
-Types of waste - green waste
 Use postcode part as disambiguator for some streets
-
-When cobrand set to Barnet:
-    * looks like Barnet site
-    * only Barnet postcodes allowed
 
 Load in PDF file
 
