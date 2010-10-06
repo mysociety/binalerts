@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pdf2xml SYSTEM "pdf2xml.dtd">
+
+<pdf2xml>
+<page number="1" position="absolute" top="0" left="0" height="841" width="595">
+	<fontspec id="0" size="49" family="Times" color="#21b4af"/>
+	<fontspec id="1" size="49" family="Times" color="#231f20"/>
+	<fontspec id="2" size="26" family="Times" color="#231f20"/>
+	<fontspec id="3" size="-1" family="Times" color="#ffffff"/>
+<text top="161" left="72" width="330" height="46" font="0">Green Garden</text>
+<text top="161" left="418" width="83" height="46" font="1">and</text>
+<text top="223" left="72" width="341" height="46" font="0">Kitchen Waste</text>
+<text top="284" left="72" width="393" height="46" font="1">Collection Service</text>
+<text top="359" left="72" width="432" height="25" font="2">List of roads included in this service</text>
+<text top="-1000" left="-999" width="1" height="1" font="3">       </text>
+</page>
+<page number="2" position="absolute" top="0" left="0" height="792" width="612">
+	<fontspec id="4" size="24" family="Times" color="#000000"/>
+	<fontspec id="5" size="11" family="Times" color="#000000"/>
+	<fontspec id="6" size="16" family="Times" color="#000000"/>
+	<fontspec id="7" size="12" family="Times" color="#000000"/>
+	<fontspec id="8" size="7" family="Times" color="#000000"/>
+	<fontspec id="9" size="10" family="Times" color="#000000"/>
+	<fontspec id="10" size="7" family="Times" color="#000000"/>
+	<fontspec id="11" size="10" family="Times" color="#000000"/>
+<text top="77" left="79" width="372" height="24" font="4">Green Garden and Kitchen </text>
+<text top="107" left="79" width="92" height="24" font="4">Waste </text>
+<text top="137" left="79" width="254" height="24" font="4">Collection Service </text>
+<text top="164" left="79" width="4" height="13" font="5"> </text>
+<text top="180" left="79" width="334" height="16" font="6">List of roads included in this service </text>
+<text top="199" left="79" width="4" height="13" font="5"> </text>
+<text top="214" left="79" width="147" height="13" font="7">To find your street: </text>
+<text top="228" left="79" width="457" height="18" font="7">When viewing the document in PDF (Portable Document Format) go to </text>
+<text top="250" left="79" width="34" height="13" font="7">Edit </text>
+<text top="246" left="114" width="226" height="18" font="7">in the menu bar and choose Find. </text>
+<text top="264" left="79" width="393" height="18" font="7">Type in the name of your street and click on the Find button.</text>
+<text top="272" left="473" width="3" height="9" font="8"> </text>
+<text top="282" left="79" width="3" height="13" font="9"> </text>
+<text top="300" left="153" width="57" height="11" font="10"><b>Road Name </b></text>
+<text top="300" left="314" width="48" height="11" font="10"><b>Postcode </b></text>
+<text top="300" left="431" width="72" height="11" font="10"><b>Collection Day </b></text>
+<text top="647" left="84" width="7" height="13" font="11"><b>I </b></text>
+<text top="650" left="203" width="5" height="11" font="8">  </text>
+<text top="650" left="287" width="5" height="11" font="8">  </text>
+<text top="650" left="396" width="5" height="11" font="8">  </text>
+<text top="665" left="84" width="29" height="11" font="8">Ibsley </text>
+<text top="665" left="203" width="23" height="11" font="8">Way </text>
+<text top="665" left="287" width="22" height="11" font="8">EN4 </text>
+<text top="665" left="396" width="41" height="11" font="8">Tuesday </text>
+<text top="681" left="84" width="24" height="11" font="8">Ingle </text>
+<text top="681" left="203" width="23" height="11" font="8">Way </text>
+<text top="681" left="287" width="21" height="11" font="8">N12 </text>
+<text top="681" left="396" width="55" height="11" font="8">Wednesday </text>
+<text top="696" left="84" width="42" height="11" font="8">Ingleway </text>
+<text top="696" left="203" width="5" height="11" font="8">  </text>
+<text top="696" left="287" width="21" height="11" font="8">N12 </text>
+<text top="696" left="396" width="55" height="11" font="8">Wednesday </text>
+</page>
+<page number="30" position="absolute" top="0" left="0" height="792" width="612">
+<text top="76" left="84" width="34" height="11" font="8">Ingram </text>
+<text top="76" left="203" width="36" height="11" font="8">Avenue </text>
+<text top="76" left="287" width="30" height="11" font="8">NW11 </text>
+<text top="76" left="396" width="41" height="11" font="8">Tuesday </text>
+<text top="91" left="84" width="34" height="11" font="8">Ingram </text>
+<text top="91" left="203" width="26" height="11" font="8">Road </text>
+<text top="91" left="287" width="15" height="11" font="8">N2 </text>
+<text top="91" left="396" width="38" height="11" font="8">Monday </text>
+<text top="107" left="84" width="33" height="11" font="8">Inkwell </text>
+<text top="107" left="203" width="28" height="11" font="8">Close </text>
+<text top="107" left="287" width="21" height="11" font="8">N12 </text>
+<text top="107" left="396" width="30" height="11" font="8">Friday </text>
+<text top="122" left="84" width="28" height="11" font="8">Ireton </text>
+<text top="122" left="203" width="28" height="11" font="8">Close </text>
+<text top="122" left="287" width="21" height="11" font="8">N10 </text>
+<text top="122" left="396" width="43" height="11" font="8">Saturday </text>
+<text top="138" left="84" width="16" height="11" font="8">Iris </text>
+<text top="138" left="203" width="25" height="11" font="8">Walk </text>
+<text top="138" left="287" width="5" height="11" font="8">  </text>
+<text top="138" left="396" width="43" height="11" font="8">Saturday </text>
+<text top="153" left="84" width="27" height="11" font="8">Irvine </text>
+<text top="153" left="203" width="28" height="11" font="8">Close </text>
+<text top="153" left="287" width="21" height="11" font="8">N20 </text>
+<text top="153" left="396" width="41" height="11" font="8">Tuesday </text>
+<text top="169" left="84" width="30" height="11" font="8">Irving  </text>
+<text top="169" left="203" width="23" height="11" font="8">Way </text>
+<text top="169" left="287" width="25" height="11" font="8">NW9 </text>
+<text top="169" left="396" width="30" height="11" font="8">Friday </text>
+<text top="184" left="84" width="20" height="11" font="8">Islip </text>
+<text top="184" left="203" width="41" height="11" font="8">Gardens </text>
+<text top="184" left="287" width="22" height="11" font="8">HA8 </text>
+<text top="184" left="396" width="55" height="11" font="8">Wednesday </text>
+<text top="200" left="84" width="25" height="11" font="8">Ivere </text>
+<text top="200" left="203" width="26" height="11" font="8">Drive </text>
+<text top="200" left="287" width="22" height="11" font="8">EN5 </text>
+<text top="200" left="396" width="38" height="11" font="8">Monday </text>
+<text top="214" left="84" width="10" height="13" font="11"><b>J </b></text>
+<text top="216" left="203" width="5" height="11" font="8">  </text>
+<text top="216" left="287" width="5" height="11" font="8">  </text>
+<text top="216" left="396" width="5" height="11" font="8">  </text>
+<text top="232" left="84" width="39" height="11" font="8">Jackson </text>
+<text top="232" left="203" width="26" height="11" font="8">Road </text>
+<text top="232" left="287" width="22" height="11" font="8">EN4 </text>
+<text top="232" left="396" width="43" height="11" font="8">Saturday </text>
+<text top="247" left="84" width="24" height="11" font="8">Jade </text>
+<text top="247" left="203" width="28" height="11" font="8">Close </text>
+<text top="247" left="287" width="25" height="11" font="8">NW2 </text>
+<text top="247" left="396" width="38" height="11" font="8">Monday </text>
+<text top="263" left="84" width="32" height="11" font="8">James </text>
+<text top="263" left="203" width="28" height="11" font="8">Close </text>
+<text top="263" left="287" width="30" height="11" font="8">NW11 </text>
+<text top="263" left="396" width="41" height="11" font="8">Tuesday </text>
+<text top="278" left="84" width="29" height="11" font="8">Jarvis </text>
+<text top="278" left="203" width="28" height="11" font="8">Close </text>
+<text top="278" left="287" width="22" height="11" font="8">EN5 </text>
+<text top="278" left="396" width="41" height="11" font="8">Tuesday </text>
+<text top="293" left="84" width="43" height="11" font="8">Jennings </text>
+<text top="293" left="203" width="23" height="11" font="8">Way </text>
+<text top="293" left="287" width="22" height="11" font="8">EN5 </text>
+<text top="293" left="396" width="43" height="11" font="8">Saturday </text>
+<text top="309" left="84" width="29" height="11" font="8">Johns </text>
+<text top="309" left="203" width="36" height="11" font="8">Avenue </text>
+<text top="309" left="287" width="25" height="11" font="8">NW4 </text>
+<text top="309" left="396" width="41" height="11" font="8">Tuesday </text>
+<text top="324" left="84" width="43" height="11" font="8">Johnston </text>
+<text top="324" left="203" width="37" height="11" font="8">Terrace </text>
+<text top="324" left="287" width="25" height="11" font="8">NW2 </text>
+<text top="324" left="396" width="43" height="11" font="8">Saturday </text>
+<text top="340" left="84" width="29" height="11" font="8">Julian </text>
+<text top="340" left="203" width="28" height="11" font="8">Close </text>
+<text top="340" left="287" width="22" height="11" font="8">EN5 </text>
+<text top="340" left="396" width="41" height="11" font="8">Tuesday </text>
+<text top="356" left="84" width="34" height="11" font="8">Juliana </text>
+<text top="356" left="203" width="28" height="11" font="8">Close </text>
+<text top="356" left="287" width="15" height="11" font="8">N2 </text>
+<text top="356" left="396" width="38" height="11" font="8">Monday </text>
+<text top="371" left="84" width="35" height="11" font="8">Juniper </text>
+<text top="371" left="203" width="28" height="11" font="8">Close </text>
+<text top="371" left="287" width="22" height="11" font="8">EN5 </text>
+<text top="371" left="396" width="41" height="11" font="8">Tuesday </text>
+<text top="570" left="79" width="3" height="13" font="9"> </text>
+<text top="583" left="533" width="3" height="13" font="9"> </text>
+<text top="597" left="478" width="58" height="13" font="9">April 2006 </text>
+</page>
+</pdf2xml>

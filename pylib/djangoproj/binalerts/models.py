@@ -5,10 +5,7 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
 from django.db import models
-
-class BinCollectionManager(models.Manager):
-    def find_by_street_name(self, street_name):
-        return self.filter(street_name__icontains=street_name)
+import xml.dom.minidom
 
 DAY_OF_WEEK_CHOICES = (
     (0, 'Sunday'),
@@ -23,6 +20,19 @@ DAY_OF_WEEK_CHOICES = (
 COLLECTION_TYPE_CHOICES = (
     ('G', 'Green Garden and Kitchen Waste'),
 )
+
+class BinCollectionManager(models.Manager):
+    def find_by_street_name(self, street_name):
+        return self.filter(street_name__icontains=street_name)
+
+    # loads http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
+    # after it has been converted with "pdftohtml -xml"
+    def load_from_pdf_xml(self, xml_file_name):
+        doc = xml.dom.minidom.parse(xml_file_name)
+        for node in doc.getElementsByTagName('text'):
+            top = node.getAttribute['top']
+            text = " ".join([ c.data for c in text.childNodes ])
+            print text
 
 class BinCollection(models.Model):
     street_name = models.CharField(max_length=200)

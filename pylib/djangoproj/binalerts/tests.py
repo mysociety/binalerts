@@ -10,8 +10,14 @@
 # Various tips on testing forms:
 # http://stackoverflow.com/questions/2257958/django-unit-testing-for-form-edit
 
+import os
+
 from django.test import TestCase
 from django.test import Client
+
+from binalerts.models import BinCollection
+
+import binalerts
 
 class BinAlertsTestCase(TestCase):
     fixtures = ['barnet_sample.json']
@@ -71,18 +77,29 @@ class StreetSearchTest(BinAlertsTestCase):
         response = self.c.post('/', { 'query': 'Alyth Gardens' })
         self.assertRedirects(response, '/street/alyth_gardens')
 
+# Check data loading functions
+class LoadDataTest(BinAlertsTestCase):
+    def test_load_data_from_pdf_xml(self):
+        # garden_sample_pdf.xml was converted with "pdftohtml -xml" from this file:
+        # http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
+        garden_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/garden_sample_pdf.xml')
+        print garden_sample_file
+        BinCollection.objects.load_from_pdf_xml(garden_sample_file)
+
+        # first item in sample file
+        response = self.c.post('/', { 'query': 'Ibsley Way' })
+        self.assertRedirects(response, '/street/ibsley_way_en4')
+
+        # one in the middle
+        response = self.c.post('/', { 'query': 'Jade Close' })
+        self.assertRedirects(response, '/street/jade_close_nw2')
+
+        # last item in sample file
+        response = self.c.post('/', { 'query': 'Juniper Close' })
+        self.assertRedirects(response, '/street/juniper_close_en5')
+
+
 # Display info about a street
-class StreetPageTest(BinAlertsTestCase):
-    def test_show_bin_collection_day_on_street_page(self):
-        response = self.c.get('/street/alyth_gardens')
-
-        self.assertContains(response, 'Green Garden')
-        self.assertContains(response, 'Tuesday')
-
-    def test_shows_postcode_when_two_streets_have_same_name(self):
-        response = self.c.get('/street/ashurst_road_en4')
-        self.assertContains(response, "EN4")
-
 
 
 # Example doctest in case we need it later
