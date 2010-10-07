@@ -99,8 +99,10 @@ class BinCollectionManager(models.Manager):
                     print column + ",",
                 print
                 (street_name_1, street_name_2, partial_postcode, day_of_week) = row
+                slug = (street_name_1 + " " + street_name_2 + " " + partial_postcode).replace(' ', '_').lower()
                 bin_collection = BinCollection(
                         street_name = street_name_1 + ' ' + street_name_2,
+                        street_url_name = slug, 
                         street_partial_postcode = partial_postcode,
                         collection_day = self.day_of_week_string_to_number(day_of_week)
                 )
