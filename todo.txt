@@ -9,21 +9,16 @@
 Tests
 =====
 
-Load in PDF file
-
 Ajaxify
-
 
 Sign up to alerts
 Send alerts
 
-Give an option of two times for alerts (9am, 6pm)
+Give an option of two times for alerts (9am, 6pm) (Maybe)
 
 
 Improvements
 ============
-
-Change "query" to say something nicer
 
 For green waste, Athenaeum Road is "Tuesday/Thursday". Deal better with that. (There are 16 examples)
 
@@ -36,6 +31,8 @@ Store date that data was valid for (last updated)
 
 Administrivia
 =============
+
+Load in real actual final PDF and test
 
 Deploy it to our servers
 
