@@ -37,14 +37,16 @@ Store date that data was valid for (last updated)
 Administrivia
 =============
 
+Deploy it to our servers
+
+Change url_name to be a SlugField
+Make sure unique keys on url_name
+
 Factor out street into its own model, separate from collection?
 
 Validate some HTML
 
 Get ./manage.py test to work for auth app, which it doesn't
-
-Change url_name to be a SlugField
-Make sure unique keys on url_name
 
 
 

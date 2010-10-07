@@ -112,7 +112,7 @@ class BinCollectionManager(models.Manager):
 
 class BinCollection(models.Model):
     street_name = models.CharField(max_length=200)
-    street_url_name = models.CharField(max_length=200)
+    street_url_name = models.SlugField(max_length=50)
     street_partial_postcode = models.CharField(max_length=5) # e.g. NW4
 
     collection_day = models.IntegerField(choices = DAY_OF_WEEK_CHOICES)

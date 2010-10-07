@@ -83,7 +83,6 @@ class LoadDataTest(BinAlertsTestCase):
         # garden_sample_pdf.xml was converted with "pdftohtml -xml" from this file:
         # http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
         garden_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/garden_sample_pdf.xml')
-        print garden_sample_file
         BinCollection.objects.load_from_pdf_xml(garden_sample_file)
 
         # first item in sample file
