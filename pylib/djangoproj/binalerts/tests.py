@@ -77,6 +77,18 @@ class StreetSearchTest(BinAlertsTestCase):
         response = self.c.post('/', { 'query': 'Alyth Gardens' })
         self.assertRedirects(response, '/street/alyth_gardens')
 
+# Display info about a street
+class StreetPageTest(BinAlertsTestCase):
+    def test_show_bin_collection_day_on_street_page(self):
+        response = self.c.get('/street/alyth_gardens')
+ 
+        self.assertContains(response, 'Green Garden')
+        self.assertContains(response, 'Tuesday')
+ 
+    def test_shows_postcode_when_two_streets_have_same_name(self):
+        response = self.c.get('/street/ashurst_road_en4')
+        self.assertContains(response, "EN4")
+
 # Check data loading functions
 class LoadDataTest(BinAlertsTestCase):
     def test_load_data_from_pdf_xml(self):
