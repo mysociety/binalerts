@@ -107,12 +107,17 @@ class AlertsTest(BinAlertsTestCase):
         self.assertContains(response, 'errorlist')
         self.assertContains(response, 'Please enter your email address')
 
-    def test_alert_form_requires_email(self):
+    def test_alert_form_requires_valid_email(self):
         response = self.c.post('/street/alyth_gardens', { 'email': 'notanemail' })
 
         self.assertTemplateUsed(response, 'street.html')
         self.assertContains(response, 'errorlist')
         self.assertContains(response, 'Please enter a valid email address')
+
+    def test_alert_form_accepts_valid_email(self):
+        response = self.c.post('/street/alyth_gardens', { 'email': 'francis@mysociety.org' })
+
+        self.assertTemplateUsed(response, 'check-email.html')
 
 
 # Check data loading functions
