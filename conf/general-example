@@ -25,5 +25,6 @@ define('OPTION_BINS_DB_HOST', null);
 define('OPTION_BINS_DB_PORT', null); 
 
 define('OPTION_DJANGO_SECRET_KEY', '');
+define('OPTION_BUGS_EMAIL', '');
 
 ?>

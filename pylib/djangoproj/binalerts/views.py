@@ -12,6 +12,8 @@ from django.core.urlresolvers import reverse
 from binalerts.forms import LocationForm, CollectionAlertForm
 from binalerts.models import BinCollection
 
+from emailconfirmation.models import EmailConfirmation
+
 def frontpage(request):
     streets = None
 
@@ -26,7 +28,7 @@ def frontpage(request):
             elif len(streets) > 1:
                 pass
             else:
-                raise BaseException("incomplete")
+                raise BaseException("internal error: this should have made the form invalid")
     else:
         form = LocationForm() # An unbound form
 
@@ -40,7 +42,7 @@ def show_street(request, url_name):
         if form.is_valid():
             alert = form.save(commit=False)
             alert.save()
-    #        EmailConfirmation.objects.confirm(request, alert, 'alert-confirmed')
+            EmailConfirmation.objects.confirm(request, alert, 'alert-confirmed')
             return render_to_response('check-email.html')
 
     return render_to_response('street.html', { 'bin_collection': bin_collection, 'form': form })

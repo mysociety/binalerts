@@ -13,7 +13,8 @@ package_dir = os.path.abspath(os.path.realpath(os.path.dirname(__file__)))
 paths = (
     os.path.normpath(package_dir + "/../../pylib"),
     os.path.normpath(package_dir + "/../../commonlib/pylib"),
-    )
+    os.path.normpath(package_dir + "/../../commonlib/pylib/djangoapps"),
+)
 
 for path in paths:
     if path not in sys.path:
@@ -30,6 +31,7 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
+DEFAULT_FROM_EMAIL = 'Barnet Bin Alerts <%s>' % mysociety.config.get('BUGS_EMAIL')
 
 MANAGERS = ADMINS
 
@@ -104,5 +106,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     #'django.contrib.gis',
     'djangoproj.binalerts',
+    'emailconfirmation',
     'south'
 )

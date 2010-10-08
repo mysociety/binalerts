@@ -11,9 +11,11 @@
 # http://stackoverflow.com/questions/2257958/django-unit-testing-for-form-edit
 
 import os
+import mysociety
 
 from django.test import TestCase
 from django.test import Client
+from django.core import mail
 
 from binalerts.models import BinCollection
 
@@ -118,6 +120,17 @@ class AlertsTest(BinAlertsTestCase):
         response = self.c.post('/street/alyth_gardens', { 'email': 'francis@mysociety.org' })
 
         self.assertTemplateUsed(response, 'check-email.html')
+
+    def test_sends_confirmation_email(self):
+        self.assertEquals(len(mail.outbox), 0)
+
+        response = self.c.post('/street/alyth_gardens', { 'email': 'francis@mysociety.org' })
+
+        self.assertEquals(len(mail.outbox), 1)
+        self.assertEquals(mail.outbox[0].subject, 'Alert confirmation')
+        self.assertEquals(mail.outbox[0].from_email, 'Barnet Bin Alerts <%s>' % mysociety.config.get('BUGS_EMAIL'))
+
+    # def test_url_in_confirmation_email(self):
 
 
 # Check data loading functions
