@@ -132,6 +132,11 @@ class AlertsTest(BinAlertsTestCase):
 
     # def test_url_in_confirmation_email(self):
 
+    # def test_following_url_confirms_email(self):
+
+    # def test_wrong_token_does_not_confirm_email(self):
+
+    # def test_alert_is_sent_on_right_day(self):
 
 # Check data loading functions
 class LoadDataTest(BinAlertsTestCase):
