@@ -89,6 +89,15 @@ class StreetPageTest(BinAlertsTestCase):
         response = self.c.get('/street/ashurst_road_en4')
         self.assertContains(response, "EN4")
 
+# Alerts
+class AlertsTest(BinAlertsTestCase):
+    def test_shows_alert_form(self):
+        response = self.c.get('/street/alyth_gardens')
+
+        self.assertContains(response, 'Email me every week the day before my bins are collected')
+        self.assertContains(response, '<input type="text" name="email" id="id_email" />')
+        self.assertContains(response, '<input type="submit" value="Subscribe" />')
+
 # Check data loading functions
 class LoadDataTest(BinAlertsTestCase):
     def test_load_data_from_pdf_xml(self):

@@ -6,7 +6,7 @@
 
 from django import forms
 
-from binalerts.models import BinCollection
+from binalerts.models import BinCollection, CollectionAlert
 
 class LocationForm(forms.Form):
     query = forms.CharField(error_messages = {
@@ -24,5 +24,11 @@ class LocationForm(forms.Form):
 
         return query
 
+class CollectionAlertForm(forms.ModelForm): 
+    email = forms.EmailField(label='Your email address', error_messages={'required': 'Please enter your email address.'})
+            
+    class Meta:
+        model = CollectionAlert
+        fields = ('email',)
 
 

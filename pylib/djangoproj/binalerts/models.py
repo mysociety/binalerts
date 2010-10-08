@@ -109,7 +109,7 @@ class BinCollectionManager(models.Manager):
                 bin_collection.save()
 
 
-
+# Represents when a type of bin is collected for a particular street.
 class BinCollection(models.Model):
     street_name = models.CharField(max_length=200)
     street_url_name = models.SlugField(max_length=50)
@@ -123,4 +123,14 @@ class BinCollection(models.Model):
     def __unicode__(self):
         return "%s %s (%s)" % (self.street_name, self.street_partial_postcode, self.get_collection_day_display())
 
+# Email alerts for 
+class CollectionAlert(models.Model):
+    email = models.EmailField()
+    street_url_name = models.SlugField(max_length=50)
+    
+    class Meta:
+        ordering = ('email',)
+    
+    #def __unicode__(self):
+    #    return 'Alert for %s, street %s' % (self.email, self.street)
 
