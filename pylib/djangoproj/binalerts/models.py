@@ -95,9 +95,9 @@ class BinCollectionManager(models.Manager):
                 started = True
             elif started:
                 # this is a useful row, store it
-                for column in row:
-                    print column + ",",
-                print
+                #for column in row:
+                #    print column + ",",
+                #print
                 (street_name_1, street_name_2, partial_postcode, day_of_week) = row
                 slug = (street_name_1 + " " + street_name_2 + " " + partial_postcode).replace(' ', '_').lower()
                 bin_collection = BinCollection(
