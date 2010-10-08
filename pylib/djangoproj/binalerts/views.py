@@ -36,14 +36,12 @@ def show_street(request, url_name):
     bin_collection = BinCollection.objects.get(street_url_name = url_name)
 
     form = CollectionAlertForm(request.POST or None)
-    #if request.method == 'POST':
-    #    if form.is_valid():
-    #        alert = form.save(commit=False)
-    #        location = postcode_lookup(alert.postcode)
-    #        alert.location = Point(location['wgs84_lon'], location['wgs84_lat'])
-    #        alert.save()
+    if request.method == 'POST':
+        if form.is_valid():
+            alert = form.save(commit=False)
+            alert.save()
     #        EmailConfirmation.objects.confirm(request, alert, 'alert-confirmed')
-    #        return render(request, 'check-email.html')
+            return render_to_response('check-email.html')
 
     return render_to_response('street.html', { 'bin_collection': bin_collection, 'form': form })
 

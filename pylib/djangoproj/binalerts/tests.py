@@ -42,6 +42,7 @@ class StreetSearchTest(BinAlertsTestCase):
         self.assertContains(response, 'Please type the name of your street')
         self.assertContains(response, '<input type="text" name="query" id="id_query" />')
         self.assertContains(response, '<input type="submit" value="Go" />')
+        self.assertContains(response, 'action="/"')
         self.assertNotContains(response, 'errorlist')
 
     def test_error_if_nothing_entered(self):
@@ -97,6 +98,22 @@ class AlertsTest(BinAlertsTestCase):
         self.assertContains(response, 'Email me every week the day before my bins are collected')
         self.assertContains(response, '<input type="text" name="email" id="id_email" />')
         self.assertContains(response, '<input type="submit" value="Subscribe" />')
+        self.assertContains(response, 'action=""')
+
+    def test_alert_form_requires_email(self):
+        response = self.c.post('/street/alyth_gardens', { 'email': '' })
+
+        self.assertTemplateUsed(response, 'street.html')
+        self.assertContains(response, 'errorlist')
+        self.assertContains(response, 'Please enter your email address')
+
+    def test_alert_form_requires_email(self):
+        response = self.c.post('/street/alyth_gardens', { 'email': 'notanemail' })
+
+        self.assertTemplateUsed(response, 'street.html')
+        self.assertContains(response, 'errorlist')
+        self.assertContains(response, 'Please enter a valid email address')
+
 
 # Check data loading functions
 class LoadDataTest(BinAlertsTestCase):
