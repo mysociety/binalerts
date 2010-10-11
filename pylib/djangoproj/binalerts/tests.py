@@ -11,6 +11,8 @@
 # http://stackoverflow.com/questions/2257958/django-unit-testing-for-form-edit
 
 import os
+import re
+
 import mysociety
 
 from django.test import TestCase
@@ -25,7 +27,7 @@ class BinAlertsTestCase(TestCase):
     fixtures = ['barnet_sample.json']
 
     def setUp(self):
-        self.c = Client()
+        self.c = Client(HTTP_HOST='testserver')
 
 # Cobranding style
 class BarnetStylingTest(BinAlertsTestCase):
@@ -130,7 +132,13 @@ class AlertsTest(BinAlertsTestCase):
         self.assertEquals(mail.outbox[0].subject, 'Alert confirmation')
         self.assertEquals(mail.outbox[0].from_email, 'Barnet Bin Alerts <%s>' % mysociety.config.get('BUGS_EMAIL'))
 
-    # def test_url_in_confirmation_email(self):
+    def test_url_in_confirmation_email(self):
+        response = self.c.post('/street/alyth_gardens', { 'email': 'francis@mysociety.org' })
+        self.assertEquals(len(mail.outbox), 1)
+        body = mail.outbox[0].body
+
+        url = re.search("\n(http://.*)", body).groups()[0]
+        print url
 
     # def test_following_url_confirms_email(self):
 
