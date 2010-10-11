@@ -41,6 +41,7 @@ def show_street(request, url_name):
     if request.method == 'POST':
         if form.is_valid():
             alert = form.save(commit=False)
+            alert.street_url_name = bin_collection.street_url_name
             alert.save()
             EmailConfirmation.objects.confirm(request, alert, 'alert_confirmed')
             return render_to_response('check_email.html')
