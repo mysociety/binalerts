@@ -19,6 +19,7 @@ urlpatterns = patterns('',
      # Bin alerts
      url(r'^$', binalerts.views.frontpage, name='frontpage'),
      url(r'^street/(?P<url_name>.+)$', binalerts.views.show_street, name='show_street'),
+     url(r'^confirmed/(\d+)$', binalerts.views.alert_confirmed, name='alert_confirmed'),
 
      # Admin
      url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

@@ -19,7 +19,7 @@ from django.test import TestCase
 from django.test import Client
 from django.core import mail
 
-from binalerts.models import BinCollection
+from binalerts.models import BinCollection, CollectionAlert
 
 import binalerts
 
@@ -121,7 +121,7 @@ class AlertsTest(BinAlertsTestCase):
     def test_alert_form_accepts_valid_email(self):
         response = self.c.post('/street/alyth_gardens', { 'email': 'francis@mysociety.org' })
 
-        self.assertTemplateUsed(response, 'check-email.html')
+        self.assertTemplateUsed(response, 'check_email.html')
 
     def test_sends_confirmation_email(self):
         self.assertEquals(len(mail.outbox), 0)
@@ -132,13 +132,21 @@ class AlertsTest(BinAlertsTestCase):
         self.assertEquals(mail.outbox[0].subject, 'Alert confirmation')
         self.assertEquals(mail.outbox[0].from_email, 'Barnet Bin Alerts <%s>' % mysociety.config.get('BUGS_EMAIL'))
 
-    def test_url_in_confirmation_email(self):
+    def test_url_in_confirmation_email_works(self):
         response = self.c.post('/street/alyth_gardens', { 'email': 'francis@mysociety.org' })
         self.assertEquals(len(mail.outbox), 1)
         body = mail.outbox[0].body
 
-        url = re.search("\n(http://.*)", body).groups()[0]
-        print url
+        url = re.search("\nhttp://testserver(/C/.*)", body).groups()[0]
+        #print "confirmation URL is: ", url
+
+        response = self.c.get(url)
+        collection_alerts = CollectionAlert.objects.all()
+        self.assertEquals(1, len(collection_alerts))
+        id = collection_alerts[0].id
+
+        self.assertRedirects(response, '/confirmed/%d' % id)
+        # self.assertTemplateUsed(response, 'alert_confirmed') # can we follow the redirect somehow?
 
     # def test_following_url_confirms_email(self):
 

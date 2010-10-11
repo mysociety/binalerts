@@ -42,9 +42,11 @@ def show_street(request, url_name):
         if form.is_valid():
             alert = form.save(commit=False)
             alert.save()
-            EmailConfirmation.objects.confirm(request, alert, 'alert-confirmed')
-            return render_to_response('check-email.html')
+            EmailConfirmation.objects.confirm(request, alert, 'alert_confirmed')
+            return render_to_response('check_email.html')
 
     return render_to_response('street.html', { 'bin_collection': bin_collection, 'form': form })
 
+def alert_confirmed(request, id):
+    return render_to_response('alert_confirmed.html', { })
 
