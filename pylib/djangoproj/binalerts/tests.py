@@ -140,30 +140,31 @@ class AlertsTest(BinAlertsTestCase):
         self.assertEquals(len(mail.outbox), 1)
         body = mail.outbox[0].body
 
+        # check an alert exists...
+        collection_alerts = CollectionAlert.objects.all()
+        self.assertEquals(1, len(collection_alerts))
+        collection_alert = collection_alerts[0]
+        self.assertEquals(collection_alert.email, 'francis@mysociety.org')
+        self.assertEquals(collection_alert.street_url_name, 'alyth_gardens')
+        # ... and it is not confirmed
+        self.assertEquals(collection_alert.is_confirmed(), False)
+
         # get the URL from the email
         url = re.search("\nhttp://testserver(/C/.*)", body).groups()[0]
         #print "confirmation URL is: ", url
 
         # follow the URL and make sure..
         response = self.c.get(url)
-
-        # 1. a confirmed alert exists
-        collection_alerts = CollectionAlert.objects.all()
-        self.assertEquals(1, len(collection_alerts))
-        collection_alert = collection_alerts[0]
-        self.assertEquals(collection_alert.email, 'francis@mysociety.org')
-        self.assertEquals(collection_alert.street_url_name, 'alyth_gardens')
-
-        # 2. user is redirected to the right page
+        # ... user is redirected to the right page
         self.assertRedirects(response, '/confirmed/%d' % collection_alert.id)
-
-        # XXX check it actually confirms it
-
-    # def test_following_url_confirms_email(self):
+        # ... alert is now confirmed
+        self.assertEquals(collection_alert.is_confirmed(), True)
 
     # def test_wrong_token_does_not_confirm_email(self):
 
     # def test_alert_is_sent_on_right_day(self):
+
+    # def test_alert_is_sent_only_for_confirmed(self):
 
 # Check data loading functions
 class LoadDataTest(BinAlertsTestCase):

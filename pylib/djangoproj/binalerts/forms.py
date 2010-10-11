@@ -29,7 +29,7 @@ class CollectionAlertForm(forms.ModelForm):
             'required': 'Please enter your email address.',
             'invalid': 'Please enter a valid email address.'
     })
-            
+
     class Meta:
         model = CollectionAlert
         fields = ('email',)

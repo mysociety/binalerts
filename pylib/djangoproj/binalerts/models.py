@@ -4,8 +4,12 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
-from django.db import models
 import xml.dom.minidom
+
+from django.db import models
+from django.contrib.contenttypes import generic
+
+from emailconfirmation.models import EmailConfirmation
 
 DAY_OF_WEEK_CHOICES = (
     (0, 'Sunday'),
@@ -127,6 +131,13 @@ class BinCollection(models.Model):
 class CollectionAlert(models.Model):
     email = models.EmailField()
     street_url_name = models.SlugField(max_length=50)
+
+    confirmed = generic.GenericRelation(EmailConfirmation)
+
+    def is_confirmed(self):
+        confirmeds = self.confirmed.all()
+        assert len(confirmeds) == 1
+        return confirmeds[0].confirmed
     
     class Meta:
         ordering = ('email',)
