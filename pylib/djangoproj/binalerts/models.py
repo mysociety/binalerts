@@ -223,6 +223,6 @@ class CollectionAlert(models.Model):
     class Meta:
         ordering = ('email',)
     
-    #def __unicode__(self):
-    #    return 'Alert for %s, street %s' % (self.email, self.street)
+    def __unicode__(self):
+        return 'Alert for %s, street %s, confirmed %s' % (self.email, self.street_url_name, self.confirmed)
 
