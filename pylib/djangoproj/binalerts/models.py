@@ -4,6 +4,7 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
+import datetime
 import xml.dom.minidom
 
 from django.db import models
@@ -127,12 +128,37 @@ class BinCollection(models.Model):
     def __unicode__(self):
         return "%s %s (%s)" % (self.street_name, self.street_partial_postcode, self.get_collection_day_display())
 
-# Email alerts for 
+#######################################################################################
+# Email alerts for bin collections
+
+class CollectionAlertManager(models.Manager):
+    def send_pending_alerts(self, now = None):
+        if now == None:
+            now = datetime.datetime.now()
+        today = now.date()
+
+        # find day of week in same format as DAY_OF_WEEK_CHOICES
+        today_day_of_week = today.isoweekday()
+        assert today_day_of_week >= 1 and today_day_of_week <= 7
+        if today_day_of_week == 7:
+            today_day_of_week = 0
+
+        for collection_alert in CollectionAlert.objects.filter(confirmed__confirmed=True).filter(last_checked_date__lt=today):
+            bin_collection = BinCollection.objects.get(street_url_name = collection_alert.street_url_name)
+            if bin_collection.collection_day == today_day_of_week:
+                raise "sending alert"
+            
+            collection_alert.last_checked_date = today
+            collection_alert.save()
+
 class CollectionAlert(models.Model):
     email = models.EmailField()
     street_url_name = models.SlugField(max_length=50)
 
     confirmed = generic.GenericRelation(EmailConfirmation)
+    last_checked_date = models.DateField(default=datetime.date(2000, 01, 01)) # always long in the past
+
+    objects = CollectionAlertManager()
 
     def is_confirmed(self):
         confirmeds = self.confirmed.all()

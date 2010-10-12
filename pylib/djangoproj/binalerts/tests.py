@@ -12,6 +12,7 @@
 
 import os
 import re
+import datetime
 
 import mysociety
 
@@ -162,7 +163,28 @@ class AlertsTest(BinAlertsTestCase):
 
     # def test_wrong_token_does_not_confirm_email(self):
 
-    # def test_alert_is_sent_on_right_day(self):
+    def test_alert_is_sent_on_right_day(self):
+        # Monday 4th January, no alert
+        CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 4, 9, 00, 00))
+        self.assertEquals(len(mail.outbox), 0)
+
+        # Tuesday 5th January, alert
+        # CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 5, 9, 00, 00))
+        # self.assertEquals(len(mail.outbox), 1)
+        # body = mail.outbox[0].body
+
+        # Wednesday 6th January, no alert
+        CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 6, 9, 00, 00))
+        self.assertEquals(len(mail.outbox), 0)
+
+        # Monday 11th January, no alert
+        CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 11, 9, 00, 00))
+        self.assertEquals(len(mail.outbox), 0)
+
+        # Tuesday 12th January, alert
+        # CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 12, 9, 00, 00))
+        # self.assertEquals(len(mail.outbox), 1)
+        # body = mail.outbox[0].body
 
     # def test_alert_is_sent_only_for_confirmed(self):
 
