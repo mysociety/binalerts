@@ -7,6 +7,7 @@
 import datetime
 import sys
 import xml.dom.minidom
+import re
 
 from django.db import models
 from django.contrib.contenttypes import generic
@@ -37,6 +38,12 @@ class BinCollectionManager(models.Manager):
         for row in DAY_OF_WEEK_CHOICES:
             if row[1] == day_of_week:
                 return row[0]
+        return None
+
+    # Check it is a partial postcode, e.g. EN4
+    def partial_postcode_parse(self, partial_postcode):
+        if re.match("[A-Z]+[0-9]+$", partial_postcode):
+            return partial_postcode
         return None
 
     # PDF loading, internal functions
@@ -108,19 +115,22 @@ class BinCollectionManager(models.Manager):
                 (street_name_1, street_name_2, partial_postcode, day_of_week) = row
                 slug = (street_name_1 + " " + street_name_2 + " " + partial_postcode).replace(' ', '_').lower()
                 day_of_week_as_number = self.day_of_week_string_to_number(day_of_week)
+                checked_partial_postcode = self.partial_postcode_parse(partial_postcode)
 
-                if day_of_week_as_number:
+                if not day_of_week_as_number:
+                    sys.stderr.write("Can't parse day of week '%s', ignoring row\n" % day_of_week)
+                elif not checked_partial_postcode:
+                    sys.stderr.write("Can't parse partial postcode '%s', ignoring row\n" % partial_postcode)
+                else:
                     print row
                     bin_collection = BinCollection(
                             street_name = street_name_1 + ' ' + street_name_2,
                             street_url_name = slug, 
-                            street_partial_postcode = partial_postcode,
+                            street_partial_postcode = checked_partial_postcode,
                             collection_day = day_of_week_as_number,
                             collection_type = 'G'
                             )
                     bin_collection.save()
-                else:
-                    sys.stderr.write("Can't parse day of week '%s', ignoring row\n" % day_of_week)
 
 
 # Represents when a type of bin is collected for a particular street.
