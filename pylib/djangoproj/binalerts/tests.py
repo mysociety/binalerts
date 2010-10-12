@@ -222,6 +222,10 @@ class LoadDataTest(BinAlertsTestCase):
         response = self.c.post('/', { 'query': 'Juniper Close' })
         self.assertRedirects(response, '/street/juniper_close_en5')
 
+        # they are green waste
+        response = self.c.get('/street/juniper_close_en5')
+        self.assertContains(response, 'Green Garden')
+
 
 # Display info about a street
 

@@ -5,6 +5,7 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
 import datetime
+import sys
 import xml.dom.minidom
 
 from django.db import models
@@ -36,7 +37,7 @@ class BinCollectionManager(models.Manager):
         for row in DAY_OF_WEEK_CHOICES:
             if row[1] == day_of_week:
                 return row[0]
-        raise Exception("Unknown day of week string '%s'" % day_of_week)
+        return None
 
     # PDF loading, internal functions
 
@@ -106,13 +107,20 @@ class BinCollectionManager(models.Manager):
                 #print
                 (street_name_1, street_name_2, partial_postcode, day_of_week) = row
                 slug = (street_name_1 + " " + street_name_2 + " " + partial_postcode).replace(' ', '_').lower()
-                bin_collection = BinCollection(
-                        street_name = street_name_1 + ' ' + street_name_2,
-                        street_url_name = slug, 
-                        street_partial_postcode = partial_postcode,
-                        collection_day = self.day_of_week_string_to_number(day_of_week)
-                )
-                bin_collection.save()
+                day_of_week_as_number = self.day_of_week_string_to_number(day_of_week)
+
+                if day_of_week_as_number:
+                    print row
+                    bin_collection = BinCollection(
+                            street_name = street_name_1 + ' ' + street_name_2,
+                            street_url_name = slug, 
+                            street_partial_postcode = partial_postcode,
+                            collection_day = day_of_week_as_number,
+                            collection_type = 'G'
+                            )
+                    bin_collection.save()
+                else:
+                    sys.stderr.write("Can't parse day of week '%s', ignoring row\n" % day_of_week)
 
 
 # Represents when a type of bin is collected for a particular street.
