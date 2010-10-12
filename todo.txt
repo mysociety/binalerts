@@ -9,9 +9,6 @@
 Tests
 =====
 
-Sign up to alerts
-Send alerts
-
 Give an option of two times for alerts (9am, 6pm) (Maybe)
 
 Ajaxify
