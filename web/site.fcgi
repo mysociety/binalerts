@@ -2,7 +2,7 @@
 import sys
 import os
 
-sys.path.extend([os.path.abspath(x) for x in ("../pylib", "../commonlib/pylib")])
+sys.path.extend([os.path.abspath(x) for x in ("../pylib", "../commonlib/pylib", "../pylib/djangoproj")])
 
 import mysociety.config
 mysociety.config.set_file("../conf/general")
