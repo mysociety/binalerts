@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# django-post-deploy
+#
+# Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
+# Email: francis@mysociety.org; WWW: http://www.mysociety.org/
+#
+# $Id: rails-post-deploy,v 1.18 2009-09-03 23:44:50 francis Exp $
+#
+
+set -e
+#set -x # debug
+
+APP_DIR=`pwd`
+
+# make sure that there is a project directory
+cd pylib/djangoproj
+
+# upgrade database
+./manage.py syncdb
+./manage.py migrate
+
+
