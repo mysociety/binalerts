@@ -1,0 +1,12 @@
+# crontab.ugly:
+# Timed tasks.
+#
+# Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
+#
+# $Id: crontab.ugly,v 1.7 2010-05-25 14:26:08 louise Exp $
+
+PATH=/usr/local/bin:/usr/bin:/bin
+
+0 9 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/binalerts/bin/send-alerts
+
