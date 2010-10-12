@@ -222,6 +222,14 @@ class LoadDataTest(BinAlertsTestCase):
         response = self.c.post('/', { 'query': 'Juniper Close' })
         self.assertRedirects(response, '/street/juniper_close_en5')
 
+        # multiple partial postcodes e.g. EN5/N20 are ignored for now
+        response = self.c.post('/', { 'query': 'Barnet Lane' })
+        self.assertContains(response, "No street found with that name.")
+
+        # multiple days of week e.g Tuesday/Thursday are ignored for now
+        response = self.c.post('/', { 'query': 'Athenaeum Road' })
+        self.assertContains(response, "No street found with that name.")
+
         # they are green waste
         response = self.c.get('/street/juniper_close_en5')
         self.assertContains(response, 'Green Garden')

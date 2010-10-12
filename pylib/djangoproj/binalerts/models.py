@@ -118,11 +118,11 @@ class BinCollectionManager(models.Manager):
                 checked_partial_postcode = self.partial_postcode_parse(partial_postcode)
 
                 if not day_of_week_as_number:
-                    sys.stderr.write("Can't parse day of week '%s', ignoring row\n" % day_of_week)
+                    sys.stderr.write("Can't parse day of week '%s', ignoring row '%s'\n" % (day_of_week, row))
                 elif not checked_partial_postcode:
-                    sys.stderr.write("Can't parse partial postcode '%s', ignoring row\n" % partial_postcode)
+                    sys.stderr.write("Can't parse partial postcode '%s', ignoring row '%s'\n" % (partial_postcode, row))
                 else:
-                    print row
+                    # print row
                     bin_collection = BinCollection(
                             street_name = street_name_1 + ' ' + street_name_2,
                             street_url_name = slug, 
