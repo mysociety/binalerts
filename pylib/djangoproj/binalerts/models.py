@@ -145,7 +145,7 @@ class CollectionAlertManager(models.Manager):
         tomorrow_day_of_week = (today_day_of_week + 1) % 7
 
         for collection_alert in CollectionAlert.objects.filter(confirmed__confirmed=True).filter(last_checked_date__lt=today):
-            bin_collection = BinCollection.objects.get(street_url_name = collection_alert.street_url_name)
+            bin_collection = collection_alert.bin_collection()
             # print "day of week compare", bin_collection.collection_day, tomorrow_day_of_week
             if bin_collection.collection_day == tomorrow_day_of_week:
                 send_email(None, 'Bin collection tomorrow, %s! (%s)' % (bin_collection.get_collection_day_display(), bin_collection.get_collection_type_display()),
@@ -172,6 +172,9 @@ class CollectionAlert(models.Model):
         confirmeds = self.confirmed.all()
         assert len(confirmeds) == 1
         return confirmeds[0].confirmed
+
+    def bin_collection(self):
+        return BinCollection.objects.get(street_url_name = self.street_url_name)
     
     class Meta:
         ordering = ('email',)

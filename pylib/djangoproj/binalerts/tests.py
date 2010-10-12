@@ -187,10 +187,13 @@ class AlertsTest(BinAlertsTestCase):
             CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, day_of_month, 9, 00, 00))
             if len(mail.outbox) > 0:
                 m = mail.outbox[0]
-                #print "Subject:", m.subject
-                #print m.body
+                # print "Subject:", m.subject
+                # print m.body
             if day_of_month == 4 or day_of_month == 11: # alert on Monday for Tuesday
                 self.assertEquals(len(mail.outbox), 1)
+                assert "Green Garden" in m.body
+                assert "Tuesday" in m.body
+                assert "Alyth Gardens" in m.body
             else:
                 self.assertEquals(len(mail.outbox), 0)
             mail.outbox = []
