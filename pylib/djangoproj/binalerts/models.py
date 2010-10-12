@@ -67,25 +67,27 @@ class BinCollectionManager(models.Manager):
     def _yield_rows_from_pdf(self, doc):
         items = []
         last_top = None
+        last_left = None
         nodes = doc.getElementsByTagName('text').__iter__()
         for node in nodes:
             top = int(node.getAttribute('top'))
-
-            if top != last_top and items != []:
-                yield items
-                items = []
-
+            left = int(node.getAttribute('left'))
             text = self._get_text_from_node(node.childNodes).strip()
 
-            # there's one line in garden-and-kitchen-waste-collection-streets.xml/pdf
-            # which wraps. this is just a simple hack to compensate for it
-            if text == 'Barnet  (Arkley Park':
-                node = nodes.next()
-                text = text + " " + self._get_text_from_node(node.childNodes).strip()
-                top = int(node.getAttribute('top'))
+            # in vertical column exactly aligned is word wrapping in one cell
+            if left == last_left and items != []:
+                # so append text to current cell
+                items[-1] += " " + text
+            else:
+                # otherwise we are on the next cell 
+                if top != last_top and items != []:
+                    yield items
+                    items = []
 
-            items.append(text)
+                items.append(text)
+
             last_top = top
+            last_left = left
         if items != []:
             yield items
 
@@ -131,7 +133,6 @@ class BinCollectionManager(models.Manager):
                 elif not checked_partial_postcode:
                     sys.stderr.write("Can't parse partial postcode '%s', ignoring row '%s'\n" % (partial_postcode, row))
                 else:
-                    # print row
                     bin_collection = BinCollection(
                             street_name = street_name_1 + ' ' + street_name_2,
                             street_url_name = slug, 

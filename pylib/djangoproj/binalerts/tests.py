@@ -198,10 +198,6 @@ class AlertsTest(BinAlertsTestCase):
                 self.assertEquals(len(mail.outbox), 0)
             mail.outbox = []
 
-    # make it go at a particular time of day
-
-    # unsubscribe URL
-
 # Check data loading functions
 class LoadDataTest(BinAlertsTestCase):
     def test_load_data_from_pdf_xml(self):

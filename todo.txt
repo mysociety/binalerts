@@ -9,9 +9,15 @@
 Tests
 =====
 
+Make it go at a particular time of day more precisely (currently just relies on cron)
 Give an option of two times for alerts (9am, 6pm) (Maybe)
 
 Ajaxify
+
+Unsubscribe
+
+Cope gracefully with same data being loaded twice (not sure what it should do or what
+it does at the moment)
 
 
 Improvements
@@ -29,11 +35,6 @@ Store date that data was valid for (last updated)
 Administrivia
 =============
 
-Load in real actual final PDF and test
-
-Deploy it to our servers
-
-Change url_name to be a SlugField
 Make sure unique keys on url_name
 
 Factor out street into its own model, separate from collection?
@@ -41,6 +42,7 @@ Factor out street into its own model, separate from collection?
 Validate some HTML
 
 Get ./manage.py test to work for auth app, which it doesn't
+(it only works for binalerts)
 
 
 
