@@ -224,5 +224,5 @@ class CollectionAlert(models.Model):
         ordering = ('email',)
     
     def __unicode__(self):
-        return 'Alert for %s, street %s, confirmed %s' % (self.email, self.street_url_name, self.confirmed)
+        return 'Alert for %s, street %s, confirmed %s' % (self.email, self.street_url_name, self.is_confirmed())
 
