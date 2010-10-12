@@ -62,6 +62,30 @@ class BinCollectionManager(models.Manager):
                 raise Exception("unfinished")
         return rc
 
+    # joins together items which are vertically wrapped but in the same table cell
+    def _yield_cells(self, nodes):
+        cell_text = ""
+        last_top = None
+        last_left = None
+        for node in nodes:
+            top = int(node.getAttribute('top'))
+            left = int(node.getAttribute('left'))
+            text = self._get_text_from_node(node.childNodes).strip()
+
+            # in vertical column exactly aligned is word wrapping in one cell
+            if left == last_left:
+                # so append text to current cell
+                cell_text += " " + text
+            else:
+                yield cell_text, last_top, last_left
+                cell_text = text
+
+            last_top = top
+            last_left = left
+
+        if cell_text != "":
+            yield cell_text, top, left
+
     # Works out what a row in the table is, and yields each one. A row is
     # just items which are lined up vertically.
     def _yield_rows_from_pdf(self, doc):
@@ -69,22 +93,12 @@ class BinCollectionManager(models.Manager):
         last_top = None
         last_left = None
         nodes = doc.getElementsByTagName('text').__iter__()
-        for node in nodes:
-            top = int(node.getAttribute('top'))
-            left = int(node.getAttribute('left'))
-            text = self._get_text_from_node(node.childNodes).strip()
+        for text, top, left in self._yield_cells(nodes):
+            if top != last_top and items != []:
+                yield items
+                items = []
 
-            # in vertical column exactly aligned is word wrapping in one cell
-            if left == last_left and items != []:
-                # so append text to current cell
-                items[-1] += " " + text
-            else:
-                # otherwise we are on the next cell 
-                if top != last_top and items != []:
-                    yield items
-                    items = []
-
-                items.append(text)
+            items.append(text)
 
             last_top = top
             last_left = left
@@ -99,6 +113,8 @@ class BinCollectionManager(models.Manager):
         rows = self._yield_rows_from_pdf(doc)
         started = False
         for row in rows:
+            #print row
+
             # find header letters, e.g. A, B, C
             if len(row) == 1:
                 letter = row[0]
