@@ -21,6 +21,7 @@ from django.test import Client
 from django.core import mail
 
 from binalerts.models import BinCollection, CollectionAlert
+from emailconfirmation.models import EmailConfirmation
 
 import binalerts
 
@@ -163,30 +164,30 @@ class AlertsTest(BinAlertsTestCase):
 
     # def test_wrong_token_does_not_confirm_email(self):
 
-    def test_alert_is_sent_on_right_day(self):
-        # Monday 4th January, no alert
-        CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 4, 9, 00, 00))
-        self.assertEquals(len(mail.outbox), 0)
+    def test_no_alerts_sent_if_not_confirmed_alert(self):
+        alert = CollectionAlert(street_url_name = 'alyth_gardens', email = 'francis@mysociety.org')
+        alert.save()
+        email_confirmation = EmailConfirmation(confirmed = False, content_object = alert)
+        email_confirmation.save()
+        assert alert.is_confirmed() == False
 
-        # Tuesday 5th January, alert
-        # CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 5, 9, 00, 00))
-        # self.assertEquals(len(mail.outbox), 1)
-        # body = mail.outbox[0].body
+        for day_of_month in range(4, 12):
+            CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 4, day_of_month, 00, 00))
+            self.assertEquals(len(mail.outbox), 0)
 
-        # Wednesday 6th January, no alert
-        CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 6, 9, 00, 00))
-        self.assertEquals(len(mail.outbox), 0)
+    def test_alerts_sent_if_confirmed_alert(self):
+        alert = CollectionAlert(street_url_name = 'alyth_gardens', email = 'francis@mysociety.org')
+        alert.save()
+        email_confirmation = EmailConfirmation(confirmed = True, content_object = alert)
+        email_confirmation.save()
+        assert alert.is_confirmed() == True
 
-        # Monday 11th January, no alert
-        CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 11, 9, 00, 00))
-        self.assertEquals(len(mail.outbox), 0)
-
-        # Tuesday 12th January, alert
-        # CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 12, 9, 00, 00))
-        # self.assertEquals(len(mail.outbox), 1)
-        # body = mail.outbox[0].body
-
-    # def test_alert_is_sent_only_for_confirmed(self):
+        for day_of_month in range(4, 12):
+            CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 4, day_of_month, 00, 00))
+            if day_of_month == 5 or day_of_month == 12:
+                self.assertEquals(len(mail.outbox), 1)
+            else:
+                self.assertEquals(len(mail.outbox), 0)
 
 # Check data loading functions
 class LoadDataTest(BinAlertsTestCase):
