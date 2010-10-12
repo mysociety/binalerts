@@ -4,9 +4,13 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
-from binalerts.models import BinCollection
+from binalerts.models import BinCollection, CollectionAlert
+from emailconfirmation.models import EmailConfirmation
+
 from django.contrib import admin
 
 admin.site.register(BinCollection)
+admin.site.register(CollectionAlert)
+admin.site.register(EmailConfirmation)
 
 
