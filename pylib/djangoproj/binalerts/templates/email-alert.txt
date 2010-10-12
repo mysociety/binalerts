@@ -1,0 +1,11 @@
+Hi,
+
+Your {{ bin_collection.get_collection_type_display }} bins are due to be collected
+tomorrow, {{ bin_collection.get_collection_day_display }}.
+
+Barnet Council
+
+============================================================
+
+To stop receiving these emails follow this link:
+    {{ unsubscribe_url }}

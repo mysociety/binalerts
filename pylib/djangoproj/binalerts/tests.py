@@ -13,6 +13,7 @@
 import os
 import re
 import datetime
+import sys
 
 import mysociety
 
@@ -171,8 +172,8 @@ class AlertsTest(BinAlertsTestCase):
         email_confirmation.save()
         assert alert.is_confirmed() == False
 
-        for day_of_month in range(4, 12):
-            CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 4, day_of_month, 00, 00))
+        for day_of_month in range(3, 12):
+            CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, day_of_month, 9, 00, 00))
             self.assertEquals(len(mail.outbox), 0)
 
     def test_alerts_sent_if_confirmed_alert(self):
@@ -182,12 +183,19 @@ class AlertsTest(BinAlertsTestCase):
         email_confirmation.save()
         assert alert.is_confirmed() == True
 
-        for day_of_month in range(4, 12):
-            CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, 4, day_of_month, 00, 00))
-            if day_of_month == 5 or day_of_month == 12:
+        for day_of_month in range(3, 12):
+            CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, day_of_month, 9, 00, 00))
+            if len(mail.outbox) > 0:
+                m = mail.outbox[0]
+                #print "Subject:", m.subject
+                #print m.body
+            if day_of_month == 4 or day_of_month == 11: # alert on Monday for Tuesday
                 self.assertEquals(len(mail.outbox), 1)
             else:
                 self.assertEquals(len(mail.outbox), 0)
+            mail.outbox = []
+
+    # unsubscribe URL
 
 # Check data loading functions
 class LoadDataTest(BinAlertsTestCase):

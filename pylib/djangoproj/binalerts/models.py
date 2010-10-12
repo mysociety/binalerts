@@ -11,6 +11,7 @@ from django.db import models
 from django.contrib.contenttypes import generic
 
 from emailconfirmation.models import EmailConfirmation
+from emailconfirmation.utils import send_email
 
 DAY_OF_WEEK_CHOICES = (
     (0, 'Sunday'),
@@ -136,18 +137,25 @@ class CollectionAlertManager(models.Manager):
         if now == None:
             now = datetime.datetime.now()
         today = now.date()
+        # print "doing day", today
 
         # find day of week in same format as DAY_OF_WEEK_CHOICES
         today_day_of_week = today.isoweekday()
         assert today_day_of_week >= 1 and today_day_of_week <= 7
-        if today_day_of_week == 7:
-            today_day_of_week = 0
+        tomorrow_day_of_week = (today_day_of_week + 1) % 7
 
         for collection_alert in CollectionAlert.objects.filter(confirmed__confirmed=True).filter(last_checked_date__lt=today):
             bin_collection = BinCollection.objects.get(street_url_name = collection_alert.street_url_name)
-            if bin_collection.collection_day == today_day_of_week:
-                raise "sending alert"
-            
+            # print "day of week compare", bin_collection.collection_day, tomorrow_day_of_week
+            if bin_collection.collection_day == tomorrow_day_of_week:
+                send_email(None, 'Bin collection tomorrow, %s! (%s)' % (bin_collection.get_collection_day_display(), bin_collection.get_collection_type_display()),
+                    'email-alert.txt', {
+                        'bin_collection': bin_collection,
+                        'collection_alert': collection_alert,
+                        'unsubscribe_url': "http://NOT_YET_IMPLEMENTED"
+                    }, collection_alert.email
+                )
+
             collection_alert.last_checked_date = today
             collection_alert.save()
 
