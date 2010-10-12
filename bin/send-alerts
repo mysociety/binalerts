@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+
+import os, sys, datetime
+file_dir = os.path.abspath(os.path.realpath(os.path.dirname(__file__)))
+sys.path.append(os.path.normpath(file_dir + "/../pylib/djangoproj"))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+from binalerts.models import CollectionAlert
+
+CollectionAlert.objects.send_pending_alerts()
+
