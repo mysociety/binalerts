@@ -17,7 +17,7 @@ APP_DIR=`pwd`
 cd pylib/djangoproj
 
 # upgrade database
-./manage.py syncdb
-./manage.py migrate
+./manage.py syncdb -v 0
+./manage.py migrate -v 0
 
 
