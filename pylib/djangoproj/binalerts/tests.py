@@ -230,6 +230,10 @@ class LoadDataTest(BinAlertsTestCase):
         response = self.c.post('/', { 'query': 'Athenaeum Road' })
         self.assertContains(response, "No street found with that name.")
 
+        # split lines, e.g. Barnet (Arkley Park\nMobile Homes) are ignored for now
+        response = self.c.post('/', { 'query': 'Athenaeum Road' })
+        self.assertContains(response, "No street found with that name.")
+
         # they are green waste
         response = self.c.get('/street/juniper_close_en5')
         self.assertContains(response, 'Green Garden')

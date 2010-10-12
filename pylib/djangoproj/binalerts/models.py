@@ -67,7 +67,8 @@ class BinCollectionManager(models.Manager):
     def _yield_rows_from_pdf(self, doc):
         items = []
         last_top = None
-        for node in doc.getElementsByTagName('text'):
+        nodes = doc.getElementsByTagName('text').__iter__()
+        for node in nodes:
             top = int(node.getAttribute('top'))
 
             if top != last_top and items != []:
@@ -75,6 +76,14 @@ class BinCollectionManager(models.Manager):
                 items = []
 
             text = self._get_text_from_node(node.childNodes).strip()
+
+            # there's one line in garden-and-kitchen-waste-collection-streets.xml/pdf
+            # which wraps. this is just a simple hack to compensate for it
+            if text == 'Barnet  (Arkley Park':
+                node = nodes.next()
+                text = text + " " + self._get_text_from_node(node.childNodes).strip()
+                top = int(node.getAttribute('top'))
+
             items.append(text)
             last_top = top
         if items != []:
