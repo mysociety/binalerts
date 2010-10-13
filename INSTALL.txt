@@ -8,6 +8,7 @@ It's using South, so you need to run both syncdb and migrate to set up the
 databases.
     ./manage.py syncdb
     ./manage.py migrate
+Please use South for future binalerts migrations too.
 
 You can load collection time data in with one of these, a small sample used by
 the test code, or a large full file:
