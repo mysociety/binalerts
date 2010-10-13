@@ -149,14 +149,13 @@ class BinCollectionManager(models.Manager):
                 elif not checked_partial_postcode:
                     sys.stderr.write("Can't parse partial postcode '%s', ignoring row '%s'\n" % (partial_postcode, row))
                 else:
-                    bin_collection = BinCollection(
+                    bin_collection = BinCollection.objects.create(
                             street_name = street_name_1 + ' ' + street_name_2,
                             street_url_name = slug, 
                             street_partial_postcode = checked_partial_postcode,
                             collection_day = day_of_week_as_number,
                             collection_type = 'G'
                             )
-                    bin_collection.save()
 
 
 # Represents when a type of bin is collected for a particular street.

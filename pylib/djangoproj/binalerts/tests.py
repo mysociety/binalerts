@@ -166,10 +166,8 @@ class AlertsTest(BinAlertsTestCase):
     # def test_wrong_token_does_not_confirm_email(self):
 
     def test_no_alerts_sent_if_not_confirmed_alert(self):
-        alert = CollectionAlert(street_url_name = 'alyth_gardens', email = 'francis@mysociety.org')
-        alert.save()
-        email_confirmation = EmailConfirmation(confirmed = False, content_object = alert)
-        email_confirmation.save()
+        alert = CollectionAlert.objects.create(street_url_name = 'alyth_gardens', email = 'francis@mysociety.org')
+        EmailConfirmation.objects.create(confirmed = False, content_object = alert)
         assert alert.is_confirmed() == False
 
         for day_of_month in range(3, 12):
@@ -177,10 +175,8 @@ class AlertsTest(BinAlertsTestCase):
             self.assertEquals(len(mail.outbox), 0)
 
     def test_alerts_sent_if_confirmed_alert(self):
-        alert = CollectionAlert(street_url_name = 'alyth_gardens', email = 'francis@mysociety.org')
-        alert.save()
-        email_confirmation = EmailConfirmation(confirmed = True, content_object = alert)
-        email_confirmation.save()
+        alert = CollectionAlert.objects.create(street_url_name = 'alyth_gardens', email = 'francis@mysociety.org')
+        email_confirmation = EmailConfirmation.objects.create(confirmed = True, content_object = alert)
         assert alert.is_confirmed() == True
 
         for day_of_month in range(3, 12):
