@@ -1,0 +1,24 @@
+Bin Alerts - how to get it running
+==========
+
+It's a normal Django application. You can find the heart of things in
+pylib/djangoproj.
+
+It's using South, so you need to run both syncdb and migrate to set up the
+databases.
+    ./manage.py syncdb
+    ./manage.py migrate
+
+You can load collection time data in with one of these, a small sample used by
+the test code, or a large full file:
+    ./manage.py loadpdf garden_sample_pdf.xml
+    ./manage.py garden-and-kitchen-waste-collection-streets.xml
+
+For me only the binalerts app tests work (not the Django core ones). So I run
+tests like this:
+    ./manage.py test binalerts
+
+It's being made with test driven development. So please add tests first, or if
+you really can't discipline yourself, add them afterwards :)
+
+
