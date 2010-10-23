@@ -5,6 +5,8 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
 from django.conf.urls.defaults import *
+import django.views.static
+import djangoproj.settings
 from django.contrib import admin
 
 admin.autodiscover()
@@ -27,4 +29,9 @@ urlpatterns = patterns('',
 
      # Email confirmation
      (r'^', include('emailconfirmation.urls')),
-)
+     )
+     
+if djangoproj.settings.SERVE_STATIC_FILES:
+     urlpatterns += patterns('',
+         (r'^static/(?P<path>.*)$', django.views.static.serve, {'document_root':djangoproj.settings.MEDIA_ROOT}),
+     )
