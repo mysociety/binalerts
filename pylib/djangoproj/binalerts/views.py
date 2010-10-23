@@ -14,6 +14,9 @@ from binalerts.models import BinCollection
 
 from emailconfirmation.models import EmailConfirmation
 
+# note: hardcoded daynames here must match binalerts.models.DAY_OF_WEEK_CHOICES (e.g. Sunday has index 0 (not Monday))
+DISPLAY_DAYS_OF_WEEK =  ['SUN', 'MON', 'TUE', 'WED', 'THURS', 'FRI', 'SAT']
+
 def frontpage(request):
     streets = None
 
@@ -46,7 +49,7 @@ def show_street(request, url_name):
             EmailConfirmation.objects.confirm(request, alert, 'alert_confirmed')
             return render_to_response('check_email.html')
 
-    return render_to_response('street.html', { 'bin_collection': bin_collection, 'form': form })
+    return render_to_response('street.html', { 'bin_collection': bin_collection, 'form': form, 'daynames': DISPLAY_DAYS_OF_WEEK })
 
 def alert_confirmed(request, id):
     return render_to_response('alert_confirmed.html', { })
