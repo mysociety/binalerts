@@ -20,8 +20,14 @@ for path in paths:
     if path not in sys.path:
         sys.path.append(path)
 
-import mysociety.config
-mysociety.config.set_file(os.path.abspath(package_dir + "/../../conf/general"))
+try:
+    from config_local import config  # put settings in config_local if you're not running in a full mysociety vhost
+    SERVE_STATIC_FILES = True
+except ImportError:
+    SERVE_STATIC_FILES = False
+    from mysociety import config
+    config.set_file(os.path.abspath(package_dir + "/../../conf/general"))
+
 
 # Now follows the normal Django stuff.
 
@@ -31,16 +37,16 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
-DEFAULT_FROM_EMAIL = 'Barnet Bin Alerts <%s>' % mysociety.config.get('BUGS_EMAIL')
+DEFAULT_FROM_EMAIL = 'Barnet Bin Alerts <%s>' % config.get('BUGS_EMAIL')
 
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'postgresql_psycopg2'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = mysociety.config.get('BINS_DB_NAME')
-DATABASE_USER = mysociety.config.get('BINS_DB_USER')
-DATABASE_PASSWORD = mysociety.config.get('BINS_DB_PASS')
-DATABASE_HOST = mysociety.config.get('BINS_DB_HOST')
-DATABASE_PORT = mysociety.config.get('BINS_DB_PORT')
+DATABASE_NAME = config.get('BINS_DB_NAME')
+DATABASE_USER = config.get('BINS_DB_USER')
+DATABASE_PASSWORD = config.get('BINS_DB_PASS')
+DATABASE_HOST = config.get('BINS_DB_HOST')
+DATABASE_PORT = config.get('BINS_DB_PORT')
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -61,7 +67,7 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(package_dir, "../../web/media/")
+MEDIA_ROOT = os.path.join(package_dir, "../../web/static/")
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -74,7 +80,7 @@ MEDIA_URL = ''
 ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = mysociety.config.get('DJANGO_SECRET_KEY')
+SECRET_KEY = config.get('DJANGO_SECRET_KEY')
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
