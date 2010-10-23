@@ -1,0 +1,44 @@
+
+.mysoc-bin-week {
+  position: relative; 
+  margin: 12px auto;
+  overflow:hidden;
+}
+
+.mysoc-bin-day {
+  display: inline-block;
+  width: 12%;
+  margin: 0 0 0 0;
+  text-align: center;
+  padding: 100px 0 8px 0;
+  font-weight:bold;
+  font-size: 20px;
+  background-color: #D8EBEB;
+  border: 2% solid #ffffff;
+  color: #ffffff;
+  
+}
+
+.mysoc-bin-collection{
+  background-color: #D8EBEB;
+  color: #34A3A4;
+  background-image: url(../images/wheeliebin.png);
+  background-repeat: no-repeat;
+  background-position:50% 46px;
+}
+
+.mysoc-bin-end {
+  clear:both;
+}
+
+#mysoc-bin-lorry {
+  position:absolute;
+  top:10px;
+  left:-100px;
+  width: 176px;
+  height: 86px;
+  display: none;
+  background-image: url(../images/lorry.png);
+  background-repeat: no-repeat;
+  background-position:0px 0px;
+}
