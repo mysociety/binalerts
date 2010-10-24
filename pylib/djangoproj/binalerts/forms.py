@@ -25,7 +25,7 @@ class LocationForm(forms.Form):
         return query
 
 class CollectionAlertForm(forms.ModelForm): 
-    email = forms.EmailField(label='Your email address', error_messages = {
+    email = forms.EmailField(label='My email address', error_messages = {
             'required': 'Please enter your email address.',
             'invalid': 'Please enter a valid email address.'
     })
