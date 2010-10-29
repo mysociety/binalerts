@@ -10,7 +10,7 @@ from binalerts.models import BinCollection, CollectionAlert
 
 class LocationForm(forms.Form):
     query = forms.CharField(error_messages = {
-        'required': "Enter either all or part of the name of the street. e.g. Abbey",
+        'required': "Enter either all or part of the name of the street, for example: Abbey",
     })
 
     def clean_query(self):
@@ -18,14 +18,14 @@ class LocationForm(forms.Form):
 
         streets = BinCollection.objects.find_by_street_name(query)
         if len(streets) == 0:
-            raise forms.ValidationError("No street found with that name. Try typing a smaller part of it. e.g. Nor")
+            raise forms.ValidationError("No street found with that name. Try typing a smaller part of it, for example: Nor")
 
         self.cleaned_data['streets'] = streets
 
         return query
 
 class CollectionAlertForm(forms.ModelForm): 
-    email = forms.EmailField(label='My email address', error_messages = {
+    email = forms.EmailField(label='Your email address', error_messages = {
             'required': 'Please enter your email address.',
             'invalid': 'Please enter a valid email address.'
     })
