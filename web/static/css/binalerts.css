@@ -1,5 +1,8 @@
+.mysoc-bin-front, .mysoc-bin-main {
+	font-size: 120%;	
+}
+
 .mysoc-bin-front-box {
-	font-size: 120%;
 	width: 80%;
 	margin: 1em auto;
 	text-align: center;
@@ -20,6 +23,17 @@
   padding: 0 1em 1em 1em;
   width: 66%;
   margin: 1em auto;
+}
+
+.mysoc-bin-form p{
+	display: inline-block;
+}
+
+.mysoc-bin-reminder-breakout{
+    padding-left: 80px;
+	background-image: url(/static/images/lightbulb.png);
+	background-position:10px 10px;
+	background-repeat: no-repeat;
 }
 
 .mysoc-bin-summary {
