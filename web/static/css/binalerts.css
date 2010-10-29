@@ -1,3 +1,27 @@
+.mysoc-bin-front-box {
+	font-size: 120%;
+	width: 80%;
+	margin: 1em auto;
+	text-align: center;
+}
+
+.mysoc-bin-title {
+	font-size:140%;
+	font-weight: bold;	
+}	
+
+.mysoc-bin-tagline {
+	font-size:120%;	
+}	
+
+.mysoc-bin-form{
+  border: 1px solid #34A3A4;
+  background-color: #D8EBEB;
+  padding: 0 1em 1em 1em;
+  width: 66%;
+  margin: 1em auto;
+}
+
 .mysoc-bin-summary {
     font-size: 120%;
     margin: 1em 0 2em 0;

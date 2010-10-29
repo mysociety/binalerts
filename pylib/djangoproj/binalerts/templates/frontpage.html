@@ -6,22 +6,34 @@
 
 <h1>Bin collection days</h1>
 
-<form action="/" method="post">
-    {{ form.query.errors }}
-    <p>
-        <label for="id_query"> Please type the name of your street: </label>
-    </p>
-    {{ form.query }}
-    <input type="submit" value="Go" />
-</form>
+<div class="mysoc-bin-front-box">
+  <p class="mysoc-bin-title">
+      When are we coming to empty your bins?
+  </p>
+  <img src="http://localhost/wheeliebin_on_white.png" alt="" class="mysoc-pretty-bin"/>
+  <p class="mysoc-bin-tagline">
+    Tell us where you live, and we'll tell you what day we collect&nbsp;your&nbsp;waste.
+  </p>
 
-{% if streets %}
-    <h2>Did you mean...</h2>
-    <ul>
-        {% for street in streets %}
-            <li> <a href="{% url show_street street.street_url_name  %}">{{ street.street_name }} ({{ street.street_partial_postcode }})</a> </li>
-        {% endfor %}
-    </ul>
-{% endif %}
+  <div class="mysoc-bin-form">
+    <form action="/" method="post">
+      {{ form.query.errors }}
+      <p>
+          <label for="id_query"> Please enter the name of your&nbsp;street: </label>
+      </p>
+      {{ form.query }}
+      <input type="submit" value="Go" />
+    </form>
+  </div>
+
+  {% if streets %}
+      <h2>Did you mean...</h2>
+      <ul>
+          {% for street in streets %}
+              <li> <a href="{% url show_street street.street_url_name  %}">{{ street.street_name }} ({{ street.street_partial_postcode }})</a> </li>
+          {% endfor %}
+      </ul>
+  {% endif %}
+</div>
 
 {% endblock %}
