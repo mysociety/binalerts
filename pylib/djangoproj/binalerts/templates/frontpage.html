@@ -25,15 +25,15 @@
       <input type="submit" value="Go" />
     </form>
   </div>
-
-  {% if streets %}
-      <h2>Did you mean...</h2>
-      <ul>
-          {% for street in streets %}
-              <li> <a href="{% url show_street street.street_url_name  %}">{{ street.street_name }} ({{ street.street_partial_postcode }})</a> </li>
-          {% endfor %}
-      </ul>
-  {% endif %}
 </div>
+
+{% if streets %}
+    <h2>Did you mean...</h2>
+    <ul>
+        {% for street in streets %}
+            <li> <a href="{% url show_street street.street_url_name  %}">{{ street.street_name }} ({{ street.street_partial_postcode }})</a> </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
 {% endblock %}
