@@ -20,24 +20,49 @@
 .mysoc-bin-form{
   border: 1px solid #34A3A4;
   background-color: #D8EBEB;
-  padding: 0 1em 0 1em;
+  padding: 0.5em 1em 1em 1em;
   width: 66%;
   margin: 1em auto;
 }
 
 .mysoc-bin-form p{
 	display: inline-block;
+	margin: 0.5em 0;
 }
 
+.mysoc-suggestions{
+	text-align:left;
+	padding:0 0.5em 0 0.5em;
+	margin: 0 auto;
+}
 .mysoc-suggestions h2{
 	font-size: 100%;
+	color: #34A3A4;
 	border-bottom:none;
 }
-.mysoc-suggestions ul{
-	
-}
-.mysoc-suggestions ul li{
 
+.mysoc-bin-summary{
+	background-repeat: no-repeat;
+	background-position: 10px 10px;
+	padding:10px 0 0 60px;
+	min-height: 50px;
+} 
+
+.mysoc-bin-summary-g{
+	background-image: url(/static/images/wheeliebin.png)
+}
+
+.mysoc-bin-summary p{
+	margin: 0;
+}
+
+.mysoc-bin-collect-details{
+	margin: 0;
+	font-size: 80%;
+	background-image: url(http://barnet.fixmystreet.com/cobrands/barnet/images/arrow-green-small.gif);
+	background-repeat: no-repeat;
+	background-position: center left;
+	padding-left: 12px;
 }
 
 .mysoc-bin-reminder-breakout{
