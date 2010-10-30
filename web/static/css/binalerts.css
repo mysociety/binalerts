@@ -20,7 +20,7 @@
 .mysoc-bin-form{
   border: 1px solid #34A3A4;
   background-color: #D8EBEB;
-  padding: 0 1em 1em 1em;
+  padding: 0 1em 0 1em;
   width: 66%;
   margin: 1em auto;
 }
@@ -29,11 +29,25 @@
 	display: inline-block;
 }
 
+.mysoc-suggestions h2{
+	font-size: 100%;
+	border-bottom:none;
+}
+.mysoc-suggestions ul{
+	
+}
+.mysoc-suggestions ul li{
+
+}
+
 .mysoc-bin-reminder-breakout{
-    padding-left: 80px;
+    padding: 12px 12px 12px 80px;
 	background-image: url(/static/images/lightbulb.png);
 	background-position:10px 10px;
 	background-repeat: no-repeat;
+}
+.mysoc-bin-reminder-breakout p{
+	margin: 0.666em 0;
 }
 
 .mysoc-bin-summary {
