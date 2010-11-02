@@ -12,7 +12,7 @@
   </p>
   <img src="/static/images/wheeliebin_on_white.png" alt="" class="mysoc-pretty-bin"/>
   <p class="mysoc-bin-tagline">
-    Tell us where you live, and we'll tell you what day we collect&nbsp;your&nbsp;waste.
+    Tell us where you live, and we'll tell you what day we collect&nbsp;your&nbsp;rubbish.
   </p>
 
   <div class="mysoc-bin-form">
@@ -29,7 +29,9 @@
         <h2>Did you mean...</h2>
         <ul>
             {% for street in streets %}
-                <li> <a href="{% url show_street street.street_url_name  %}">{{ street.street_name }} ({{ street.street_partial_postcode }})</a> </li>
+                <li> 
+                  <a href="{% url show_street street.street_url_name  %}">{{ street.street_name }} ({{ street.street_partial_postcode }})</a> 
+                </li>
             {% endfor %}
         </ul>
       </div>

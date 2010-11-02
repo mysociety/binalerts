@@ -123,3 +123,19 @@
   background-repeat: no-repeat;
   background-position:0px 0px;
 }
+
+.mysoc-bin-links{
+	margin: 4em 1em 0 2em;
+}
+.mysoc-bin-links ul{
+	text-align: left;
+	padding-left:2em;
+}
+
+.errorlist{
+	text-align: left;
+}
+ul.errorlist li{
+	background: url(../images/tiny_warning.png) no-repeat 0px 3px !important; /* force ovveride of #content ul li */
+	padding-left: 20px;
+}
