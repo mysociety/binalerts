@@ -86,6 +86,7 @@
   position: relative; 
   margin: 12px auto;
   overflow:hidden;
+  width:100%;
 }
 
 .mysoc-bin-day {
@@ -117,7 +118,7 @@
 #mysoc-bin-lorry {
   position:absolute;
   top:10px;
-  left:-100px;
+  left:-352px; /* that's lorry width x -2 */
   width: 176px;
   height: 86px;
   display: none;
