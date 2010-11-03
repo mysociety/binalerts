@@ -24,6 +24,7 @@
   <script src="/static/js/binalerts.js" type="text/javascript"></script>
 
   {# later... iterate over collection types here (ideally in day-of-week order?) #}
+  <hr class="mysoc-ie6-fixer"/>
   <div class="mysoc-bin-summary mysoc-bin-summary-{{ bin_collection.collection_type|lower }}">
     <p>
       <strong>{{ bin_collection.get_collection_type_display}}</strong> collection day is <strong>{{ bin_collection.get_collection_day_display }}</strong>.
