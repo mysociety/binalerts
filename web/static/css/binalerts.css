@@ -3,7 +3,6 @@
 }
 
 .mysoc-bin-front {
-	width: 80%;
 	margin: 1em auto;
 	text-align: center;
 }
@@ -20,13 +19,14 @@
 .mysoc-bin-form{
   border: 1px solid #34A3A4;
   background-color: #D8EBEB;
-  padding: 0.5em 1em 1em 1em;
-  width: 66%;
-  margin: 1em auto;
+  padding: 1em 1em 1em 1em;
+  margin: 1em 4em;
+}
+.mysoc-bin-form input{
+  margin-top:0.5em;
 }
 
 .mysoc-bin-form p{
-	display: inline-block;
 	margin: 0.5em 0;
 }
 
