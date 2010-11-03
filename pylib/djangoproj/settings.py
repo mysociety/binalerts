@@ -31,7 +31,7 @@ except ImportError:
 
 # Now follows the normal Django stuff.
 
-DEBUG = True
+DEBUG = config.get('DEBUG', False)
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
