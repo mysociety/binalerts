@@ -34,8 +34,9 @@ except ImportError:
 DEBUG = config.get('DEBUG', False)
 TEMPLATE_DEBUG = DEBUG
 
+SERVER_EMAIL = config.get('BUGS_EMAIL')
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('mySociety bugs', config.get('BUGS_EMAIL')),
 )
 DEFAULT_FROM_EMAIL = 'Barnet Bin Alerts <%s>' % config.get('BUGS_EMAIL')
 
