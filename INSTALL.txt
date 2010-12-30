@@ -13,7 +13,7 @@ Please use South for future binalerts migrations too.
 You can load collection time data in with one of these, a small sample used by
 the test code, or a large full file:
     ./manage.py loadpdf garden_sample_pdf.xml
-    ./manage.py garden-and-kitchen-waste-collection-streets.xml
+    ./manage.py loadpdf garden-and-kitchen-waste-collection-streets.xml
 
 For me only the binalerts app tests work (not the Django core ones). So I run
 tests like this:
