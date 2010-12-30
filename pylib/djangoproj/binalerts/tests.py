@@ -46,7 +46,7 @@ class StreetSearchTest(BinAlertsTestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertTemplateUsed(response, 'frontpage.html')
-        self.assertContains(response, 'Please type the name of your street')
+        self.assertContains(response, 'Please enter the name of your&nbsp;street')
         self.assertContains(response, '<input type="text" name="query" id="id_query" />')
         self.assertContains(response, '<input type="submit" value="Go" />')
         self.assertContains(response, 'action="/"')
@@ -102,7 +102,8 @@ class AlertsTest(BinAlertsTestCase):
     def test_shows_alert_form(self):
         response = self.c.get('/street/alyth_gardens')
 
-        self.assertContains(response, 'Email me every week the day before my bins are collected')
+        self.assertContains(response, 'Want a reminder?')
+        self.assertContains(response, 'We can email you every week')
         self.assertContains(response, '<input type="text" name="email" id="id_email" />')
         self.assertContains(response, '<input type="submit" value="Subscribe" />')
         self.assertContains(response, 'action=""')
