@@ -181,17 +181,24 @@ class AlertsTest(BinAlertsTestCase):
             self.assertEquals(len(mail.outbox), 0)
 
     def test_alerts_sent_if_confirmed_alert(self):
+        # make an alert for Alyth Gardens
         alert = CollectionAlert.objects.create(street_url_name = 'alyth_gardens', email = 'francis@mysociety.org')
         email_confirmation = EmailConfirmation.objects.create(confirmed = True, content_object = alert)
         assert alert.is_confirmed() == True
-
+        
+        # In production, the cron job (conf/crontab.ugly) is called at 9am
+        # every day. This test simulates as if the cron ran for an arbitary
+        # range of dates in January 2010. The date range covers two Mondays, to
+        # check the alerts are sent on those days, and not on others.
         for day_of_month in range(3, 12):
+            # fake the day/time the alerts are sent for testing purposes
             CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, day_of_month, 9, 00, 00))
             if len(mail.outbox) > 0:
                 m = mail.outbox[0]
                 # print "Subject:", m.subject
                 # print m.body
-            if day_of_month == 4 or day_of_month == 11: # alert on Monday for Tuesday
+            # we expect an alert on Monday for Tuesday - both 4th, 11th January 2010 are Mondays
+            if day_of_month == 4 or day_of_month == 11: 
                 self.assertEquals(len(mail.outbox), 1)
                 assert "Green Garden" in m.body
                 assert "Tuesday" in m.body
