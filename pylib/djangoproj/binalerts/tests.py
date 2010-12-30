@@ -17,6 +17,11 @@ import sys
 
 import mysociety
 
+try:
+    from config_local import config  # put settings in config_local if you're not running in a full mysociety vhost
+except ImportError:
+    from mysociety import config
+
 from django.test import TestCase
 from django.test import Client
 from django.core import mail
@@ -134,7 +139,7 @@ class AlertsTest(BinAlertsTestCase):
 
         self.assertEquals(len(mail.outbox), 1)
         self.assertEquals(mail.outbox[0].subject, 'Alert confirmation')
-        self.assertEquals(mail.outbox[0].from_email, 'Barnet Bin Alerts <%s>' % mysociety.config.get('BUGS_EMAIL'))
+        self.assertEquals(mail.outbox[0].from_email, 'Barnet Bin Alerts <%s>' % config.get('BUGS_EMAIL'))
 
     def test_url_in_confirmation_email_works(self):
         # submit to ask for email confirmation
