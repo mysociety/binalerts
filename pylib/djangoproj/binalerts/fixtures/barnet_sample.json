@@ -1,11 +1,55 @@
 [
     {
+        "pk": 1,
+        "model": "binalerts.street",
+        "fields": {
+            "partial_postcode": "XX0", 
+            "name": "Abbey View", 
+            "url_name": "abbey_view"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "binalerts.street",
+        "fields": {
+            "partial_postcode": "XX0", 
+            "name": "Abbots Road", 
+            "url_name": "abbots_road"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "binalerts.street",
+        "fields": {
+            "partial_postcode": "XX0", 
+            "name": "Alyth Gardens", 
+            "url_name": "alyth_gardens"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "binalerts.street",
+        "fields": {
+            "partial_postcode": "N12", 
+            "name": "Ashurst Road", 
+            "url_name": "ashurst_road_n12"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "binalerts.street",
+        "fields": {
+            "partial_postcode": "EN4", 
+            "name": "Ashurst Road", 
+            "url_name": "ashurst_road_en4"
+        }
+    },
+        
+    {
         "pk": 1, 
         "model": "binalerts.bincollection", 
         "fields": {
-            "street_partial_postcode": "XX0", 
-            "street_name": "Abbey View", 
-            "street_url_name": "abbey_view", 
+            "street": 1,
             "collection_day": 5, 
             "collection_type": "G"
         }
@@ -14,9 +58,7 @@
         "pk": 2, 
         "model": "binalerts.bincollection", 
         "fields": {
-            "street_partial_postcode": "XX0", 
-            "street_name": "Abbots Road", 
-            "street_url_name": "abbots_road", 
+            "street": 2,
             "collection_day": 5, 
             "collection_type": "G"
         }
@@ -25,9 +67,7 @@
         "pk": 3, 
         "model": "binalerts.bincollection", 
         "fields": {
-            "street_partial_postcode": "XX0", 
-            "street_name": "Alyth Gardens", 
-            "street_url_name": "alyth_gardens", 
+            "street": 3,
             "collection_day": 2, 
             "collection_type": "G"
         }
@@ -36,9 +76,7 @@
         "pk": 4, 
         "model": "binalerts.bincollection", 
         "fields": {
-            "street_partial_postcode": "N12", 
-            "street_name": "Ashurst Road", 
-            "street_url_name": "ashurst_road_n12", 
+            "street": 4,
             "collection_day": 4, 
             "collection_type": "G"
         }
@@ -47,9 +85,7 @@
         "pk": 5, 
         "model": "binalerts.bincollection", 
         "fields": {
-            "street_partial_postcode": "EN4", 
-            "street_name": "Ashurst Road", 
-            "street_url_name": "ashurst_road_en4", 
+            "street": 5,
             "collection_day": 2, 
             "collection_type": "G"
         }

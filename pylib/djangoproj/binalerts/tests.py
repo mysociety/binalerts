@@ -26,7 +26,7 @@ from django.test import TestCase
 from django.test import Client
 from django.core import mail
 
-from binalerts.models import BinCollection, CollectionAlert
+from binalerts.models import BinCollection, CollectionAlert, Street
 from emailconfirmation.models import EmailConfirmation
 
 import binalerts
@@ -154,7 +154,7 @@ class AlertsTest(BinAlertsTestCase):
         self.assertEquals(1, len(collection_alerts))
         collection_alert = collection_alerts[0]
         self.assertEquals(collection_alert.email, 'francis@mysociety.org')
-        self.assertEquals(collection_alert.street_url_name, 'alyth_gardens')
+        self.assertEquals(collection_alert.street.url_name, 'alyth_gardens')
         # ... and it is not confirmed
         self.assertEquals(collection_alert.is_confirmed(), False)
 
@@ -172,7 +172,8 @@ class AlertsTest(BinAlertsTestCase):
     # def test_wrong_token_does_not_confirm_email(self):
 
     def test_no_alerts_sent_if_not_confirmed_alert(self):
-        alert = CollectionAlert.objects.create(street_url_name = 'alyth_gardens', email = 'francis@mysociety.org')
+        street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
+        alert = CollectionAlert.objects.create(street=street, email='francis@mysociety.org')
         EmailConfirmation.objects.create(confirmed = False, content_object = alert)
         assert alert.is_confirmed() == False
 
@@ -182,7 +183,9 @@ class AlertsTest(BinAlertsTestCase):
 
     def test_alerts_sent_if_confirmed_alert(self):
         # make an alert for Alyth Gardens
-        alert = CollectionAlert.objects.create(street_url_name = 'alyth_gardens', email = 'francis@mysociety.org')
+        street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
+        bin_collection = BinCollection.objects.create(collection_day=2, collection_type='G', street=street)
+        alert = CollectionAlert.objects.create(street=street, email = 'francis@mysociety.org')
         email_confirmation = EmailConfirmation.objects.create(confirmed = True, content_object = alert)
         assert alert.is_confirmed() == True
         

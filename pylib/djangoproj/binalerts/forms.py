@@ -6,7 +6,7 @@
 
 from django import forms
 
-from binalerts.models import BinCollection, CollectionAlert
+from binalerts.models import BinCollection, CollectionAlert, Street
 
 class LocationForm(forms.Form):
     query = forms.CharField(error_messages = {
@@ -16,7 +16,7 @@ class LocationForm(forms.Form):
     def clean_query(self):
         query = self.cleaned_data['query']
 
-        streets = BinCollection.objects.find_by_street_name(query)
+        streets = Street.objects.find_by_name(query)
         if len(streets) == 0:
             raise forms.ValidationError("No street found with that name. Try typing a smaller part of it, for example: Nor")
 

@@ -10,7 +10,7 @@ from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 
 from binalerts.forms import LocationForm, CollectionAlertForm
-from binalerts.models import BinCollection
+from binalerts.models import BinCollection, Street
 
 from emailconfirmation.models import EmailConfirmation
 
@@ -27,7 +27,7 @@ def frontpage(request):
             streets = form.cleaned_data['streets']
 
             if len(streets) == 1:
-                return HttpResponseRedirect(reverse('show_street', kwargs = { 'url_name' : streets[0].street_url_name })) 
+                return HttpResponseRedirect(reverse('show_street', kwargs = { 'url_name' : streets[0].url_name })) 
             elif len(streets) > 1:
                 pass
             else:
@@ -38,18 +38,16 @@ def frontpage(request):
     return render_to_response('frontpage.html', { 'form': form, 'streets': streets })
 
 def show_street(request, url_name):
-    bin_collection = BinCollection.objects.get(street_url_name = url_name)
-
+    street = Street.objects.get(url_name=url_name)
     form = CollectionAlertForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
             alert = form.save(commit=False)
-            alert.street_url_name = bin_collection.street_url_name
+            alert.street = street
             alert.save()
             EmailConfirmation.objects.confirm(request, alert, 'alert_confirmed')
-            return render_to_response('check_email.html')
-
-    return render_to_response('street.html', { 'bin_collection': bin_collection, 'form': form, 'daynames': DISPLAY_DAYS_OF_WEEK })
+            return render_to_response('check_email.html')    
+    return render_to_response('street.html', { 'street': street, 'bin_collections': street.bin_collections.all(), 'form': form, 'daynames': DISPLAY_DAYS_OF_WEEK })
 
 def alert_confirmed(request, id):
     return render_to_response('alert_confirmed.html', { })

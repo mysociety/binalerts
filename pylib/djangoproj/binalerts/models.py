@@ -32,10 +32,22 @@ COLLECTION_TYPE_CHOICES = (
 class BinCollectionType(models.Model):
     description = models.CharField(max_length=200)
     friendly_id = models.CharField(max_length=4) # used in associated graphic filenames and javascript: rather than using a number (id)
+
+class StreetManager(models.Manager):
+    def find_by_name(self, name):
+        return self.filter(name__icontains=name)
     
+class Street(models.Model):
+    name = models.CharField(max_length=200)
+    url_name = models.SlugField(max_length=50)
+    partial_postcode = models.CharField(max_length=5) # e.g. NW4
+    
+    objects = StreetManager()
+    
+
 class BinCollectionManager(models.Manager):
     def find_by_street_name(self, street_name):
-        return self.filter(street_name__icontains=street_name)
+        return self.filter(street__name__icontains=street_name)
 
     # Convert from day of week string e.g. Sunday, to number, e.g. 0
     def day_of_week_string_to_number(self, day_of_week):
@@ -153,26 +165,29 @@ class BinCollectionManager(models.Manager):
                 elif not checked_partial_postcode:
                     sys.stderr.write("Can't parse partial postcode '%s', ignoring row '%s'\n" % (partial_postcode, row))
                 else:
+                    (street, was_created) = Street.objects.get_or_create(
+                        name = street_name_1 + ' ' + street_name_2,
+                        url_name = slug,
+                        partial_postcode = checked_partial_postcode,
+                        )
                     bin_collection = BinCollection.objects.create(
-                            street_name = street_name_1 + ' ' + street_name_2,
-                            street_url_name = slug, 
-                            street_partial_postcode = checked_partial_postcode,
-                            collection_day = day_of_week_as_number,
-                            collection_type = 'G'
-                            )
-
+                        street = street,
+                        collection_day = day_of_week_as_number,
+                        collection_type = 'G',
+                        )
 
 # Represents when a type of bin is collected for a particular street.
 class BinCollection(models.Model):
-    street_name = models.CharField(max_length=200)
-    street_url_name = models.SlugField(max_length=50)
-    street_partial_postcode = models.CharField(max_length=5) # e.g. NW4
 
-    collection_day = models.IntegerField(choices = DAY_OF_WEEK_CHOICES)
-    collection_type = models.CharField(max_length = 10, choices = COLLECTION_TYPE_CHOICES)
+    street = models.ForeignKey(Street, null=True, related_name='bin_collections')
+    collection_day = models.IntegerField(choices=DAY_OF_WEEK_CHOICES)
+    collection_type = models.CharField(max_length=10, choices=COLLECTION_TYPE_CHOICES)
 
     objects = BinCollectionManager()
 
+    def get_collection_type_display(self):
+        return "Green Garden"
+    
     def __unicode__(self):
         return "%s %s (%s)" % (self.street_name, self.street_partial_postcode, self.get_collection_day_display())
 
@@ -192,7 +207,7 @@ class CollectionAlertManager(models.Manager):
         tomorrow_day_of_week = (today_day_of_week + 1) % 7
 
         for collection_alert in CollectionAlert.objects.filter(confirmed__confirmed=True).filter(last_checked_date__lt=today):
-            bin_collection = collection_alert.bin_collection()
+            bin_collection = collection_alert.street.bin_collections.all()[0]
             # print "day of week compare", bin_collection.collection_day, tomorrow_day_of_week
             if bin_collection.collection_day == tomorrow_day_of_week:
                 send_email(None, 'Bin collection tomorrow, %s! (%s)' % (bin_collection.get_collection_day_display(), bin_collection.get_collection_type_display()),
@@ -208,8 +223,8 @@ class CollectionAlertManager(models.Manager):
 
 class CollectionAlert(models.Model):
     email = models.EmailField()
-    street_url_name = models.SlugField(max_length=50)
-
+    street = models.ForeignKey(Street, null=True)
+    
     confirmed = generic.GenericRelation(EmailConfirmation)
     last_checked_date = models.DateField(default=datetime.date(2000, 01, 01)) # always long in the past
 
@@ -220,12 +235,9 @@ class CollectionAlert(models.Model):
         assert len(confirmeds) == 1
         return confirmeds[0].confirmed
 
-    def bin_collection(self):
-        return BinCollection.objects.get(street_url_name = self.street_url_name)
-    
     class Meta:
         ordering = ('email',)
     
     def __unicode__(self):
-        return 'Alert for %s, street %s, confirmed %s' % (self.email, self.street_url_name, self.is_confirmed())
+        return 'Alert for %s, street %s, confirmed %s' % (self.email, self.street.url_name, self.is_confirmed())
 
