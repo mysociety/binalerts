@@ -1,0 +1,12 @@
+Hello,
+
+Thanks for signing up to your Barnet bin alert -- we'll email you the day before we come to empty your bins. 
+
+To confirm, please visit the following link:
+
+http://{{ host }}{% url emailconfirmation-check-token id=id, token=token %}
+
+
+Yours,
+The Bin Team
+
