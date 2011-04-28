@@ -140,6 +140,7 @@ class AlertsTest(BinAlertsTestCase):
         self.assertEquals(len(mail.outbox), 1)
         self.assertEquals(mail.outbox[0].subject, 'Alert confirmation')
         self.assertEquals(mail.outbox[0].from_email, 'Barnet Bin Alerts <%s>' % config.get('BUGS_EMAIL'))
+        assert mail.outbox[0].body.find("The Bin Team") != -1, '"The Bin Team" wasn\'t in the email body; using wrong emailconfirmation template?'
 
     def test_url_in_confirmation_email_works(self):
         # submit to ask for email confirmation
