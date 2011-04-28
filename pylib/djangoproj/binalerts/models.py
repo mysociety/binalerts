@@ -29,6 +29,10 @@ COLLECTION_TYPE_CHOICES = (
     ('G', 'Green Garden and Kitchen Waste'),
 )
 
+class BinCollectionType(models.Model):
+    description = models.CharField(max_length=200)
+    friendly_id = models.CharField(max_length=4) # used in associated graphic filenames and javascript: rather than using a number (id)
+    
 class BinCollectionManager(models.Manager):
     def find_by_street_name(self, street_name):
         return self.filter(street_name__icontains=street_name)
