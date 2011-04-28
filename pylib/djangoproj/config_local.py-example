@@ -1,0 +1,26 @@
+# to use quick-and-dirty local config, make this file available as config_local.py 
+
+class LocalConfig(dict):
+        
+    def get (self, key, default = None):
+        if key in self:
+            return self[key]
+        elif default != None:
+            return default
+        else:
+            raise Exception, "No value for '%s' in LocalConfig (config_local.py), and no default specified" % key
+
+        
+config = LocalConfig(
+    BINS_DB_HOST='localhost',
+    BINS_DB_PORT=5432,
+    BINS_DB_NAME='local-bins',
+    BINS_DB_USER='foo',
+    BINS_DB_PASS='bar',
+    
+    DEBUG = True,
+    
+    BUGS_EMAIL = '',
+    
+    DJANGO_SECRET_KEY='againiamauniquekeysoiam',
+)
