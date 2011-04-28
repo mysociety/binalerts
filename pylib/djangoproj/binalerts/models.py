@@ -186,10 +186,10 @@ class BinCollection(models.Model):
     objects = BinCollectionManager()
 
     def get_collection_type_display(self):
-        return "Green Garden"
+        return "Green Garden" # FIXME!
     
     def __unicode__(self):
-        return "%s %s (%s)" % (self.street_name, self.street_partial_postcode, self.get_collection_day_display())
+        return "%s %s (%s)" % (self.street, self.collection_day, self.collection_type)
 
 #######################################################################################
 # Email alerts for bin collections
