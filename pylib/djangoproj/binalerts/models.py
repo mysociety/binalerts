@@ -181,8 +181,8 @@ class BinCollection(models.Model):
 
     street = models.ForeignKey(Street, null=True, related_name='bin_collections')
     collection_day = models.IntegerField(choices=DAY_OF_WEEK_CHOICES)
-    collection_type = models.CharField(max_length=10, choices=COLLECTION_TYPE_CHOICES)
-
+    collection_type = models.ForeignKey(BinCollectionType, null=True)
+    
     objects = BinCollectionManager()
 
     def get_collection_type_display(self):
