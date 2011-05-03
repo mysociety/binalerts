@@ -25,13 +25,13 @@ DAY_OF_WEEK_CHOICES = (
     (6, 'Saturday')
 )
 
-COLLECTION_TYPE_CHOICES = (
-    ('G', 'Green Garden and Kitchen Waste'),
-)
 
 class BinCollectionType(models.Model):
     description = models.CharField(max_length=200)
     friendly_id = models.CharField(max_length=4) # used in associated graphic filenames and javascript: rather than using a number (id)
+
+    def __unicode__(self):
+        return "%s" % (self.description)
 
 class StreetManager(models.Manager):
     def find_by_name(self, name):
@@ -41,9 +41,11 @@ class Street(models.Model):
     name = models.CharField(max_length=200)
     url_name = models.SlugField(max_length=50)
     partial_postcode = models.CharField(max_length=5) # e.g. NW4
-    
+
     objects = StreetManager()
-    
+
+    def __unicode__(self):
+        return "%s, %s" % (self.name, self.partial_postcode)
 
 class BinCollectionManager(models.Manager):
     def find_by_street_name(self, street_name):
@@ -126,6 +128,8 @@ class BinCollectionManager(models.Manager):
     def load_from_pdf_xml(self, xml_file_name):
         doc = xml.dom.minidom.parse(xml_file_name)
 
+        this_type = BinCollectionType.objects.get(friendly_id='G')
+        
         rows = self._yield_rows_from_pdf(doc)
         started = False
         for row in rows:
@@ -173,15 +177,15 @@ class BinCollectionManager(models.Manager):
                     bin_collection = BinCollection.objects.create(
                         street = street,
                         collection_day = day_of_week_as_number,
-                        collection_type = 'G',
+                        collection_type = this_type, # NB defaulting to a single type at the moment
                         )
 
 # Represents when a type of bin is collected for a particular street.
 class BinCollection(models.Model):
 
-    street = models.ForeignKey(Street, null=True, related_name='bin_collections')
+    street = models.ForeignKey(Street, null=False, related_name='bin_collections')
     collection_day = models.IntegerField(choices=DAY_OF_WEEK_CHOICES)
-    collection_type = models.ForeignKey(BinCollectionType, null=True)
+    collection_type = models.ForeignKey(BinCollectionType, null=False)
     
     objects = BinCollectionManager()
 
@@ -189,7 +193,7 @@ class BinCollection(models.Model):
         return "Green Garden" # FIXME!
     
     def __unicode__(self):
-        return "%s %s (%s)" % (self.street, self.collection_day, self.collection_type)
+        return "%s: %s (%s)" % (self.street, DAY_OF_WEEK_CHOICES[self.collection_day][1], self.collection_type)
 
 #######################################################################################
 # Email alerts for bin collections
