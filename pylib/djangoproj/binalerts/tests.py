@@ -95,8 +95,10 @@ class StreetPageTest(BinAlertsTestCase):
     def test_show_bin_collection_day_on_street_page(self):
         response = self.c.get('/street/alyth_gardens')
  
+        self.assertContains(response, '<title>Bin collection days for Alyth Gardens</title>')
         self.assertContains(response, 'Green Garden')
         self.assertContains(response, '<div class="mysoc-bin-day mysoc-bin-collection-g">') 
+        self.assertContains(response, '<div class="mysoc-bin-summary mysoc-bin-summary-g">') 
 
         self.assertNotContains(response, 'Monday')
         self.assertContains(   response, 'Tuesday')
