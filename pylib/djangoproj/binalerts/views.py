@@ -48,14 +48,34 @@ def show_street(request, url_name):
             EmailConfirmation.objects.confirm(request, alert, 'alert_confirmed')
             return render_to_response('check_email.html')
 
-    all_collection_types = []
-    collection_types_as_strings = ['' for x in DISPLAY_DAYS_OF_WEEK]
-    for bc in street.bin_collections.all().order_by('collection_type__friendly_id'):
-        if collection_types_as_strings[bc.collection_day].find(bc.collection_type.friendly_id) == -1:
+    # prepare the data to keep things as simple as possible in the template
+    
+    collection_days = {}         # collect all unique days on which a collection is taking place
+    collection_days_by_type = {} # collect all unique types of collection 'g' => [2,5]  (normally, just one day)
+    collection_types = {}        # collect unique instances of bin_collection
+    collection_types_as_strings = ['' for x in DISPLAY_DAYS_OF_WEEK] # friendly_ids, concatted and sorted, for each day
+    
+    for bc in street.bin_collections.all().order_by('collection_type__friendly_id', 'collection_day'):
+        collection_days[bc.collection_day] = True
+        collection_types[bc.collection_type.friendly_id] = bc.collection_type
+        day_name = bc.get_collection_day_name()
+        try:
+            if not (day_name in collection_days_by_type[bc.collection_type.friendly_id]):
+                collection_days_by_type[bc.collection_type.friendly_id].append(day_name)
+        except KeyError:
+            collection_days_by_type[bc.collection_type.friendly_id] = [day_name]
+        if collection_types_as_strings[bc.collection_day].find(bc.collection_type.friendly_id) == -1: # haven't got this type already
             collection_types_as_strings[bc.collection_day] += bc.collection_type.friendly_id
 
     day_by_day_collections = zip(DISPLAY_DAYS_OF_WEEK, collection_types_as_strings)
-    return render_to_response('street.html', { 'street': street, 'day_by_day_collections': day_by_day_collections, 'bin_collections': street.bin_collections.all(), 'form': form, 'daynames': DISPLAY_DAYS_OF_WEEK })
+    collection_types_with_days = [(collection_types[x], collection_days_by_type[x]) for x in sorted(collection_types.keys())]
+    return render_to_response('street.html', {
+        'street': street, 
+        'form': form,  
+        'day_by_day_collections': day_by_day_collections, 
+        'collection_days': sorted(collection_days.keys()), 
+        'collection_types_with_days': collection_types_with_days,
+        'daynames': DISPLAY_DAYS_OF_WEEK })
 
 def alert_confirmed(request, id):
     return render_to_response('alert_confirmed.html', { })

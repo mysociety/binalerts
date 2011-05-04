@@ -48,7 +48,10 @@
 	min-height: 50px;
 } 
 
-.mysoc-bin-summary-g{
+.mysoc-bin-summary-d,
+.mysoc-bin-summary-g,
+.mysoc-bin-summary-r
+{
 	background-image: url(/static/images/wheeliebin.png)
 }
 
@@ -113,7 +116,8 @@
 .mysoc-bin-collection-dr,
 .mysoc-bin-collection-dgr,
 .mysoc-bin-collection-g,
-.mysoc-bin-collection-gr
+.mysoc-bin-collection-gr,
+.mysoc-bin-collection-r
 {
   background-color: #D8EBEB;
   color: #34A3A4;

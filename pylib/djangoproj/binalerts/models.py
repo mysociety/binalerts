@@ -189,8 +189,11 @@ class BinCollection(models.Model):
     
     objects = BinCollectionManager()
 
+    def get_collection_day_name(self):
+        return DAY_OF_WEEK_CHOICES[self.collection_day][1]
+
     def get_collection_type_display(self):
-        return "Green Garden" # FIXME!
+        return self.collection_type.description
     
     def __unicode__(self):
         return "%s: %s (%s)" % (self.street, DAY_OF_WEEK_CHOICES[self.collection_day][1], self.collection_type)
