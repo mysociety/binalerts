@@ -26,7 +26,7 @@ from django.test import TestCase
 from django.test import Client
 from django.core import mail
 
-from binalerts.models import BinCollection, CollectionAlert, Street
+from binalerts.models import BinCollectionType, BinCollection, CollectionAlert, Street
 from emailconfirmation.models import EmailConfirmation
 
 import binalerts
@@ -184,8 +184,9 @@ class AlertsTest(BinAlertsTestCase):
 
     def test_alerts_sent_if_confirmed_alert(self):
         # make an alert for Alyth Gardens
+        collection_type = BinCollectionType.objects.get(friendly_id='G')
         street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
-        bin_collection = BinCollection.objects.create(collection_day=2, collection_type='G', street=street)
+        bin_collection = BinCollection.objects.create(collection_day=2, collection_type=collection_type, street=street)
         alert = CollectionAlert.objects.create(street=street, email = 'francis@mysociety.org')
         email_confirmation = EmailConfirmation.objects.create(confirmed = True, content_object = alert)
         assert alert.is_confirmed() == True

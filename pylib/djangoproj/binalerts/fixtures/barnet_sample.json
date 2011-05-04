@@ -1,6 +1,31 @@
 [
     {
         "pk": 1,
+        "model": "binalerts.bincollectiontype",
+        "fields": {
+            "friendly_id": "G",
+            "description": "Green Garden and Kitchen Waste"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "binalerts.bincollectiontype",
+        "fields": {
+            "friendly_id": "D",
+            "description": "Domestic Waste"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "binalerts.bincollectiontype",
+        "fields": {
+            "friendly_id": "R",
+            "description": "Recyclable Waste Collection"
+        }
+    },
+
+    {
+        "pk": 1,
         "model": "binalerts.street",
         "fields": {
             "partial_postcode": "XX0", 
@@ -51,7 +76,7 @@
         "fields": {
             "street": 1,
             "collection_day": 5, 
-            "collection_type": "G"
+            "collection_type": 1
         }
     }, 
     {
@@ -60,7 +85,7 @@
         "fields": {
             "street": 2,
             "collection_day": 5, 
-            "collection_type": "G"
+            "collection_type": 1
         }
     }, 
     {
@@ -69,7 +94,7 @@
         "fields": {
             "street": 3,
             "collection_day": 2, 
-            "collection_type": "G"
+            "collection_type": 1
         }
     }, 
     {
@@ -78,7 +103,7 @@
         "fields": {
             "street": 4,
             "collection_day": 4, 
-            "collection_type": "G"
+            "collection_type": 1
         }
     }, 
     {
@@ -87,7 +112,7 @@
         "fields": {
             "street": 5,
             "collection_day": 2, 
-            "collection_type": "G"
+            "collection_type": 1
         }
     }
 ]
