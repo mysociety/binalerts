@@ -106,7 +106,6 @@ class StreetPageTest(BinAlertsTestCase):
         self.assertNotContains(response, 'Saturday')
         self.assertNotContains(response, 'Sunday')
         
- 
     def test_shows_postcode_when_two_streets_have_same_name(self):
         response = self.c.get('/street/ashurst_road_en4')
         self.assertContains(response, "EN4")
@@ -118,6 +117,9 @@ class StreetPageTest(BinAlertsTestCase):
         self.assertContains(response, '<div class="mysoc-bin-day mysoc-bin-collection-g">') 
         self.assertContains(response, '<div class="mysoc-bin-day mysoc-bin-collection-d">') 
         
+    def test_shows_message_when_street_has_no_collections(self):
+        response = self.c.get('/street/no_collections_road')
+        self.assertContains(response, "There is no collection data available for this street")
         
 # Alerts
 class AlertsTest(BinAlertsTestCase):

@@ -69,7 +69,15 @@
             "url_name": "ashurst_road_en4"
         }
     },
-        
+    {
+        "pk": 6,
+        "model": "binalerts.street",
+        "fields": {
+            "partial_postcode": "XX0", 
+            "name": "No Collections Road", 
+            "url_name": "no_collections_road"
+        }
+    },        
     {
         "pk": 1, 
         "model": "binalerts.bincollection", 

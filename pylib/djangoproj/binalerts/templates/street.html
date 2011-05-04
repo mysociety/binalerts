@@ -23,34 +23,44 @@
   <script src="/static/js/binalerts.js" type="text/javascript"></script>
 
   <hr class="mysoc-ie6-fixer"/>
-  {% for bin_collection_type, collection_day_array in collection_types_with_days %}
-    <div class="mysoc-bin-summary mysoc-bin-summary-{{ bin_collection_type.friendly_id|lower }}">
+  {% if collection_days|length == 0 %}
+    <div class="mysoc-bin-summary">
       <p>
-        {# note: tests expect this to be one one line in the generated HTML source #}
-        <strong>{{ bin_collection_type.description}}</strong> collection {% if collection_day_array|length == 1 %}day is{% else %}days are{% endif %} <strong>{{ collection_day_array|join:" &amp; " }}</strong>.
+          There is no collection data available for this street.
       </p>
       <p class="mysoc-bin-collect-details">
-        {% ifequal bin_collection_type.friendly_id 'D' %}
-          make sure it&rsquo;s inside the bin, not wedged in or too heavy, with the lid closed .&nbsp;.&nbsp;. 
-          <a href="http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling.htm/waste-collection">more&nbsp;details</a>
-        {% endifequal %}
-        {% ifequal bin_collection_type.friendly_id 'G' %}
-          for grass cuttings, vegetable, meat and fish, egg shells .&nbsp;.&nbsp;. 
-          <a href="http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling/green-garden-kitchen-waste">more&nbsp;details</a>    
-        {% endifequal %}
-        {% ifequal bin_collection_type.friendly_id 'R' %}
-          for glass, bottles, paper, plastics &mdash; lots of things, in fact .&nbsp;.&nbsp;. 
-          <a href="http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling.htm/recycling1/recycle-from-home.htm">more&nbsp;details</a>    
-        {% endifequal %}
+          Please let us know, and we will investigate why we haven&rsquo;t got {{ street.name|default:'it' }} covered.
       </p>
     </div>
-  {% endfor %}
-  
+  {% else %}
+    {% for bin_collection_type, collection_day_array in collection_types_with_days %}
+      <div class="mysoc-bin-summary mysoc-bin-summary-{{ bin_collection_type.friendly_id|lower }}">
+        <p>
+          {# note: tests expect this to be one one line in the generated HTML source #}
+          <strong>{{ bin_collection_type.description}}</strong> collection {% if collection_day_array|length == 1 %}day is{% else %}days are{% endif %} <strong>{{ collection_day_array|join:" &amp; " }}</strong>.
+        </p>
+        <p class="mysoc-bin-collect-details">
+          {% ifequal bin_collection_type.friendly_id 'D' %}
+            make sure it&rsquo;s inside the bin, not wedged in or too heavy, with the lid closed .&nbsp;.&nbsp;. 
+            <a href="http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling.htm/waste-collection">more&nbsp;details</a>
+          {% endifequal %}
+          {% ifequal bin_collection_type.friendly_id 'G' %}
+            for grass cuttings, vegetable, meat and fish, egg shells .&nbsp;.&nbsp;. 
+            <a href="http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling/green-garden-kitchen-waste">more&nbsp;details</a>    
+          {% endifequal %}
+          {% ifequal bin_collection_type.friendly_id 'R' %}
+            for glass, bottles, paper, plastics &mdash; lots of things, in fact .&nbsp;.&nbsp;. 
+            <a href="http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling.htm/recycling1/recycle-from-home.htm">more&nbsp;details</a>    
+          {% endifequal %}
+        </p>
+      </div>
+    {% endfor %}
+  {% endif %}  
   <div class="mysoc-bin-form mysoc-bin-reminder-breakout">
     <p>
       <b>Want a reminder?</b>
       <br/>
-      We can email you every week <i>the day before</i> your bins are collected.
+      We can email you every week <i>the day before</i> we come to  {{ street.name }} to empty your bins.
     </p>
     <form method="post" action="" id="alert_form">
         {{ form.as_p }}
