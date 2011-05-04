@@ -20,7 +20,7 @@
         "model": "binalerts.bincollectiontype",
         "fields": {
             "friendly_id": "R",
-            "description": "Recyclable Waste Collection"
+            "description": "Recyclable Waste"
         }
     }
 ]
