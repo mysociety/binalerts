@@ -12,10 +12,8 @@
 
   <div class="mysoc-bin-week">
     <div id="mysoc-bin-lorry"></div>
-    {% for dayname in daynames %}
-      {# FIXME: note we're only looking at the first bin collection in this street, not all of them  #}
-      {# FIXME use friendly_id here #}
-      <div class="mysoc-bin-day {% ifequal forloop.counter0 bin_collections.0.collection_day %}mysoc-bin-collection{% endifequal %}"> 
+    {% for dayname, collection_string in day_by_day_collections %}
+      <div class="mysoc-bin-day {% if collection_string %}mysoc-bin-collection-{{ collection_string|lower }}{% endif %}"> 
       {{ dayname }}
       </div>
     {% endfor %}
@@ -31,7 +29,7 @@
     <p>
       <strong>{{ bin_collections.0.get_collection_type_display}}</strong> collection day is <strong>{{ bin_collections.0.get_collection_day_display }}</strong>.
     </p>
-    {% ifequal bin_collections.0.collection_type 'G' %}
+    {% ifequal bin_collections.0.collection_type.friendly_id 'G' %}
       <p class="mysoc-bin-collect-details">
           for grass cuttings, vegetable, meat and fish, egg shells .&nbsp;.&nbsp;. 
           <a href="http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling/green-garden-kitchen-waste">more&nbsp;details</a>

@@ -96,12 +96,29 @@ class StreetPageTest(BinAlertsTestCase):
         response = self.c.get('/street/alyth_gardens')
  
         self.assertContains(response, 'Green Garden')
-        self.assertContains(response, 'Tuesday')
+        self.assertContains(response, '<div class="mysoc-bin-day mysoc-bin-collection-g">') 
+
+        self.assertNotContains(response, 'Monday')
+        self.assertContains(   response, 'Tuesday')
+        self.assertNotContains(response, 'Wednesday')
+        self.assertNotContains(response, 'Thursday')
+        self.assertNotContains(response, 'Friday')
+        self.assertNotContains(response, 'Saturday')
+        self.assertNotContains(response, 'Sunday')
+        
  
     def test_shows_postcode_when_two_streets_have_same_name(self):
         response = self.c.get('/street/ashurst_road_en4')
         self.assertContains(response, "EN4")
 
+    def test_shows_both_collections_on_street_page(self):
+        response = self.c.get('/street/ashurst_road_en4')
+        self.assertContains(response, '<strong>Green Garden</strong> collection day is <strong>Tuesday')
+        self.assertContains(response, '<strong>Domestic Waste</strong> collection day is <strong>Thursday')
+        self.assertContains(response, '<div class="mysoc-bin-day mysoc-bin-collection-g">') 
+        self.assertContains(response, '<div class="mysoc-bin-day mysoc-bin-collection-d">') 
+        
+        
 # Alerts
 class AlertsTest(BinAlertsTestCase):
     def test_shows_alert_form(self):

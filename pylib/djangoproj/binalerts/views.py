@@ -46,8 +46,16 @@ def show_street(request, url_name):
             alert.street = street
             alert.save()
             EmailConfirmation.objects.confirm(request, alert, 'alert_confirmed')
-            return render_to_response('check_email.html')    
-    return render_to_response('street.html', { 'street': street, 'bin_collections': street.bin_collections.all(), 'form': form, 'daynames': DISPLAY_DAYS_OF_WEEK })
+            return render_to_response('check_email.html')
+
+    all_collection_types = []
+    collection_types_as_strings = ['' for x in DISPLAY_DAYS_OF_WEEK]
+    for bc in street.bin_collections.all().order_by('collection_type__friendly_id'):
+        if collection_types_as_strings[bc.collection_day].find(bc.collection_type.friendly_id) == -1:
+            collection_types_as_strings[bc.collection_day] += bc.collection_type.friendly_id
+
+    day_by_day_collections = zip(DISPLAY_DAYS_OF_WEEK, collection_types_as_strings)
+    return render_to_response('street.html', { 'street': street, 'day_by_day_collections': day_by_day_collections, 'bin_collections': street.bin_collections.all(), 'form': form, 'daynames': DISPLAY_DAYS_OF_WEEK })
 
 def alert_confirmed(request, id):
     return render_to_response('alert_confirmed.html', { })

@@ -103,7 +103,18 @@
   
 }
 
-.mysoc-bin-collection{
+/*
+    d   domestic waste
+    g   garden waste
+    r   recyclables
+*/
+.mysoc-bin-collection-d,
+.mysoc-bin-collection-dg,
+.mysoc-bin-collection-dr,
+.mysoc-bin-collection-dgr,
+.mysoc-bin-collection-g,
+.mysoc-bin-collection-gr
+{
   background-color: #D8EBEB;
   color: #34A3A4;
   background-image: url(../images/wheeliebin.png);
