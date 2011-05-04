@@ -114,5 +114,15 @@
             "collection_day": 2, 
             "collection_type": 1
         }
+    },
+    {
+        "pk": 6, 
+        "model": "binalerts.bincollection", 
+        "fields": {
+            "street": 5,
+            "collection_day": 4, 
+            "collection_type": 2
+        }
     }
+    
 ]
