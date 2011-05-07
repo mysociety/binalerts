@@ -41,19 +41,19 @@
 	border-bottom:none;
 }
 
-.mysoc-bin-summary{
+.mysoc-bin-summary {
 	background-repeat: no-repeat;
 	background-position: 10px 10px;
-	padding:10px 0 0 60px;
+	padding:10px 0 0 70px;
 	min-height: 50px;
+    clear: both;
+    font-size: 120%;
+    margin: 1em 0 2em 0;
 } 
 
-.mysoc-bin-summary-d,
-.mysoc-bin-summary-g,
-.mysoc-bin-summary-r
-{
-	background-image: url(/static/images/wheeliebin.png)
-}
+.mysoc-bin-summary-d { background-image: url(/static/images/wheeliebin_d.png); }
+.mysoc-bin-summary-g { background-image: url(/static/images/wheeliebin_g.png); }
+.mysoc-bin-summary-r { background-image: url(/static/images/wheeliebin_r.png); }
 
 .mysoc-bin-summary p{
 	margin: 0;
@@ -77,12 +77,6 @@
 }
 .mysoc-bin-reminder-breakout p{
 	margin: 0.666em 0;
-}
-
-.mysoc-bin-summary {
-	clear: both;
-    font-size: 120%;
-    margin: 1em 0 2em 0;
 }
 
 .mysoc-bin-week {
@@ -117,14 +111,20 @@
 .mysoc-bin-collection-dgr,
 .mysoc-bin-collection-g,
 .mysoc-bin-collection-gr,
-.mysoc-bin-collection-r
-{
+.mysoc-bin-collection-r {
   background-color: #D8EBEB;
   color: #34A3A4;
-  background-image: url(../images/wheeliebin.png);
   background-repeat: no-repeat;
   background-position:50% 46px;
 }
+
+.mysoc-bin-collection-d   { background-image: url(/static/images/wheeliebin_d.png); }
+.mysoc-bin-collection-dg  { background-image: url(/static/images/wheeliebin_dg.png); }
+.mysoc-bin-collection-dr  { background-image: url(/static/images/wheeliebin_dr.png); }
+.mysoc-bin-collection-dgr { background-image: url(/static/images/wheeliebin_dgr.png); }
+.mysoc-bin-collection-g   { background-image: url(/static/images/wheeliebin_g.png); }
+.mysoc-bin-collection-gr  { background-image: url(/static/images/wheeliebin_gr.png); }
+.mysoc-bin-collection-r   { background-image: url(/static/images/wheeliebin_r.png); }
 
 .mysoc-bin-end {
   clear:both;
@@ -156,6 +156,7 @@
 ul.errorlist li{
 	background: url(../images/tiny_warning.png) no-repeat 0px 3px !important; /* force ovveride of #content ul li */
 	padding-left: 20px;
+	color: #aa0000;
 }
 
 /* dirty bit of hackery in response to empirical testing in IE6 <sigh> */
