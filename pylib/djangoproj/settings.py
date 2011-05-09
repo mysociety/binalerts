@@ -49,6 +49,11 @@ DATABASE_PASSWORD = config.get('BINS_DB_PASS')
 DATABASE_HOST = config.get('BINS_DB_HOST')
 DATABASE_PORT = config.get('BINS_DB_PORT')
 
+# True if the *same type of collection* can occur at a given address more than once a week
+# (the default, False, is common: e.g., recycling is only collected once a week)
+# If false, it means if the a new collection day is read from the import, the old one will be deleted
+BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = config.get('BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK', False)
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.

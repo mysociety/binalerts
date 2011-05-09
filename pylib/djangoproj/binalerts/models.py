@@ -9,6 +9,8 @@ import sys
 import xml.dom.minidom
 import re
 
+from djangoproj.settings import BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
+
 from django.db import models
 from django.contrib.contenttypes import generic
 
@@ -44,6 +46,17 @@ class Street(models.Model):
     url_name = models.SlugField(max_length=50)
     partial_postcode = models.CharField(max_length=5) # e.g. NW4
 
+    def add_collection(self, collection_type, collection_day):
+        if not BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK:
+            # delete all other collections (of this type), on all days, then create a new one
+            for bc in self.bin_collections.filter(collection_type=collection_type):
+                bc.delete()
+        # find the single bin collection of this type on this day, and mark it as modified
+        bin_collection, was_created = BinCollection.objects.get_or_create(street=self, collection_type=collection_type, collection_day=collection_day )
+        if not was_created:
+            bin_collection.last_update = datetime.datetime.now()
+        bin_collection.save()
+
     objects = StreetManager()
 
     def __unicode__(self):
@@ -51,8 +64,8 @@ class Street(models.Model):
 
 class BinCollectionManager(models.Manager):
     def find_by_street_name(self, street_name):
-        return self.filter(street__name__icontains=street_name)
-
+        return self.filter(street__name__icontains=street_name)                    
+        
     # Convert from day of week string e.g. Sunday, to number, e.g. 0
     def day_of_week_string_to_number(self, day_of_week):
         for row in DAY_OF_WEEK_CHOICES:
@@ -127,10 +140,10 @@ class BinCollectionManager(models.Manager):
 
     # loads http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
     # after it has been converted with "pdftohtml -xml"
-    def load_from_pdf_xml(self, xml_file_name):
+    def load_from_pdf_xml(self, xml_file_name, collection_type_id='G'):
         doc = xml.dom.minidom.parse(xml_file_name)
 
-        this_type = BinCollectionType.objects.get(friendly_id='G')
+        this_type = BinCollectionType.objects.get(friendly_id=collection_type_id)
         
         rows = self._yield_rows_from_pdf(doc)
         started = False
@@ -176,11 +189,7 @@ class BinCollectionManager(models.Manager):
                         url_name = slug,
                         partial_postcode = checked_partial_postcode,
                         )
-                    bin_collection = BinCollection.objects.create(
-                        street = street,
-                        collection_day = day_of_week_as_number,
-                        collection_type = this_type, # NB defaulting to a single type at the moment
-                        )
+                    street.add_collection(this_type, day_of_week_as_number)
 
 # Represents when a type of bin is collected for a particular street.
 class BinCollection(models.Model):
@@ -188,6 +197,7 @@ class BinCollection(models.Model):
     street = models.ForeignKey(Street, null=False, related_name='bin_collections')
     collection_day = models.IntegerField(choices=DAY_OF_WEEK_CHOICES)
     collection_type = models.ForeignKey(BinCollectionType, null=False)
+    last_updated = models.DateTimeField(auto_now=True, auto_now_add=True, null=True) # allow tracking of change data
     
     objects = BinCollectionManager()
 

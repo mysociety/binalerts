@@ -11,9 +11,15 @@ databases.
 Please use South for future binalerts migrations too.
 
 You can load collection time data in with one of these, a small sample used by
-the test code, or a large full file:
+the test code:
     ./manage.py loadpdf garden_sample_pdf.xml
+
+... or a large full file: (this is Garden Waste, but includes postcodes)
     ./manage.py loadpdf garden-and-kitchen-waste-collection-streets.xml
+
+...then load the Domestic waste (lacks postcodes):
+    ./manage.py loadcvs refuse_rounds_road_day.csv
+
 
 For me only the binalerts app tests work (not the Django core ones). So I run
 tests like this:

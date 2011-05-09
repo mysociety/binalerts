@@ -9,7 +9,13 @@ from emailconfirmation.models import EmailConfirmation
 
 from django.contrib import admin
 
-admin.site.register(BinCollection)
+class BinCollectionAdmin(admin.ModelAdmin):
+    date_hierarchy = 'last_updated'
+    readonly_fields = ('last_updated',)
+    list_display = ('street', 'collection_day', 'collection_type', 'last_updated')    
+    list_display_links = ('street', 'collection_day', 'collection_type')
+
+admin.site.register(BinCollection, BinCollectionAdmin)
 admin.site.register(BinCollectionType)
 admin.site.register(CollectionAlert)
 admin.site.register(EmailConfirmation)
