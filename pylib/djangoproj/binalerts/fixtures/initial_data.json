@@ -4,7 +4,8 @@
         "model": "binalerts.bincollectiontype",
         "fields": {
             "friendly_id": "G",
-            "description": "Green Garden and Kitchen Waste"
+            "description": "Green Garden and Kitchen Waste",
+            "detail_text": "for grass cuttings, vegetable, meat and fish, egg shells .&nbsp;.&nbsp;." 
         }
     },
     {
@@ -12,7 +13,8 @@
         "model": "binalerts.bincollectiontype",
         "fields": {
             "friendly_id": "D",
-            "description": "Domestic Waste"
+            "description": "Domestic Waste",
+            "detail_text": "make sure it&rsquo;s inside the bin, not wedged in or too heavy, with the lid closed .&nbsp;.&nbsp;."
         }
     },
     {
@@ -20,7 +22,8 @@
         "model": "binalerts.bincollectiontype",
         "fields": {
             "friendly_id": "R",
-            "description": "Recyclable Waste"
+            "description": "Recyclable Waste",
+            "detail_text": "for glass, bottles, paper, plastics, carbdoard &mdash; lots of things, in fact .&nbsp;.&nbsp;."
         }
     }
 ]

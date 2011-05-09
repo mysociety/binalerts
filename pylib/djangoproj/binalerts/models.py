@@ -29,7 +29,9 @@ DAY_OF_WEEK_CHOICES = (
 class BinCollectionType(models.Model):
     description = models.CharField(max_length=200)
     friendly_id = models.CharField(max_length=4) # used in associated graphic filenames and javascript: rather than using a number (id)
-
+    detail_text = models.TextField(max_length=1024, null=False, blank=True, default="") 
+    # detail_text used to provide extra info on the street page (including, e.g., a link to council page)
+    
     def __unicode__(self):
         return "%s" % (self.description)
 
