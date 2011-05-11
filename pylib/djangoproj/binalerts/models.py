@@ -8,6 +8,7 @@ import datetime
 import sys
 import xml.dom.minidom
 import re
+import csv
 
 from djangoproj.settings import BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
 
@@ -60,7 +61,10 @@ class Street(models.Model):
     objects = StreetManager()
 
     def __unicode__(self):
-        return "%s, %s" % (self.name, self.partial_postcode)
+        if (self.partial_postcode):
+            return "%s, %s" % (self.name, self.partial_postcode)
+        else:
+            return self.name
 
 class BinCollectionManager(models.Manager):
     def find_by_street_name(self, street_name):
@@ -138,6 +142,55 @@ class BinCollectionManager(models.Manager):
         if items != []:
             yield items
 
+    def load_from_csv_file(self, csv_file_name, collection_type_id='D'):
+        csv_file = open(csv_file_name, 'r')
+        this_type = this_type = BinCollectionType.objects.get(friendly_id=collection_type_id)
+        reader=csv.reader(csv_file, delimiter=',', quotechar='"')
+        regexp_alpha_check = re.compile('\w')
+        found_data = False
+        day_number_offset = 0
+        n_collections = 0
+        n_new_streets = 0
+        for row in reader:
+            if found_data:
+                for day in range(len(row)): #   for this_day in 0..4 (actually monday-friday)
+                    # note: here we are making these assumptions, based on current provided data:
+                    #       index position is day
+                    #       there is NO postcode
+                    # Ought to dump all failures into a log for review, and manual input, later TODO
+                    this_day = day + day_number_offset
+                    this_day_name = DAY_OF_WEEK_CHOICES[this_day][1]
+                    raw_street_name = ' '.join(row[day].strip().split())
+                    if not regexp_alpha_check.match(raw_street_name): # common: an empty entry in the row
+                        continue
+                    candidate_streets = Street.objects.filter(name__iexact=raw_street_name)
+                    if len(candidate_streets) > 1:
+                        sys.stderr.write("found multiple matches for %s in these streets: %s\n" % 
+                          (raw_street_name, ", ".join(s.name for s in candidate_streets)))
+                    else:
+                        if not candidate_streets:
+                            # create a new street: TODD normalise this 
+                            sys.stderr.write("making a new street '%s': %s\n" % (raw_street_name, this_day_name))
+                            slug = raw_street_name # for now: no postcode
+                            this_street = Street(name = raw_street_name, url_name = slug )
+                            this_street.save()
+                            n_new_streets += 1
+                        else:
+                            this_street = candidate_streets[0]
+                            sys.stderr.write("updated street '%s': %s (was: %s)\n" % (candidate_streets[0].url_name, this_day_name, ", ".join(bc.get_collection_day_name() for bc in candidate_streets[0].bin_collections.all()))) 
+                        this_street.add_collection(this_type, this_day)
+                        n_collections += 1
+            else:
+                # lazy for now: the title line is "Monday,Tuesday,...,Friday"
+                if len(row)>=5:
+                    found_data = (row[0] == 'Monday' and row[4] == 'Friday')
+                    day_number_offset = 1 # because row 0 is Monday, which is 1
+        if not found_data:
+            sys.stderr.write("found no data in '%s'. Is there a title line with Monday,Tuesday,Wednesday... in it?\n" % csv_file_name)
+        else:
+            sys.stderr.write("collections loaded: %s\nnew streets: %s\nDone.\n" % (n_collections, n_new_streets))
+            
+
     # loads http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
     # after it has been converted with "pdftohtml -xml"
     def load_from_pdf_xml(self, xml_file_name, collection_type_id='G'):
@@ -189,6 +242,7 @@ class BinCollectionManager(models.Manager):
                         url_name = slug,
                         partial_postcode = checked_partial_postcode,
                         )
+                    # if there isn't a partial postcode... add it: don't make it a condition of the find because we don't always have one
                     street.add_collection(this_type, day_of_week_as_number)
 
 # Represents when a type of bin is collected for a particular street.
