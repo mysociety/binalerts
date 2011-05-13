@@ -17,4 +17,5 @@ class Command(BaseCommand):
         #transaction.managed(True)
         
         file_to_load = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/', args[0])
-        models.BinCollection.objects.load_from_csv_file(file_to_load)
+        csv_file = open(file_to_load, 'r')
+        models.DataImport.load_from_csv_file(csv_file)

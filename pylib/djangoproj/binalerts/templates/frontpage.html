@@ -18,7 +18,6 @@
   <div class="mysoc-bin-form">
     <form action="/" method="post">
       {{ form.query.errors }}
-      
       <label for="id_query"> Please enter the name of your&nbsp;street: </label>
       <br/>
       {{ form.query }}
@@ -28,10 +27,11 @@
       <div class="mysoc-suggestions">
         <h2>Did you mean...</h2>
         <ul>
-            {% for street in streets %}
-                <li> 
-                  <a href="{% url show_street street.url_name  %}">{{ street.name }} ({{ street.partial_postcode }})</a> 
-                </li>
+          {% for street in streets %}
+            <li> 
+              {# note: keep on one line; whitespace may break tests #}
+              <a href="{% url show_street street.url_name  %}">{{ street.name }}{% if street.partial_postcode %} ({{ street.partial_postcode }}){% endif %}</a> 
+            </li>
             {% endfor %}
         </ul>
       </div>

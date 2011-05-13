@@ -26,7 +26,7 @@ from django.test import TestCase
 from django.test import Client
 from django.core import mail
 
-from binalerts.models import BinCollectionType, BinCollection, CollectionAlert, Street
+from binalerts.models import BinCollectionType, BinCollection, CollectionAlert, Street, DataImport
 from emailconfirmation.models import EmailConfirmation
 
 import binalerts
@@ -108,6 +108,8 @@ class StreetPageTest(BinAlertsTestCase):
         self.assertNotContains(response, 'Saturday')
         self.assertNotContains(response, 'Sunday')
         
+        self.assertContains(response, 'id="alert_form"') # offers user chance to subscribe to alerts
+        
     def test_shows_postcode_when_two_streets_have_same_name(self):
         response = self.c.get('/street/ashurst_road_en4')
         self.assertContains(response, "EN4")
@@ -122,6 +124,7 @@ class StreetPageTest(BinAlertsTestCase):
     def test_shows_message_when_street_has_no_collections(self):
         response = self.c.get('/street/no_collections_road')
         self.assertContains(response, "There is no collection data available for this street")
+        self.assertNotContains(response, 'id="alert_form"') # does not offer user chance to subscribe to alerts
         
 # Alerts
 class AlertsTest(BinAlertsTestCase):
@@ -239,7 +242,7 @@ class LoadDataTest(BinAlertsTestCase):
         # garden_sample_pdf.xml was converted with "pdftohtml -xml" from this file:
         # http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
         garden_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/garden_sample_pdf.xml')
-        BinCollection.objects.load_from_pdf_xml(garden_sample_file)
+        DataImport.load_from_pdf_xml(garden_sample_file)
 
         # first item in sample file
         response = self.c.post('/', { 'query': 'Ibsley Way' })
@@ -268,6 +271,49 @@ class LoadDataTest(BinAlertsTestCase):
         # they are green waste
         response = self.c.get('/street/juniper_close_en5')
         self.assertContains(response, 'Green Garden')
+
+    def test_load_data_from_csv(self):
+        # short_sample.csv is the first few lines from a Barnet spreadsheet, exported to CSV 
+        domestic_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/short_sample.csv')
+        DataImport.load_from_csv_file(open(domestic_sample_file, 'r'))
+
+        response = self.c.post('/', { 'query': 'Amber Grove' })
+        self.assertRedirects(response, '/street/amber_grove')
+
+        response = self.c.get('/street/amber_grove')
+        self.assertContains(response, 'Monday')
+        self.assertContains(response, 'Domestic')
+
+        response = self.c.get('/street/juniper_close')
+        self.assertContains(response, 'Tuesday')
+
+        # they are domestic waste
+        response = self.c.get('/street/amber_grove')
+        self.assertContains(response, 'Domestic')
+        
+#    def test_load_data_from_pdf_then_csv(self):
+#        Street.objects.all().delete() # not using fixtures here
+#        domestic_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/short_sample.csv')
+#        DataImport.load_from_csv_file(open(domestic_sample_file, 'r'))
+#        garden_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/garden_sample_pdf.xml')
+#        DataImport.load_from_pdf_xml(garden_sample_file)
+
+        # Should snap to the (only) Juniper Close (with postcode)
+#        response = self.c.get('/street/juniper_close')
+#        import pdb; pdb.set_trace()
+#        self.assertRedirects(response, '/street/juniper_close_en5')
+
+    def test_load_data_from_csv_then_pdf(self):
+        Street.objects.all().delete() # not using fixtures here
+        garden_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/garden_sample_pdf.xml')
+        DataImport.load_from_pdf_xml(garden_sample_file)
+        domestic_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/short_sample.csv')
+        DataImport.load_from_csv_file(open(domestic_sample_file, 'r'))
+
+        # Juniper Close in csv doesn't have postcode... should snap to the (only) Juniper Close (with postcode) and
+        # not create a record -- instead, redirecting to it
+        response = self.c.get('/street/juniper_close')
+        self.assertRedirects(response, '/street/juniper_close_en5')
 
 
 # Display info about a street

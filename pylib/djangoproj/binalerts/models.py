@@ -9,6 +9,7 @@ import sys
 import xml.dom.minidom
 import re
 import csv
+import os.path
 
 from djangoproj.settings import BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
 
@@ -66,184 +67,18 @@ class Street(models.Model):
         else:
             return self.name
 
-class BinCollectionManager(models.Manager):
-    def find_by_street_name(self, street_name):
-        return self.filter(street__name__icontains=street_name)                    
-        
-    # Convert from day of week string e.g. Sunday, to number, e.g. 0
-    def day_of_week_string_to_number(self, day_of_week):
-        for row in DAY_OF_WEEK_CHOICES:
-            if row[1] == day_of_week:
-                return row[0]
-        return None
-
     # Check it is a partial postcode, e.g. EN4
-    def partial_postcode_parse(self, partial_postcode):
+    @staticmethod
+    def partial_postcode_parse(partial_postcode):
         if re.match("[A-Z]+[0-9]+$", partial_postcode):
             return partial_postcode
         return None
 
-    # PDF loading, internal functions
 
-    def _get_text_from_node(self, nodelist):
-        rc = ""
-        for node in nodelist:
-            if node.nodeType == node.TEXT_NODE:
-                rc = rc + node.data
-            elif node.nodeType == node.ELEMENT_NODE:
-                if node.nodeName == 'b':
-                    rc = rc + self._get_text_from_node(node.childNodes)
-                else:
-                    raise Exception("unfinished")
-            else:
-                raise Exception("unfinished")
-        return rc
+class BinCollectionManager(models.Manager):
+    def find_by_street_name(self, street_name):
+        return self.filter(street__name__icontains=street_name)                    
 
-    # joins together items which are vertically wrapped but in the same table cell
-    def _yield_cells(self, nodes):
-        cell_text = ""
-        last_top = None
-        last_left = None
-        for node in nodes:
-            top = int(node.getAttribute('top'))
-            left = int(node.getAttribute('left'))
-            text = self._get_text_from_node(node.childNodes).strip()
-
-            # in vertical column exactly aligned is word wrapping in one cell
-            if left == last_left:
-                # so append text to current cell
-                cell_text += " " + text
-            else:
-                yield cell_text, last_top, last_left
-                cell_text = text
-
-            last_top = top
-            last_left = left
-
-        if cell_text != "":
-            yield cell_text, top, left
-
-    # Works out what a row in the table is, and yields each one. A row is
-    # just items which are lined up vertically.
-    def _yield_rows_from_pdf(self, doc):
-        items = []
-        last_top = None
-        last_left = None
-        nodes = doc.getElementsByTagName('text').__iter__()
-        for text, top, left in self._yield_cells(nodes):
-            if top != last_top and items != []:
-                yield items
-                items = []
-
-            items.append(text)
-
-            last_top = top
-            last_left = left
-        if items != []:
-            yield items
-
-    def load_from_csv_file(self, csv_file_name, collection_type_id='D'):
-        csv_file = open(csv_file_name, 'r')
-        this_type = this_type = BinCollectionType.objects.get(friendly_id=collection_type_id)
-        reader=csv.reader(csv_file, delimiter=',', quotechar='"')
-        regexp_alpha_check = re.compile('\w')
-        found_data = False
-        day_number_offset = 0
-        n_collections = 0
-        n_new_streets = 0
-        for row in reader:
-            if found_data:
-                for day in range(len(row)): #   for this_day in 0..4 (actually monday-friday)
-                    # note: here we are making these assumptions, based on current provided data:
-                    #       index position is day
-                    #       there is NO postcode
-                    # Ought to dump all failures into a log for review, and manual input, later TODO
-                    this_day = day + day_number_offset
-                    this_day_name = DAY_OF_WEEK_CHOICES[this_day][1]
-                    raw_street_name = ' '.join(row[day].strip().split())
-                    if not regexp_alpha_check.match(raw_street_name): # common: an empty entry in the row
-                        continue
-                    candidate_streets = Street.objects.filter(name__iexact=raw_street_name)
-                    if len(candidate_streets) > 1:
-                        sys.stderr.write("found multiple matches for %s in these streets: %s\n" % 
-                          (raw_street_name, ", ".join(s.name for s in candidate_streets)))
-                    else:
-                        if not candidate_streets:
-                            # create a new street: TODD normalise this 
-                            sys.stderr.write("making a new street '%s': %s\n" % (raw_street_name, this_day_name))
-                            slug = raw_street_name # for now: no postcode
-                            this_street = Street(name = raw_street_name, url_name = slug )
-                            this_street.save()
-                            n_new_streets += 1
-                        else:
-                            this_street = candidate_streets[0]
-                            sys.stderr.write("updated street '%s': %s (was: %s)\n" % (candidate_streets[0].url_name, this_day_name, ", ".join(bc.get_collection_day_name() for bc in candidate_streets[0].bin_collections.all()))) 
-                        this_street.add_collection(this_type, this_day)
-                        n_collections += 1
-            else:
-                # lazy for now: the title line is "Monday,Tuesday,...,Friday"
-                if len(row)>=5:
-                    found_data = (row[0] == 'Monday' and row[4] == 'Friday')
-                    day_number_offset = 1 # because row 0 is Monday, which is 1
-        if not found_data:
-            sys.stderr.write("found no data in '%s'. Is there a title line with Monday,Tuesday,Wednesday... in it?\n" % csv_file_name)
-        else:
-            sys.stderr.write("collections loaded: %s\nnew streets: %s\nDone.\n" % (n_collections, n_new_streets))
-            
-
-    # loads http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
-    # after it has been converted with "pdftohtml -xml"
-    def load_from_pdf_xml(self, xml_file_name, collection_type_id='G'):
-        doc = xml.dom.minidom.parse(xml_file_name)
-
-        this_type = BinCollectionType.objects.get(friendly_id=collection_type_id)
-        
-        rows = self._yield_rows_from_pdf(doc)
-        started = False
-        for row in rows:
-            #print row
-
-            # find header letters, e.g. A, B, C
-            if len(row) == 1:
-                letter = row[0]
-                if len(letter) != 1:
-                    # we loop until the first header letter
-                    if not started:
-                        continue
-                    # this is a heuristic for the end
-                    if started and letter == '':
-                        n = rows.next()
-                        assert n == [""]
-                        n = rows.next()
-                        assert n == ["April 2006"] # XXX generalise this to any date?
-                        break
-                    raise Exception("unexpected single item '" + letter + "' when expected a letter")
-                # the letter is followed by a blank "row"
-                n = rows.next()
-                assert n == ["","",""]
-                started = True
-            elif started:
-                # this is a useful row, store it
-                #for column in row:
-                #    print column + ",",
-                #print
-                (street_name_1, street_name_2, partial_postcode, day_of_week) = row
-                slug = (street_name_1 + " " + street_name_2 + " " + partial_postcode).replace(' ', '_').lower()
-                day_of_week_as_number = self.day_of_week_string_to_number(day_of_week)
-                checked_partial_postcode = self.partial_postcode_parse(partial_postcode)
-
-                if not day_of_week_as_number:
-                    sys.stderr.write("Can't parse day of week '%s', ignoring row '%s'\n" % (day_of_week, row))
-                elif not checked_partial_postcode:
-                    sys.stderr.write("Can't parse partial postcode '%s', ignoring row '%s'\n" % (partial_postcode, row))
-                else:
-                    (street, was_created) = Street.objects.get_or_create(
-                        name = street_name_1 + ' ' + street_name_2,
-                        url_name = slug,
-                        partial_postcode = checked_partial_postcode,
-                        )
-                    # if there isn't a partial postcode... add it: don't make it a condition of the find because we don't always have one
-                    street.add_collection(this_type, day_of_week_as_number)
 
 # Represents when a type of bin is collected for a particular street.
 class BinCollection(models.Model):
@@ -260,9 +95,17 @@ class BinCollection(models.Model):
 
     def get_collection_type_display(self):
         return self.collection_type.description
-    
+            
     def __unicode__(self):
         return "%s: %s (%s)" % (self.street, DAY_OF_WEEK_CHOICES[self.collection_day][1], self.collection_type)
+
+    # Convert from day of week string e.g. Sunday, to number, e.g. 0
+    @staticmethod
+    def day_of_week_string_to_number(day_of_week):
+        for row in DAY_OF_WEEK_CHOICES:
+            if row[1] == day_of_week:
+                return row[0]
+        return None
 
 #######################################################################################
 # Email alerts for bin collections
@@ -314,3 +157,226 @@ class CollectionAlert(models.Model):
     def __unicode__(self):
         return 'Alert for %s, street %s, confirmed %s' % (self.email, self.street.url_name, self.is_confirmed())
 
+class DataImport(models.Model):
+    upload_file = models.FileField(upload_to='uploads')
+    timestamp = models.DateTimeField(auto_now=True, auto_now_add=True, null=True) # allow tracking of change data
+
+    def __unicode__(self):
+        return '%s: %s' % (self.timestamp, self.upload_file.name)
+    
+    def import_data(self):       
+        if self.upload_file:
+            if self.upload_file.name.endswith('.csv'):
+                csv_file = self.upload_file
+                report_lines = DataImport.load_from_csv_file(csv_file, want_onscreen_log=True)
+            else:
+                if self.upload_file.name.endswith('.xml'):
+                    report_lines = DataImport.load_from_pdf_xml(self.upload_file.path, want_onscreen_log=True)
+            self.upload_file.delete()
+            self.delete()
+            return report_lines
+
+    # load_from_csv currently expects CSV file with:
+    #     data before "Monday,Tuesday.Wednesday,Thursday,Friday" ignored
+    #     thereafter, five street names per line (may be blank)
+    # arg: csv_file maybe from: open(csv_file_name, 'r')
+    @staticmethod
+    def load_from_csv_file(csv_file, collection_type_id='D', want_onscreen_log=False):
+        log_lines = []
+        this_type = this_type = BinCollectionType.objects.get(friendly_id=collection_type_id)
+        reader=csv.reader(csv_file, delimiter=',', quotechar='"')
+        regexp_alpha_check = re.compile('\w')
+        found_data = False
+        day_number_offset = 0
+        n_collections = 0
+        n_new_streets = 0
+        n_lines = 0
+        for row in reader:
+            n_lines += 1
+            if found_data:
+                for day in range(len(row)): #   for this_day in 0..4 (actually monday-friday)
+                    # note: here we are making these assumptions, based on current provided data:
+                    #       index position is day
+                    #       there is NO postcode
+                    # Ought to dump all failures into a log for review, and manual input, later TODO
+                    this_day = day + day_number_offset
+                    this_day_name = DAY_OF_WEEK_CHOICES[this_day][1]
+                    raw_street_name = ' '.join(row[day].strip().split())
+                    if not regexp_alpha_check.match(raw_street_name): # common: an empty entry in the row, nothing more to do
+                        continue
+                    candidate_streets = Street.objects.filter(name__iexact=raw_street_name)
+                    if len(candidate_streets) > 1:
+                        msg = "line %s: found multiple matches for %s in the following streets, so did not update: %s\n" % (n_lines, raw_street_name, ", ".join(s.name for s in candidate_streets))
+                        log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+                    else:
+                        if not candidate_streets:
+                            # create a new street: TODO normalise this 
+                            msg = "line %s: making a new street '%s': %s\n" % (n_lines, raw_street_name, this_day_name)
+                            log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+                            slug = raw_street_name.replace(' ', '_').lower() # for now: no postcode
+                            this_street = Street(name = raw_street_name, url_name = slug )
+                            this_street.save()
+                            n_new_streets += 1
+                        else:
+                            this_street = candidate_streets[0]
+                            current_days = ", ".join(bc.get_collection_day_name() for bc in candidate_streets[0].bin_collections.all())
+                            if this_day_name != current_days: # only report updates if they changed they day
+                                msg = "line %s: updated street '%s': %s (was: %s)\n" % (n_lines, candidate_streets[0].url_name, this_day_name, current_days)
+                                log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+                        this_street.add_collection(this_type, this_day)
+                        n_collections += 1
+            else:
+                # lazy for now: the title line is "Monday,Tuesday,...,Friday"
+                if len(row)>=5:
+                    found_data = (row[0] == 'Monday' and row[4] == 'Friday')
+                    day_number_offset = 1 # because row 0 is Monday, which is 1
+        if not found_data:
+            msg = "found no data in '%s'. Is there a title line with Monday,Tuesday,Wednesday... in it?\n" % csv_file_name
+            log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+        else:
+            msg = "lines read: %s\n" % n_lines
+            log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+            msg = "bin collections loaded: %s\n" % n_collections
+            log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+            msg = "new streets created: %s\n" % n_new_streets
+            log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+        return log_lines
+
+    # loads http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
+    # after it has been converted with "pdftohtml -xml"
+    @staticmethod
+    def load_from_pdf_xml(xml_file_name, collection_type_id='G', want_onscreen_log=False):
+        log_lines = []
+        n_collections = 0
+        n_new_streets = 0
+        this_type = BinCollectionType.objects.get(friendly_id=collection_type_id)
+        doc = xml.dom.minidom.parse(xml_file_name)
+        rows = DataImport._yield_rows_from_pdf(doc)
+        started = False
+        for row in rows:
+            #print row
+            # find header letters, e.g. A, B, C
+            if len(row) == 1:
+                letter = row[0]
+                if len(letter) != 1:
+                    # we loop until the first header letter
+                    if not started:
+                        continue
+                    # this is a heuristic for the end
+                    if started and letter == '':
+                        n = rows.next()
+                        assert n == [""]
+                        n = rows.next()
+                        assert n == ["April 2006"] # XXX generalise this to any date?
+                        break
+                    raise Exception("unexpected single item '" + letter + "' when expected a letter")
+                # the letter is followed by a blank "row"
+                n = rows.next()
+                assert n == ["","",""]
+                started = True
+            elif started:
+                # this is a useful row, store it
+                #for column in row:
+                #    print column + ",",
+                #print
+                (street_name_1, street_name_2, partial_postcode, day_of_week) = row
+                slug = (street_name_1 + " " + street_name_2 + " " + partial_postcode).replace(' ', '_').lower()
+                day_of_week_as_number = BinCollection.day_of_week_string_to_number(day_of_week)
+                checked_partial_postcode = Street.partial_postcode_parse(partial_postcode)
+
+                if not day_of_week_as_number:
+                    msg = "Can't parse day of week '%s', ignoring row '%s'\n" % (day_of_week, row)
+                    log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+                elif not checked_partial_postcode:
+                    msg = "Can't parse partial postcode '%s', ignoring row '%s'\n" % (partial_postcode, row)
+                    log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)                    
+                else:
+                    # need to check for *similar* streets here: without postcode? etc.
+                    (street, was_created) = Street.objects.get_or_create(
+                        name = street_name_1 + ' ' + street_name_2,
+                        url_name = slug,
+                        partial_postcode = checked_partial_postcode,
+                        )
+                    if was_created:
+                        n_new_streets += 1
+                    # if there isn't a partial postcode... add it: don't make it a condition of the find because we don't always have one
+                    street.add_collection(this_type, day_of_week_as_number)
+                    n_collections += 1
+        msg = "bin collections loaded: %s\n" % n_collections
+        log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+        msg = "new streets created: %s\n" % n_new_streets
+        log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+        return log_lines
+    
+    # clumsy: either build up a list of log_lines (return the array)
+    # doing this so it plays fairly nicely in the admin interface, but also 
+    # runs helpfully from the command line
+    @staticmethod
+    def _add_to_log_lines(log_lines, msg, want_onscreen_log=False):
+        if want_onscreen_log:
+            log_lines.append(msg)
+            return log_lines
+        else:
+            sys.stderr.write(msg)
+            return log_lines
+            
+    # PDF loading, internal functions
+    @staticmethod
+    def _get_text_from_node(nodelist):
+        rc = ""
+        for node in nodelist:
+            if node.nodeType == node.TEXT_NODE:
+                rc = rc + node.data
+            elif node.nodeType == node.ELEMENT_NODE:
+                if node.nodeName == 'b':
+                    rc = rc + DataImport._get_text_from_node(node.childNodes)
+                else:
+                    raise Exception("unfinished")
+            else:
+                raise Exception("unfinished")
+        return rc
+
+    # joins together items which are vertically wrapped but in the same table cell
+    @staticmethod
+    def _yield_cells(nodes):
+        cell_text = ""
+        last_top = None
+        last_left = None
+        for node in nodes:
+            top = int(node.getAttribute('top'))
+            left = int(node.getAttribute('left'))
+            text = DataImport._get_text_from_node(node.childNodes).strip()
+
+            # in vertical column exactly aligned is word wrapping in one cell
+            if left == last_left:
+                # so append text to current cell
+                cell_text += " " + text
+            else:
+                yield cell_text, last_top, last_left
+                cell_text = text
+
+            last_top = top
+            last_left = left
+
+        if cell_text != "":
+            yield cell_text, top, left
+
+    # Works out what a row in the table is, and yields each one. A row is
+    # just items which are lined up vertically.
+    @staticmethod
+    def _yield_rows_from_pdf(doc):
+        items = []
+        last_top = None
+        last_left = None
+        nodes = doc.getElementsByTagName('text').__iter__()
+        for text, top, left in DataImport._yield_cells(nodes):
+            if top != last_top and items != []:
+                yield items
+                items = []
+
+            items.append(text)
+
+            last_top = top
+            last_left = left
+        if items != []:
+            yield items

@@ -4,7 +4,7 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
-from binalerts.models import BinCollection, BinCollectionType, Street, CollectionAlert
+from binalerts.models import BinCollection, BinCollectionType, Street, CollectionAlert, DataImport
 from emailconfirmation.models import EmailConfirmation
 
 from django.contrib import admin
@@ -18,10 +18,21 @@ class BinCollectionAdmin(admin.ModelAdmin):
 class StreetAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
+class DataImportAdmin(admin.ModelAdmin):
+    actions = ['execute_import_data']
+     
+    def execute_import_data(self, request, queryset):
+        for di in queryset:
+            report_lines = di.import_data() 
+            self.message_user(request, "Imported data")
+            for rl in report_lines:
+                self.message_user(request, rl)
+    execute_import_data.short_description = "Import data from file"
+
 admin.site.register(BinCollection, BinCollectionAdmin)
 admin.site.register(BinCollectionType)
 admin.site.register(CollectionAlert)
 admin.site.register(EmailConfirmation)
 admin.site.register(Street, StreetAdmin)
-
+admin.site.register(DataImport, DataImportAdmin)
 

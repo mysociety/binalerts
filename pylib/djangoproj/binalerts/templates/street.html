@@ -44,18 +44,18 @@
         </p>
       </div>
     {% endfor %}
+    <div class="mysoc-bin-form mysoc-bin-reminder-breakout">
+      <p>
+        <b>Want a reminder?</b>
+        <br/>
+        We can email you every week <i>the day before</i> we come to  {{ street.name }} to empty your bins.
+      </p>
+      <form method="post" action="" id="alert_form">
+          {{ form.as_p }}
+          <input type="submit" value="Subscribe" />
+      </form>
+    </div>
   {% endif %}  
-  <div class="mysoc-bin-form mysoc-bin-reminder-breakout">
-    <p>
-      <b>Want a reminder?</b>
-      <br/>
-      We can email you every week <i>the day before</i> we come to  {{ street.name }} to empty your bins.
-    </p>
-    <form method="post" action="" id="alert_form">
-        {{ form.as_p }}
-        <input type="submit" value="Subscribe" />
-    </form>
-  </div>
 
   <div class="mysoc-bin-links">
     <h3>Help us to help you</h3>

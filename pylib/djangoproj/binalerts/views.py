@@ -4,10 +4,12 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
+import re
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 
 from binalerts.forms import LocationForm, CollectionAlertForm
 from binalerts.models import BinCollection, Street
@@ -38,7 +40,27 @@ def frontpage(request):
     return render_to_response('frontpage.html', { 'form': form, 'streets': streets })
 
 def show_street(request, url_name):
-    street = Street.objects.get(url_name=url_name)
+    try:
+        street = Street.objects.get(url_name=url_name)
+    except ObjectDoesNotExist:
+        # Policy for failing to find a street:
+        #   break the name down, strip off a trailing postcode (if there is one) and search for
+        #   the new name: redirect if there's a single hit, otherwise show the front page
+        #   populated with the matches (if any) that were found.
+        #   Note this automatically corrects "wrong" postcodes (where the street name is 
+        #   unambiguous, which is *probably* what you want).
+        lost_street_name_parts = url_name.split('_')
+        if len(lost_street_name_parts) > 1 and re.search("^\w\w?\d+$", lost_street_name_parts[-1]):
+            lost_street_name_parts = lost_street_name_parts[:-1] # drop the postcode
+        lost_street_name = " ".join(lost_street_name_parts)
+        streets =  Street.objects.find_by_name(lost_street_name)
+        if len(streets)==1:
+            return HttpResponseRedirect('/street/' + streets[0].url_name) # careful of looping here
+        else:
+            return render_to_response('frontpage.html', { 
+                'form': LocationForm({'query':lost_street_name}), 
+                'streets': Street.objects.find_by_name(lost_street_name)  })
+        
     form = CollectionAlertForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
