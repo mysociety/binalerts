@@ -23,7 +23,7 @@
   <script src="/static/js/binalerts.js" type="text/javascript"></script>
 
   <hr class="mysoc-ie6-fixer"/>
-  {% if collection_days|length == 0 %}
+  {% ifequal collection_days|length 0 %}
     <div class="mysoc-bin-summary">
       <p>
           There is no collection data available for this street.
@@ -37,7 +37,7 @@
       <div class="mysoc-bin-summary mysoc-bin-summary-{{ bin_collection_type.friendly_id|lower }}">
         <p>
           {# note: tests expect this to be one one line in the generated HTML source #}
-          <strong>{{ bin_collection_type.description}}</strong> collection {% if collection_day_array|length == 1 %}day is{% else %}days are{% endif %} <strong>{{ collection_day_array|join:" &amp; " }}</strong>.
+          <strong>{{ bin_collection_type.description}}</strong> collection {% ifequal collection_day_array|length 1 %}day is{% else %}days are{% endifequal %} <strong>{{ collection_day_array|join:" &amp; " }}</strong>.
         </p>
         <p class="mysoc-bin-collect-details">
             {{ bin_collection_type.detail_text|safe }}
@@ -55,7 +55,7 @@
           <input type="submit" value="Subscribe" />
       </form>
     </div>
-  {% endif %}  
+  {% endifequal %}  
 
   <div class="mysoc-bin-links">
     <h3>Help us to help you</h3>
