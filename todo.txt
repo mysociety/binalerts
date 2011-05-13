@@ -6,9 +6,6 @@
 
 
 
-Tests
-=====
-
 Make it go at a particular time of day more precisely (currently just relies on cron)
 Give an option of two times for alerts (9am, 6pm) (Maybe)
 
@@ -16,28 +13,38 @@ Ajaxify
 
 Unsubscribe
 
-Cope gracefully with same data being loaded twice (not sure what it should do or what
-it does at the moment)
-
 
 Improvements
 ============
 
-For green waste, Athenaeum Road is "Tuesday/Thursday". Deal better with that. (There are 16 examples)
+   * must allow multiple day collections because the (Barnet) input data has quite a lot of them
+   ...write tests for these with BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK=True
 
-Different blocks of flats on one street can have different days.
+   * For green waste, Athenaeum Road is "Tuesday/Thursday". Deal better with that. (There are 16 examples)
+   ...actually close to coping with that as multiple collections are supported, provided the global setting allows it,
+   but the setting currently forbids it (see previous item), so: BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK=True
 
-Some kind of tri-based fuzzy matching
+   * investigate multiple street matches in DataImport execute: perhaps they are because 
 
-Store date that data was valid for (last updated)
+   * Different blocks of flats on one street can have different days
+   ...we're coping with this, naively, by having those streets have different names, since they have the house number in them
+
+   * Some kind of tri-based fuzzy matching
+   ...not currently, but the postcode is ignored if a direct street hit fails
+
+    * Store date that data was valid for (last updated)
+   ...implemented
 
 
 Administrivia
 =============
 
-Make sure unique keys on url_name
+* data import "couldn't update multiple streets" must report postcodes too otherwise the streets all look the same(!)
 
-Factor out street into its own model, separate from collection?
+Make sure unique keys on url_name
+   + currently, admin expects admin user to enter url_name, and it should be calculated not requested
+   + so admin allows duplicate streets, including the special (dangerous) case of high_street and hight_street_nw1 both existing:
+     data import should catch these, but manual input can override it
 
 Validate some HTML
 
