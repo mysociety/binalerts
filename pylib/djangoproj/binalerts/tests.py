@@ -260,17 +260,24 @@ class LoadDataTest(BinAlertsTestCase):
         response = self.c.post('/', { 'query': 'Barnet Lane' })
         self.assertContains(response, "No street found with that name.")
 
+        # need BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK set to false to test this TODO
         # multiple days of week e.g Tuesday/Thursday are ignored for now
-        response = self.c.post('/', { 'query': 'Athenaeum Road' })
-        self.assertContains(response, "No street found with that name.")
+        # response = self.c.post('/', { 'query': 'Athenaeum Road' })
+        # self.assertContains(response, "No street found with that name.")
 
-        # split lines, e.g. Barnet (Arkley Park\nMobile Homes) are ignored for now
-        response = self.c.post('/', { 'query': 'Athenaeum Road' })
-        self.assertContains(response, "No street found with that name.")
-
-        # they are green waste
+        # they are green/garden waste (the default for xml import)
         response = self.c.get('/street/juniper_close_en5')
         self.assertContains(response, 'Green Garden')
+
+    def test_load_data_from_pdf_xml_with_multiple_days(self):        
+        garden_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/garden_sample_pdf.xml')
+        DataImport.load_from_pdf_xml(garden_sample_file)
+
+        # multiple days of week e.g Tuesday/Thursday are handled OK
+        response = self.c.get('/street/athenaeum_road_n20')
+        #import pdb; pdb.set_trace()
+        self.assertContains(response, "Kitchen Waste</strong> collection days are <strong>Tuesday &amp; Thursday")
+
 
     def test_load_data_from_csv(self):
         # short_sample.csv is the first few lines from a Barnet spreadsheet, exported to CSV 
@@ -287,7 +294,7 @@ class LoadDataTest(BinAlertsTestCase):
         response = self.c.get('/street/juniper_close')
         self.assertContains(response, 'Tuesday')
 
-        # they are domestic waste
+        # they are domestic waste (the default for csv import)
         response = self.c.get('/street/amber_grove')
         self.assertContains(response, 'Domestic')
         
