@@ -221,11 +221,11 @@ class DataImport(models.Model):
                     else:
                         if not candidate_streets:
                             # create a new street: TODO normalise this 
-                            msg = "line %s: making a new street '%s': %s\n" % (n_lines, raw_street_name, this_day_name)
-                            log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                             slug = raw_street_name.replace(' ', '_').lower() # for now: no postcode
                             this_street = Street(name = raw_street_name, url_name = slug )
                             this_street.save()
+                            msg = "line %s: made a new street '%s': %s\n" % (n_lines, raw_street_name, this_day_name)
+                            log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                             n_new_streets += 1
                         else:
                             this_street = candidate_streets[0]
@@ -293,27 +293,39 @@ class DataImport(models.Model):
                 #print
                 (street_name_1, street_name_2, partial_postcode, day_of_week) = row
                 slug = (street_name_1 + " " + street_name_2 + " " + partial_postcode).replace(' ', '_').lower()
-                day_of_week_as_number = BinCollection.day_of_week_string_to_number(day_of_week)
                 checked_partial_postcode = Street.partial_postcode_parse(partial_postcode)
-
-                if not day_of_week_as_number:
-                    msg = "Can't parse day of week '%s', ignoring row '%s'\n" % (day_of_week, row)
-                    log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
-                elif not checked_partial_postcode:
+                if not checked_partial_postcode:
                     msg = "Can't parse partial postcode '%s', ignoring row '%s'\n" % (partial_postcode, row)
                     log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)                    
                 else:
-                    # need to check for *similar* streets here: without postcode? etc.
-                    (street, was_created) = Street.objects.get_or_create(
-                        name = street_name_1 + ' ' + street_name_2,
-                        url_name = slug,
-                        partial_postcode = checked_partial_postcode,
-                        )
-                    if was_created:
-                        n_new_streets += 1
-                    # if there isn't a partial postcode... add it: don't make it a condition of the find because we don't always have one
-                    street.add_collection(collection_type, day_of_week_as_number)
-                    n_collections += 1
+                    days_of_week = re.split('\W', day_of_week)
+                    if len(days_of_week) > 1 and not BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK:
+                        msg = "Can't parse '%s' into a single day: ignoring row '%s'\n" % (day_of_week, row)
+                        log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+                    else:
+                        days_as_numbers = []
+                        for day_name in days_of_week:
+                            day_of_week_as_number = BinCollection.day_of_week_string_to_number(day_name)
+                            if not day_of_week_as_number:
+                                msg = "Can't parse day of week '%s', skipping that day in row '%s'\n" % (day_name, row)
+                                log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+                            else:
+                                days_as_numbers.append(day_of_week_as_number)
+                        if len(days_as_numbers) > 0:
+                            # need to check for *similar* streets here: without postcode? etc.
+                            (street, was_created) = Street.objects.get_or_create(
+                                name = street_name_1 + ' ' + street_name_2,
+                                url_name = slug,
+                                partial_postcode = checked_partial_postcode,
+                                )
+                            if was_created:
+                                msg = "made a new street '%s'\n" % street
+                                log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+                                n_new_streets += 1
+                            # if there isn't a partial postcode... add it: don't make it a condition of the find because we don't always have one
+                            for day_number in days_as_numbers:
+                                street.add_collection(collection_type, day_number)
+                                n_collections += 1
         msg = "bin collections loaded: %s\n" % n_collections
         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
         msg = "new streets created: %s\n" % n_new_streets
