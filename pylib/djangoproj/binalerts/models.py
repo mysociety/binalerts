@@ -163,18 +163,22 @@ class CollectionAlert(models.Model):
 class DataImport(models.Model):
     upload_file = models.FileField(upload_to='uploads')
     timestamp = models.DateTimeField(auto_now=True, auto_now_add=True, null=True) # allow tracking of change data
-
+    implicit_collection_type = models.ForeignKey(BinCollectionType, null=True)
+    
     def __unicode__(self):
-        return '%s: %s' % (self.timestamp, self.upload_file.name)
+        if self.implicit_collection_type:
+            return '%s: %s (%s)' % (self.timestamp, self.upload_file.name, self.implicit_collection_type)
+        else:
+            return '%s: %s' % (self.timestamp, self.upload_file.name)
     
     def import_data(self):       
         if self.upload_file:
             if self.upload_file.name.endswith('.csv'):
                 csv_file = self.upload_file
-                report_lines = DataImport.load_from_csv_file(csv_file, want_onscreen_log=True)
+                report_lines = DataImport.load_from_csv_file(csv_file, collection_type=self.implicit_collection_type, want_onscreen_log=True)
             else:
                 if self.upload_file.name.endswith('.xml'):
-                    report_lines = DataImport.load_from_pdf_xml(self.upload_file.path, want_onscreen_log=True)
+                    report_lines = DataImport.load_from_pdf_xml(self.upload_file.path, collection_type=self.implicit_collection_type, want_onscreen_log=True)
             self.upload_file.delete()
             self.delete()
             return report_lines
@@ -183,10 +187,13 @@ class DataImport(models.Model):
     #     data before "Monday,Tuesday.Wednesday,Thursday,Friday" ignored
     #     thereafter, five street names per line (may be blank)
     # arg: csv_file maybe from: open(csv_file_name, 'r')
+    #      collection_type
     @staticmethod
-    def load_from_csv_file(csv_file, collection_type_id='D', want_onscreen_log=False):
-        log_lines = DataImport._add_to_log_lines([], ("importing from CSV file: %s" % csv_file.name), want_onscreen_log)
-        this_type = this_type = BinCollectionType.objects.get(friendly_id=collection_type_id)
+    def load_from_csv_file(csv_file, collection_type=None, want_onscreen_log=False):
+        if not collection_type:
+            collection_type = BinCollectionType.objects.get(friendly_id='D') # historical reasons: default D
+        msg = "importing from CSV file: %s (as %s unless explicitly specified)" % (csv_file.name, collection_type)
+        log_lines = DataImport._add_to_log_lines([], msg, want_onscreen_log)
         reader=csv.reader(csv_file, delimiter=',', quotechar='"')
         regexp_alpha_check = re.compile('\w')
         found_data = False
@@ -224,9 +231,9 @@ class DataImport(models.Model):
                             this_street = candidate_streets[0]
                             current_days = ", ".join("%s on %s" % (bc.collection_type.friendly_id, bc.get_collection_day_name()) for bc in candidate_streets[0].bin_collections.all())
                             if this_day_name != current_days: # only report updates if they changed they day
-                                msg = "line %s: updated street '%s': %s on %s (was: %s)\n" % (n_lines, candidate_streets[0].url_name, this_type.friendly_id, this_day_name, current_days)
+                                msg = "line %s: updated street '%s': %s on %s (was: %s)\n" % (n_lines, candidate_streets[0].url_name, collection_type.friendly_id, this_day_name, current_days)
                                 log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
-                        this_street.add_collection(this_type, this_day)
+                        this_street.add_collection(collection_type, this_day)
                         n_collections += 1
             else:
                 # lazy for now: the title line is "Monday,Tuesday,...,Friday"
@@ -248,11 +255,13 @@ class DataImport(models.Model):
     # loads http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
     # after it has been converted with "pdftohtml -xml"
     @staticmethod
-    def load_from_pdf_xml(xml_file_name, collection_type_id='G', want_onscreen_log=False):
-        log_lines = DataImport._add_to_log_lines([], ("importing from XML file: %s" % xml_file_name), want_onscreen_log)
+    def load_from_pdf_xml(xml_file_name, collection_type=None, want_onscreen_log=False):
+        if not collection_type:
+            collection_type = BinCollectionType.objects.get(friendly_id='G') # historical reasons: default G
+        msg = "importing from XML file: %s (as %s unless explicitly specified)" % (xml_file_name, collection_type)
+        log_lines = DataImport._add_to_log_lines([], msg, want_onscreen_log)
         n_collections = 0
         n_new_streets = 0
-        this_type = BinCollectionType.objects.get(friendly_id=collection_type_id)
         doc = xml.dom.minidom.parse(xml_file_name)
         rows = DataImport._yield_rows_from_pdf(doc)
         started = False
@@ -303,7 +312,7 @@ class DataImport(models.Model):
                     if was_created:
                         n_new_streets += 1
                     # if there isn't a partial postcode... add it: don't make it a condition of the find because we don't always have one
-                    street.add_collection(this_type, day_of_week_as_number)
+                    street.add_collection(collection_type, day_of_week_as_number)
                     n_collections += 1
         msg = "bin collections loaded: %s\n" % n_collections
         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
