@@ -185,7 +185,7 @@ class DataImport(models.Model):
     # arg: csv_file maybe from: open(csv_file_name, 'r')
     @staticmethod
     def load_from_csv_file(csv_file, collection_type_id='D', want_onscreen_log=False):
-        log_lines = []
+        log_lines = DataImport._add_to_log_lines([], ("importing from CSV file: %s" % csv_file.name), want_onscreen_log)
         this_type = this_type = BinCollectionType.objects.get(friendly_id=collection_type_id)
         reader=csv.reader(csv_file, delimiter=',', quotechar='"')
         regexp_alpha_check = re.compile('\w')
@@ -249,7 +249,7 @@ class DataImport(models.Model):
     # after it has been converted with "pdftohtml -xml"
     @staticmethod
     def load_from_pdf_xml(xml_file_name, collection_type_id='G', want_onscreen_log=False):
-        log_lines = []
+        log_lines = DataImport._add_to_log_lines([], ("importing from XML file: %s" % xml_file_name), want_onscreen_log)
         n_collections = 0
         n_new_streets = 0
         this_type = BinCollectionType.objects.get(friendly_id=collection_type_id)
