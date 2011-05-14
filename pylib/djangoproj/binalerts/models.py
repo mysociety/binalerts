@@ -163,7 +163,7 @@ class CollectionAlert(models.Model):
 class DataImport(models.Model):
     upload_file = models.FileField(upload_to='uploads')
     timestamp = models.DateTimeField(auto_now=True, auto_now_add=True, null=True) # allow tracking of change data
-    implicit_collection_type = models.ForeignKey(BinCollectionType, null=True)
+    implicit_collection_type = models.ForeignKey(BinCollectionType, null=True, blank=True)
     
     def __unicode__(self):
         if self.implicit_collection_type:

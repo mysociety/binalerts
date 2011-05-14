@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'DataImport.implicit_collection_type'
-        db.add_column('binalerts_dataimport', 'implicit_collection_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['binalerts.BinCollectionType'], null=True), keep_default=False)
+        db.add_column('binalerts_dataimport', 'implicit_collection_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['binalerts.BinCollectionType'], null=True, blank=True), keep_default=False)
 
 
     def backwards(self, orm):
@@ -44,7 +44,7 @@ class Migration(SchemaMigration):
         'binalerts.dataimport': {
             'Meta': {'object_name': 'DataImport'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'implicit_collection_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['binalerts.BinCollectionType']", 'null': 'True'}),
+            'implicit_collection_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['binalerts.BinCollectionType']", 'null': 'True', 'blank': 'True'}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             'upload_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'})
         },
