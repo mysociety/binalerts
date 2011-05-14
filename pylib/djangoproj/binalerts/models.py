@@ -48,6 +48,9 @@ class Street(models.Model):
     url_name = models.SlugField(max_length=50)
     partial_postcode = models.CharField(max_length=5) # e.g. NW4
 
+    class Meta:
+        ordering = ["name", "partial_postcode"]
+        
     def add_collection(self, collection_type, collection_day):
         if not BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK:
             # delete all other collections (of this type), on all days, then create a new one
