@@ -191,7 +191,7 @@ class DataImport(models.Model):
         n_collections = 0
         n_new_streets = 0
         n_lines = 0
-        for row in reader:
+        for row in reader: 
             n_lines += 1
             if found_data:
                 for day in range(len(row)): #   for this_day in 0..4 (actually monday-friday)
@@ -206,7 +206,7 @@ class DataImport(models.Model):
                         continue
                     candidate_streets = Street.objects.filter(name__iexact=raw_street_name)
                     if len(candidate_streets) > 1:
-                        msg = "line %s: found multiple matches for %s in the following streets, so did not update: %s\n" % (n_lines, raw_street_name, ", ".join(s.name for s in candidate_streets))
+                        msg = "line %s: found multiple matches for %s in the following streets, so did not update: %s\n" % (n_lines, raw_street_name, " & ".join(s.__unicode__() for s in candidate_streets))
                         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                     else:
                         if not candidate_streets:
@@ -219,9 +219,9 @@ class DataImport(models.Model):
                             n_new_streets += 1
                         else:
                             this_street = candidate_streets[0]
-                            current_days = ", ".join(bc.get_collection_day_name() for bc in candidate_streets[0].bin_collections.all())
+                            current_days = ", ".join("%s on %s" % (bc.collection_type.friendly_id, bc.get_collection_day_name()) for bc in candidate_streets[0].bin_collections.all())
                             if this_day_name != current_days: # only report updates if they changed they day
-                                msg = "line %s: updated street '%s': %s (was: %s)\n" % (n_lines, candidate_streets[0].url_name, this_day_name, current_days)
+                                msg = "line %s: updated street '%s': %s on %s (was: %s)\n" % (n_lines, candidate_streets[0].url_name, this_type.friendly_id, this_day_name, current_days)
                                 log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                         this_street.add_collection(this_type, this_day)
                         n_collections += 1
