@@ -256,6 +256,10 @@ class LoadDataTest(BinAlertsTestCase):
         response = self.c.post('/', { 'query': 'Juniper Close' })
         self.assertRedirects(response, '/street/juniper_close_en5')
 
+        # check that postcodes are indeed being loaded (and not simply being put into the url_name)
+        a_street = Street.objects.get(name="Juniper Close")
+        self.assertEquals(a_street.partial_postcode, 'EN5')
+
         # multiple partial postcodes e.g. EN5/N20 are ignored for now
         response = self.c.post('/', { 'query': 'Barnet Lane' })
         self.assertContains(response, "No street found with that name.")
