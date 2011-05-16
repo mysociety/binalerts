@@ -235,9 +235,11 @@ class DataImport(models.Model):
     
     def __unicode__(self):
         collection_type = "auto"
-        if not self.implicit_collection_type:
+        if self.implicit_collection_type:
             collection_type = self.implicit_collection_type
-        return '%s: %s (guess postcodes: %s, type: %s)' % (self.timestamp, self.upload_file.name, self.guess_postcodes, collection_type)
+        guessing_postcodes = "yes" if self.guess_postcodes else "no"
+        filename = os.path.split(self.upload_file.name)[1]
+        return '%s: %s (guess postcodes: %s, type: %s)' % (self.timestamp, filename, guessing_postcodes, collection_type)
     
     def import_data(self):       
         if self.upload_file:
@@ -268,7 +270,9 @@ class DataImport(models.Model):
     def load_from_csv_file(csv_file, collection_type=None, guess_postcodes=False, want_onscreen_log=False):
         if not collection_type:
             collection_type = BinCollectionType.objects.get(friendly_id='D') # historical reasons: default D
-        msg = "importing from CSV file: %s (as %s unless explicitly specified)" % (csv_file.name, collection_type)
+        auto_postcode = "will" if guess_postcodes else "will not"
+        filename = os.path.split(csv_file.name)[1]
+        msg = "importing from CSV file: %s (as %s unless explicitly specified), %s guess missing postcodes" % (filename, collection_type, auto_postcode)
         log_lines = DataImport._add_to_log_lines([], msg, want_onscreen_log)
         reader=csv.reader(csv_file, delimiter=',', quotechar='"')
         regexp_alpha_check = re.compile('\w')
@@ -332,7 +336,9 @@ class DataImport(models.Model):
     def load_from_pdf_xml(xml_file_name, collection_type=None, guess_postcodes=False, want_onscreen_log=False):
         if not collection_type:
             collection_type = BinCollectionType.objects.get(friendly_id='G') # historical reasons: default G
-        msg = "importing from XML file: %s (as %s unless explicitly specified)" % (xml_file_name, collection_type)
+        auto_postcode = "will" if guess_postcodes else "will not"
+        filename = os.path.split(xml_file_name)[1]
+        msg = "importing from XML file: %s (as %s unless explicitly specified), %s guess missing postcodes" % (filename, collection_type, auto_postcode)
         log_lines = DataImport._add_to_log_lines([], msg, want_onscreen_log)
         n_collections = 0
         n_new_streets = 0
