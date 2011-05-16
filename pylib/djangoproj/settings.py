@@ -54,6 +54,10 @@ DATABASE_PORT = config.get('BINS_DB_PORT')
 # If false, it means if the a new collection day is read from the import, the old one will be deleted
 BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = config.get('BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK', True)
 
+# It's a good idea to force all streets to have a postcode, to avoid ambiguity
+# But just in case there's a place with no duplicate street names, allow it to be optional
+BINS_STREETS_MUST_HAVE_POSTCODE = config.get('BINS_STREETS_MUST_HAVE_POSTCODE', True)
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.

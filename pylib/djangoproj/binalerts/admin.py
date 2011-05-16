@@ -17,6 +17,8 @@ class BinCollectionAdmin(admin.ModelAdmin):
 
 class StreetAdmin(admin.ModelAdmin):
     search_fields = ['name']
+    list_display = ('name', 'partial_postcode')    
+    
 
 class DataImportAdmin(admin.ModelAdmin):
     actions = ['execute_import_data']

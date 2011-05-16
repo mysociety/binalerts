@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pdf2xml SYSTEM "pdf2xml.dtd">
-
+<!-- note: this is not real data! Duplicate Road has been duplicated to exist with two different postcodes:  N2, for example -->
 <pdf2xml>
 <page number="1" position="absolute" top="0" left="0" height="841" width="595">
 	<fontspec id="0" size="49" family="Times" color="#21b4af"/>
@@ -148,12 +148,12 @@
 <text top="324" left="203" width="37" height="11" font="8">Terrace </text>
 <text top="324" left="287" width="25" height="11" font="8">NW2 </text>
 <text top="324" left="396" width="43" height="11" font="8">Saturday </text>
-<text top="340" left="84" width="29" height="11" font="8">Julian </text>
-<text top="340" left="203" width="28" height="11" font="8">Close </text>
+<text top="340" left="84" width="29" height="11" font="8">Duplicate </text>
+<text top="340" left="203" width="28" height="11" font="8">Road </text>
 <text top="340" left="287" width="22" height="11" font="8">EN5 </text>
 <text top="340" left="396" width="41" height="11" font="8">Tuesday </text>
-<text top="356" left="84" width="34" height="11" font="8">Juliana </text>
-<text top="356" left="203" width="28" height="11" font="8">Close </text>
+<text top="356" left="84" width="34" height="11" font="8">Duplicate </text>
+<text top="356" left="203" width="28" height="11" font="8">Road </text>
 <text top="356" left="287" width="15" height="11" font="8">N2 </text>
 <text top="356" left="396" width="38" height="11" font="8">Monday </text>
 <text top="371" left="84" width="35" height="11" font="8">Juniper </text>
