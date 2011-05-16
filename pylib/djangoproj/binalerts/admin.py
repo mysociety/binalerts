@@ -22,7 +22,8 @@ class StreetAdmin(admin.ModelAdmin):
 
 class DataImportAdmin(admin.ModelAdmin):
     actions = ['execute_import_data']
-     
+    list_display = ('upload_file', 'timestamp', 'implicit_collection_type', 'guess_postcodes')
+         
     def execute_import_data(self, request, queryset):
         for di in queryset:
             report_lines = di.import_data() 

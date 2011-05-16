@@ -53,7 +53,7 @@ class StreetManager(models.Manager):
     # add a street to the database (this is via update: a little dangerous if this isn't used in admin street creation)
     # raises IntegrityError if there's a problem (similar to get_or_create), containing useful message
     # returns street, bool was created, bool guessed_postcode
-    def add_street(self, name, partial_postcode=None, want_to_guess_postcode=True):
+    def get_or_create_street(self, name, partial_postcode=None, guess_postcodes=False):
         if not partial_postcode:
             partial_postcode = '' # empty string since not null is enforced
         if not name:
@@ -62,7 +62,7 @@ class StreetManager(models.Manager):
         candidate_streets = self.filter(name__iexact=name)
         if not partial_postcode:
             postcodes = candidate_streets.exclude(partial_postcode='').values_list('partial_postcode', flat=True)
-            if len(postcodes) == 1 and want_to_guess_postcode:
+            if len(postcodes) == 1 and guess_postcodes:
                 partial_postcode = postcodes[0]
                 did_guess_postcode = True
             elif BINS_STREETS_MUST_HAVE_POSTCODE:
@@ -231,21 +231,30 @@ class DataImport(models.Model):
     upload_file = models.FileField(upload_to='uploads')
     timestamp = models.DateTimeField(auto_now=True, auto_now_add=True, null=True) # allow tracking of change data
     implicit_collection_type = models.ForeignKey(BinCollectionType, null=True, blank=True)
+    guess_postcodes = models.BooleanField(null=False, blank=False, default=False)
     
     def __unicode__(self):
-        if self.implicit_collection_type:
-            return '%s: %s (%s)' % (self.timestamp, self.upload_file.name, self.implicit_collection_type)
-        else:
-            return '%s: %s' % (self.timestamp, self.upload_file.name)
+        collection_type = "auto"
+        if not self.implicit_collection_type:
+            collection_type = self.implicit_collection_type
+        return '%s: %s (guess postcodes: %s, type: %s)' % (self.timestamp, self.upload_file.name, self.guess_postcodes, collection_type)
     
     def import_data(self):       
         if self.upload_file:
             if self.upload_file.name.endswith('.csv'):
                 csv_file = self.upload_file
-                report_lines = DataImport.load_from_csv_file(csv_file, collection_type=self.implicit_collection_type, want_onscreen_log=True)
+                report_lines = DataImport.load_from_csv_file(
+                                    csv_file, 
+                                    collection_type=self.implicit_collection_type, 
+                                    guess_postcodes=self.guess_postcodes,
+                                    want_onscreen_log=True)
             else:
                 if self.upload_file.name.endswith('.xml'):
-                    report_lines = DataImport.load_from_pdf_xml(self.upload_file.path, collection_type=self.implicit_collection_type, want_onscreen_log=True)
+                    report_lines = DataImport.load_from_pdf_xml(
+                                    self.upload_file.path, 
+                                    collection_type=self.implicit_collection_type, 
+                                    guess_postcodes=self.guess_postcodes,
+                                    want_onscreen_log=True)
             self.upload_file.delete()
             self.delete()
             return report_lines
@@ -256,7 +265,7 @@ class DataImport(models.Model):
     # arg: csv_file maybe from: open(csv_file_name, 'r')
     #      collection_type
     @staticmethod
-    def load_from_csv_file(csv_file, collection_type=None, want_onscreen_log=False):
+    def load_from_csv_file(csv_file, collection_type=None, guess_postcodes=False, want_onscreen_log=False):
         if not collection_type:
             collection_type = BinCollectionType.objects.get(friendly_id='D') # historical reasons: default D
         msg = "importing from CSV file: %s (as %s unless explicitly specified)" % (csv_file.name, collection_type)
@@ -283,21 +292,21 @@ class DataImport(models.Model):
                     if not regexp_alpha_check.match(street_name): # common: an empty entry in the row, nothing more to do
                         continue
                     try:
-                        street, was_created, did_guess_postcode = Street.objects.add_street(street_name, partial_postcode)
+                        street, was_created, did_guess_postcode = Street.objects.get_or_create_street(street_name, partial_postcode, guess_postcodes=guess_postcodes)
                     except IntegrityError as e: # e.g., ambiguous postcode: exception may contain suggested value
                         msg = "line %s: did not update street: %s" % (n_lines, e)
                         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                         continue
+                    if did_guess_postcode:
+                        did_guess_postcode = "(guessed postcode %s)" % street.partial_postcode
+                    else:
+                        did_guess_postcode = ""
                     if was_created:
-                        if did_guess_postcode:
-                            did_guess_postcode = "(guessed postcode %s)" % street.partial_postcode
-                        else:
-                            did_guess_postcode = ""
                         msg = 'line %s: made a new street "%s" %s' % (n_lines, street, did_guess_postcode)
                         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                         n_new_streets += 1
                     collection_change_msg = street.add_collection(collection_type, this_day)
-                    msg = 'line %s: street %s: %s' % (n_lines, street, collection_change_msg)
+                    msg = 'line %s: street %s: %s %s' % (n_lines, street, collection_change_msg, did_guess_postcode)
                     log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log) 
                     n_collections += 1
             else:
@@ -320,7 +329,7 @@ class DataImport(models.Model):
     # loads http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
     # after it has been converted with "pdftohtml -xml"
     @staticmethod
-    def load_from_pdf_xml(xml_file_name, collection_type=None, want_onscreen_log=False):
+    def load_from_pdf_xml(xml_file_name, collection_type=None, guess_postcodes=False, want_onscreen_log=False):
         if not collection_type:
             collection_type = BinCollectionType.objects.get(friendly_id='G') # historical reasons: default G
         msg = "importing from XML file: %s (as %s unless explicitly specified)" % (xml_file_name, collection_type)
@@ -379,7 +388,7 @@ class DataImport(models.Model):
                                 days_as_numbers.append(day_of_week_as_number)
                         if len(days_as_numbers) > 0:
                             try:
-                                street, was_created, did_guess_postcode = Street.objects.add_street(street_name, partial_postcode)
+                                street, was_created, did_guess_postcode = Street.objects.get_or_create_street(street_name, partial_postcode, guess_postcodes=guess_postcodes)
                             except IntegrityError as e: # e.g., ambiguous postcode: exception may contain suggested value
                                 msg = 'did not update street: %s in row "%s"' % (e, row)
                                 log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
