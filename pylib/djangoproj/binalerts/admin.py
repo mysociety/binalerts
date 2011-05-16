@@ -17,9 +17,14 @@ class BinCollectionAdmin(admin.ModelAdmin):
 
 class StreetAdmin(admin.ModelAdmin):
     search_fields = ['name']
-    list_display = ('name', 'partial_postcode')    
+    list_display = ('name', 'partial_postcode', 'bin_collections')
+    prepopulated_fields = {"url_name": ("name","partial_postcode")} # gah! django uses - not _ for slugs
     
+    def save_model(self, request, street, form, change):
+        street.url_name = street.url_name.replace("-", "_") # fix hyphens from django slug magic
+        street.save() # TODO: really URL name should be unqiue as a db constraint, no?
 
+        
 class DataImportAdmin(admin.ModelAdmin):
     actions = ['execute_import_data']
     list_display = ('upload_file', 'timestamp', 'implicit_collection_type', 'guess_postcodes')
