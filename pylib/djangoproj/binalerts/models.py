@@ -87,16 +87,32 @@ class Street(models.Model):
     class Meta:
         ordering = ["name", "partial_postcode"]
         
+    # returns fairly specific report message (which makes this a bit fiddlier than necessary)
+    # This is the routine used by data import, so it's very useful to be clear how the data change has affected collections
     def add_collection(self, collection_type, collection_day):
+        msg = ""
+        collection_day_name = BinCollection.number_to_day_name(collection_day)
         if not BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK:
             # delete all other collections (of this type), on all days, then create a new one
-            for bc in self.bin_collections.filter(collection_type=collection_type):
-                bc.delete()
-        # find the single bin collection of this type on this day, and mark it as modified
+            deleted_days = []
+            for bc in self.bin_collections.filter(collection_type=collection_type).order_by('collection_day'):
+                if bc.collection_day != collection_day:
+                    deleted_days.append(BinCollection.number_to_day_name(bc.collection_day))
+                    bc.delete()
         bin_collection, was_created = BinCollection.objects.get_or_create(street=self, collection_type=collection_type, collection_day=collection_day )
-        if not was_created:
-            bin_collection.last_update = datetime.datetime.now()
+        if was_created:
+            if deleted_days: # only if multiple collections are forbidden
+                if len(deleted_days)==1:
+                    msg = "changed collection from %s to %s" % (deleted_days[0], collection_day_name) # day changed
+                else:
+                    msg = "repaced %s collections with one on %s" % (' and '.(deleted_days), collection_day_name)
+            elif 
+                msg = "added %s collection" % collection_day_name
+        else:
+            bin_collection.last_update = datetime.datetime.now() # mark the data as modified, since it's up-to-date as of now
+            msg = "collection on %s remains unchanged" % collection_day_name
         bin_collection.save()
+        return msg
 
     objects = StreetManager()
 
@@ -152,6 +168,12 @@ class BinCollection(models.Model):
             if row[1] == day_of_week:
                 return row[0]
         return None
+
+    # Convert from number to day of week string e.g. 0 to Sunday 
+    # note: using mod 7 here, although perhaps any number > len(DAY_OF_WEEK_CHOICES) should throw an exception?
+    @staticmethod
+    def number_to_day_name(day_number):
+        return DAY_OF_WEEK_CHOICES[day_number % 7][1]
 
 #######################################################################################
 # Email alerts for bin collections
