@@ -52,24 +52,26 @@ class StreetManager(models.Manager):
 
     # add a street to the database (this is via update: a little dangerous if this isn't used in admin street creation)
     # raises IntegrityError if there's a problem (similar to get_or_create), containing useful message
-    # returns street, bool was created
+    # returns street, bool was created, bool guessed_postcode
     def add_street(self, name, partial_postcode=None, want_to_guess_postcode=True):
         if not partial_postcode:
             partial_postcode = '' # empty string since not null is enforced
         if not name:
             raise IntegrityError('street has no name')
+        did_guess_postcode = False
         candidate_streets = self.filter(name__iexact=name)
         if not partial_postcode:
             postcodes = candidate_streets.exclude(partial_postcode='').values_list('partial_postcode', flat=True)
             if len(postcodes) == 1 and want_to_guess_postcode:
                 partial_postcode = postcodes[0]
+                did_guess_postcode = True
             elif BINS_STREETS_MUST_HAVE_POSTCODE:
                 msg = '"%s" has no postcode' % name
                 if postcodes:
                     msg += ' (my guess from existing data is: %s)' % ' or '.join(postcodes)
                 raise IntegrityError(msg)
         if candidate_streets.filter(partial_postcode=partial_postcode):
-            return (candidate_streets[0], False)
+            return (candidate_streets[0], False, did_guess_postcode)
         elif len(candidate_streets) > 1:
             msg = '"%s"" is ambiguous, %s possibilities: %s' % (name, len(candidate_streets), " or ".join('"' + s.__unicode__() + '"' for s in candidate_streets))
             raise IntegrityError(msg)
@@ -77,7 +79,7 @@ class StreetManager(models.Manager):
             url_name = Street.make_url_name(name, partial_postcode)
             street = Street(name=name, url_name=url_name, partial_postcode=partial_postcode)
             street.save()
-            return (street, True) 
+            return (street, True, did_guess_postcode) 
 
 class Street(models.Model):
     name = models.CharField(max_length=200)
@@ -281,13 +283,17 @@ class DataImport(models.Model):
                     if not regexp_alpha_check.match(street_name): # common: an empty entry in the row, nothing more to do
                         continue
                     try:
-                        street, was_created = Street.objects.add_street(street_name, partial_postcode)
+                        street, was_created, did_guess_postcode = Street.objects.add_street(street_name, partial_postcode)
                     except IntegrityError as e: # e.g., ambiguous postcode: exception may contain suggested value
                         msg = "line %s: did not update street: %s" % (n_lines, e)
                         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                         continue
-                    if was_created: 
-                        msg = 'line %s: made a new street "%s"' % (n_lines, street)
+                    if was_created:
+                        if did_guess_postcode:
+                            did_guess_postcode = "(guessed postcode %s)" % street.partial_postcode
+                        else:
+                            did_guess_postcode = ""
+                        msg = 'line %s: made a new street "%s" %s' % (n_lines, street, did_guess_postcode)
                         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                         n_new_streets += 1
                     collection_change_msg = street.add_collection(collection_type, this_day)
@@ -373,13 +379,17 @@ class DataImport(models.Model):
                                 days_as_numbers.append(day_of_week_as_number)
                         if len(days_as_numbers) > 0:
                             try:
-                                street, was_created = Street.objects.add_street(street_name, partial_postcode)
+                                street, was_created, did_guess_postcode = Street.objects.add_street(street_name, partial_postcode)
                             except IntegrityError as e: # e.g., ambiguous postcode: exception may contain suggested value
                                 msg = 'did not update street: %s in row "%s"' % (e, row)
                                 log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                                 continue
                             if was_created: 
-                                msg = 'made a new street %s' % street
+                                if did_guess_postcode:
+                                    did_guess_postcode = "(guessed postcode %s)" % street.partial_postcode
+                                else:
+                                    did_guess_postcode = ""
+                                msg = 'made a new street %s %s' % (street, did_guess_postcode)
                                 log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                                 n_new_streets += 1
                             # used to report what was *new* in this update :-|
