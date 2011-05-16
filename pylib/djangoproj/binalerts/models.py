@@ -258,7 +258,7 @@ class DataImport(models.Model):
                                     guess_postcodes=self.guess_postcodes,
                                     want_onscreen_log=True)
             self.upload_file.delete()
-            self.delete()
+            self.delete() # deleting everything after import seems harh, but also keeps the DataImport admin clean
             return report_lines
 
     # load_from_csv currently expects CSV file with:
@@ -268,8 +268,7 @@ class DataImport(models.Model):
     #      collection_type
     @staticmethod
     def load_from_csv_file(csv_file, collection_type=None, guess_postcodes=False, want_onscreen_log=False):
-        if not collection_type:
-            collection_type = BinCollectionType.objects.get(friendly_id='D') # historical reasons: default D
+        # nb collection_type can only be optional if it's explicitly stated inside the file (currently we don't look for this)
         auto_postcode = "will" if guess_postcodes else "will not"
         filename = os.path.split(csv_file.name)[1]
         msg = "importing from CSV file: %s (as %s unless explicitly specified), %s guess missing postcodes" % (filename, collection_type, auto_postcode)
@@ -334,8 +333,7 @@ class DataImport(models.Model):
     # after it has been converted with "pdftohtml -xml"
     @staticmethod
     def load_from_pdf_xml(xml_file_name, collection_type=None, guess_postcodes=False, want_onscreen_log=False):
-        if not collection_type:
-            collection_type = BinCollectionType.objects.get(friendly_id='G') # historical reasons: default G
+        # nb collection_type can only be optional if it's explicitly stated inside the file (currently we don't look for this)
         auto_postcode = "will" if guess_postcodes else "will not"
         filename = os.path.split(xml_file_name)[1]
         msg = "importing from XML file: %s (as %s unless explicitly specified), %s guess missing postcodes" % (filename, collection_type, auto_postcode)
