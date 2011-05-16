@@ -91,10 +91,10 @@ class Street(models.Model):
     # This is the routine used by data import, so it's very useful to be clear how the data change has affected collections
     def add_collection(self, collection_type, collection_day):
         msg = ""
+        deleted_days = []
         collection_day_name = BinCollection.number_to_day_name(collection_day)
         if not BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK:
             # delete all other collections (of this type), on all days, then create a new one
-            deleted_days = []
             for bc in self.bin_collections.filter(collection_type=collection_type).order_by('collection_day'):
                 if bc.collection_day != collection_day:
                     deleted_days.append(BinCollection.number_to_day_name(bc.collection_day))
@@ -105,8 +105,8 @@ class Street(models.Model):
                 if len(deleted_days)==1:
                     msg = "changed collection from %s to %s" % (deleted_days[0], collection_day_name) # day changed
                 else:
-                    msg = "repaced %s collections with one on %s" % (' and '.(deleted_days), collection_day_name)
-            elif 
+                    msg = "repaced %s collections with one on %s" % (' and '.join(deleted_days), collection_day_name)
+            else:
                 msg = "added %s collection" % collection_day_name
         else:
             bin_collection.last_update = datetime.datetime.now() # mark the data as modified, since it's up-to-date as of now
@@ -290,10 +290,9 @@ class DataImport(models.Model):
                         msg = 'line %s: made a new street "%s"' % (n_lines, street)
                         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                         n_new_streets += 1
-                    msg = 'line %s: updated street "%s" collection: +%s' % (n_lines, street, this_day_name)
+                    collection_change_msg = street.add_collection(collection_type, this_day)
+                    msg = 'line %s: street %s: %s' % (n_lines, street, collection_change_msg)
                     log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log) 
-                    # used to report what was *new* in this update :-|
-                    street.add_collection(collection_type, this_day)
                     n_collections += 1
             else:
                 # lazy for now: the title line is "Monday,Tuesday,...,Friday"
@@ -383,11 +382,11 @@ class DataImport(models.Model):
                                 msg = 'made a new street %s' % street
                                 log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                                 n_new_streets += 1
-                            msg = 'updated street %s\'s collection: +%s (from row "%s")' % (street, ', '.join(days_of_week), pretty_row)
-                            log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log) 
                             # used to report what was *new* in this update :-|
                             for day_number in days_as_numbers:
-                                street.add_collection(collection_type, day_number)
+                                collection_change_msg = street.add_collection(collection_type, day_number)
+                                msg = 'street %s: %s  (from row "%s")' % (street, collection_change_msg, pretty_row)
+                                log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log) 
                                 n_collections += 1
         msg = "bin collections loaded: %s" % n_collections
         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
