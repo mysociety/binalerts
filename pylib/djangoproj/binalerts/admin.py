@@ -17,7 +17,7 @@ class BinCollectionAdmin(admin.ModelAdmin):
         
 class StreetAdmin(admin.ModelAdmin):
     search_fields = ['name']
-    list_display = ('name', 'partial_postcode', 'bin_collections')
+    list_display = ('name', 'partial_postcode', 'url_name')
     prepopulated_fields = {"url_name": ("name","partial_postcode")} # gah! django uses - not _ for slugs
 
     def save_model(self, request, street, form, change):
