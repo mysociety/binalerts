@@ -154,14 +154,17 @@ class BinCollection(models.Model):
     
     objects = BinCollectionManager()
 
+    class Meta:
+        ordering = ["street__name", "collection_day", "collection_type__friendly_id"]
+        
     def get_collection_day_name(self):
-        return DAY_OF_WEEK_CHOICES[self.collection_day][1]
+        return self.number_to_day_name(self.collection_day)
 
     def get_collection_type_display(self):
         return self.collection_type.description
             
     def __unicode__(self):
-        return "%s: %s (%s)" % (self.street, DAY_OF_WEEK_CHOICES[self.collection_day][1], self.collection_type)
+        return "%s: %s (%s)" % (self.street, self.get_collection_day_name(), self.collection_type)
 
     # Convert from day of week string e.g. Sunday, to number, e.g. 0
     @staticmethod
@@ -191,19 +194,22 @@ class CollectionAlertManager(models.Manager):
         today_day_of_week = today.isoweekday()
         assert today_day_of_week >= 1 and today_day_of_week <= 7
         tomorrow_day_of_week = (today_day_of_week + 1) % 7
-
+        tomorrow_day_name = BinCollection.number_to_day_name(tomorrow_day_of_week)
+        
         for collection_alert in CollectionAlert.objects.filter(confirmed__confirmed=True).filter(last_checked_date__lt=today):
-            bin_collection = collection_alert.street.bin_collections.all()[0]
-            # print "day of week compare", bin_collection.collection_day, tomorrow_day_of_week
-            if bin_collection.collection_day == tomorrow_day_of_week:
-                send_email(None, 'Bin collection tomorrow, %s! (%s)' % (bin_collection.get_collection_day_display(), bin_collection.get_collection_type_display()),
+            collections = collection_alert.street.bin_collections.filter(collection_day__exact=tomorrow_day_of_week)
+            if collections:
+                bin_collection_types = ", and ".join(bc.get_collection_type_display() for bc in collections)
+                send_email(None, 'Bin collection tomorrow, %s! (%s)' % (tomorrow_day_name, bin_collection_types),
                     'email-alert.txt', {
-                        'bin_collection': bin_collection,
+                        'bin_collection_types': bin_collection_types,
+                        'street_name': collection_alert.street.__unicode__(),
+                        'tomorrow_day_name': tomorrow_day_name,
                         'collection_alert': collection_alert,
                         'unsubscribe_url': "http://NOT_YET_IMPLEMENTED"
                     }, collection_alert.email
                 )
-
+                
             collection_alert.last_checked_date = today
             collection_alert.save()
 
@@ -289,7 +295,7 @@ class DataImport(models.Model):
                     #       there is NO postcode
                     # Ought to dump all failures into a log for review, and manual input, later TODO
                     this_day = day + day_number_offset
-                    this_day_name = DAY_OF_WEEK_CHOICES[this_day][1]
+                    this_day_name = BinCollection.number_to_day_name(this_day)
                     street_name = ' '.join(row[day].strip().split())
                     partial_postcode = None # for now: absolutely anticipate finding one in future data
                     if not regexp_alpha_check.match(street_name): # common: an empty entry in the row, nothing more to do

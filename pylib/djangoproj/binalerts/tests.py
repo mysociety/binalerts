@@ -212,6 +212,8 @@ class AlertsTest(BinAlertsTestCase):
         collection_type = BinCollectionType.objects.get(friendly_id='G')
         street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
         bin_collection = BinCollection.objects.create(collection_day=2, collection_type=collection_type, street=street)
+        collection_type = BinCollectionType.objects.get(friendly_id='D')
+        bin_collection2 = BinCollection.objects.create(collection_day=2, collection_type=collection_type, street=street)
         alert = CollectionAlert.objects.create(street=street, email = 'francis@mysociety.org')
         email_confirmation = EmailConfirmation.objects.create(confirmed = True, content_object = alert)
         assert alert.is_confirmed() == True
@@ -231,6 +233,7 @@ class AlertsTest(BinAlertsTestCase):
             if day_of_month == 4 or day_of_month == 11: 
                 self.assertEquals(len(mail.outbox), 1)
                 assert "Green Garden" in m.body
+                assert "Domestic" in m.body
                 assert "Tuesday" in m.body
                 assert "Alyth Gardens" in m.body
             else:
