@@ -16,6 +16,8 @@ class Command(BaseCommand):
         #transaction.enter_transaction_management()
         #transaction.managed(True)
         
-        file_to_load = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/', args[0])
-        models.BinCollection.objects.load_from_pdf_xml(file_to_load)
+        collection_type = BinCollectionType.objects.get('G') # should come from option, hardwired for now 
+        
+        file_to_load = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/', args[0]) # really? not anywhere?
+        models.BinCollection.objects.load_from_pdf_xml(file_to_load, collection_type=collection_type)
 

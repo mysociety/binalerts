@@ -1,0 +1,29 @@
+[
+    {
+        "pk": 1,
+        "model": "binalerts.bincollectiontype",
+        "fields": {
+            "friendly_id": "G",
+            "description": "Green Garden and Kitchen Waste",
+            "detail_text": "for grass cuttings, vegetable, meat and fish, egg shells .&nbsp;.&nbsp;. <a href=\"http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling/green-garden-kitchen-waste\">more&nbsp;details</a>" 
+        }
+    },
+    {
+        "pk": 2,
+        "model": "binalerts.bincollectiontype",
+        "fields": {
+            "friendly_id": "D",
+            "description": "Domestic Waste",
+            "detail_text": "make sure it&rsquo;s inside the bin, not wedged in or too heavy, with the lid closed .&nbsp;.&nbsp;. <a href=\"http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling.htm/waste-collection\">more&nbsp;details</a>"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "binalerts.bincollectiontype",
+        "fields": {
+            "friendly_id": "R",
+            "description": "Recyclable Waste",
+            "detail_text": "for glass, bottles, paper, plastics, carbdoard &mdash; lots of things, in fact .&nbsp;.&nbsp;. <a href=\"http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling.htm/recycling1/recycle-from-home.htm\">more&nbsp;details</a>"
+        }
+    }
+]
