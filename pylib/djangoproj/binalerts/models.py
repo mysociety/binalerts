@@ -11,8 +11,8 @@ import re
 import csv
 import os.path
 
-from djangoproj.settings import BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
-from djangoproj.settings import BINS_STREETS_MUST_HAVE_POSTCODE
+from settings import BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
+from settings import BINS_STREETS_MUST_HAVE_POSTCODE
 
 from django.db import models
 from django.db import IntegrityError
@@ -296,7 +296,7 @@ class DataImport(models.Model):
                         continue
                     try:
                         street, was_created, did_guess_postcode = Street.objects.get_or_create_street(street_name, partial_postcode, guess_postcodes=guess_postcodes)
-                    except IntegrityError as e: # e.g., ambiguous postcode: exception may contain suggested value
+                    except IntegrityError, e: # e.g., ambiguous postcode: exception may contain suggested value
                         msg = "line %s: did not update street: %s" % (n_lines, e)
                         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                         continue
@@ -393,7 +393,7 @@ class DataImport(models.Model):
                         if len(days_as_numbers) > 0:
                             try:
                                 street, was_created, did_guess_postcode = Street.objects.get_or_create_street(street_name, partial_postcode, guess_postcodes=guess_postcodes)
-                            except IntegrityError as e: # e.g., ambiguous postcode: exception may contain suggested value
+                            except IntegrityError, e: # e.g., ambiguous postcode: exception may contain suggested value
                                 msg = 'did not update street: %s in row "%s"' % (e, row)
                                 log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                                 continue
