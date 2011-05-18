@@ -2,7 +2,10 @@ Hi,
 
 This is your Barnet Bin reminder message!
 
-The {{ bin_collection_types }} in {{ street_name }} is due to be collected tomorrow, {{ tomorrow_day_name }}.
+We're coming to {{ street_name }} to empty your bins tomorrow ({{ tomorrow_day_name }}).
+We will be collecting:
+
+{{ bin_collection_types_list }} 
 
 Please put your bins out by 6:30am. The best place is usually on the boundary of your property, but don't block the pavement.
 If you park your car in the street, please think of our lorry drivers and leave them enough space to get through!

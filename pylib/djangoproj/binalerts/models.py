@@ -199,10 +199,11 @@ class CollectionAlertManager(models.Manager):
         for collection_alert in CollectionAlert.objects.filter(confirmed__confirmed=True).filter(last_checked_date__lt=today):
             collections = collection_alert.street.bin_collections.filter(collection_day__exact=tomorrow_day_of_week)
             if collections:
-                bin_collection_types = ", and ".join(bc.get_collection_type_display() for bc in collections)
-                send_email(None, 'Bin collection tomorrow, %s! (%s)' % (tomorrow_day_name, bin_collection_types),
+                bin_collection_types_subject = " + ".join(bc.get_collection_type_display() for bc in collections)
+                bin_collection_types_list = "\n".join("  * %s\n" % bc.get_collection_type_display() for bc in collections)
+                send_email(None, 'Bin collection tomorrow, %s! (%s)' % (tomorrow_day_name, bin_collection_types_subject),
                     'email-alert.txt', {
-                        'bin_collection_types': bin_collection_types,
+                        'bin_collection_types_list': bin_collection_types_list,
                         'street_name': collection_alert.street.__unicode__(),
                         'tomorrow_day_name': tomorrow_day_name,
                         'collection_alert': collection_alert,
