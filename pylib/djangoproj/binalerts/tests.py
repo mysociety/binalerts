@@ -224,7 +224,8 @@ class AlertsTest(BinAlertsTestCase):
         # check the alerts are sent on those days, and not on others.
         for day_of_month in range(3, 12):
             # fake the day/time the alerts are sent for testing purposes
-            CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, day_of_month, 9, 00, 00))
+            faked_now = datetime.datetime(2010, 1, day_of_month, 9, 00, 00)
+            CollectionAlert.objects.send_pending_alerts(now = faked_now)
             if len(mail.outbox) > 0:
                 m = mail.outbox[0]
                 # print "Subject:", m.subject
@@ -239,7 +240,9 @@ class AlertsTest(BinAlertsTestCase):
             else:
                 self.assertEquals(len(mail.outbox), 0)
             mail.outbox = []
-
+        # the (only) collection alert should remember when the last email was sent
+        assert CollectionAlert.objects.all()[0].last_sent_date == datetime.date(2010, 01, 11)
+                    
 # Check data loading functions
 class LoadDataTest(BinAlertsTestCase):
             

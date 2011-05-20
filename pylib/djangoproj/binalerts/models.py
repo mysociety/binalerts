@@ -210,6 +210,7 @@ class CollectionAlertManager(models.Manager):
                         'unsubscribe_url': "http://NOT_YET_IMPLEMENTED"
                     }, collection_alert.email
                 )
+                collection_alert.last_sent_date = today
                 
             collection_alert.last_checked_date = today
             collection_alert.save()
@@ -220,7 +221,8 @@ class CollectionAlert(models.Model):
     
     confirmed = generic.GenericRelation(EmailConfirmation)
     last_checked_date = models.DateField(default=datetime.date(2000, 01, 01)) # always long in the past
-
+    last_sent_date = models.DateField(default=None, blank=True, null=True) 
+    
     objects = CollectionAlertManager()
 
     def is_confirmed(self):
