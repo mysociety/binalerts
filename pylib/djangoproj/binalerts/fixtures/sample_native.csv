@@ -1,0 +1,16 @@
+# this is an example of the "native format" for binalert csv import
+
+# street:   street name
+# postcode: partial postcode (e.g., NW1)
+# type:     collection type: currently
+#              D - domestic refuse
+#              G - garden & kitchen waste
+#              R - recycling
+# days:     space separated days (e.g. Monday Friday)
+#
+# must contain this title line: "street,postcode,type,days"
+
+street,postcode,type,days
+Test Road,AB1,G,Friday
+Test Road,AB1,D,Friday
+Example Street,AB1,G,Monday

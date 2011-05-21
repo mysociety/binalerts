@@ -354,6 +354,21 @@ class LoadDataTest(BinAlertsTestCase):
         self.assertNotContains(response, 'Domestic') # from the csv import, which had no postcode
 
 
+    def test_load_data_from_native_csv(self):
+        collection_type = BinCollectionType.objects.get(friendly_id='D') 
+        # sample_ideal.csv is in the nativce CSV format, rather than a proprietary one
+        sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/sample_native.csv')
+        DataImport.load_from_csv_file(open(sample_file, 'r'), collection_type=collection_type, guess_postcodes=False)
+
+        response = self.c.get('/street/test_road')
+        self.assertRedirects(response, '/street/test_road_ab1')
+
+        response = self.c.get('/street/test_road_ab1')
+        self.assertContains(response, 'Garden') 
+        self.assertContains(response, 'Domestic') 
+        self.assertContains(response, 'Friday')
+        self.assertNotContains(response, 'Recycl')
+
 # Display info about a street
 
 

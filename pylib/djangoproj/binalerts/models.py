@@ -278,20 +278,47 @@ class DataImport(models.Model):
     @staticmethod
     def load_from_csv_file(csv_file, collection_type=None, guess_postcodes=False, want_onscreen_log=False):
         # nb collection_type can only be optional if it's explicitly stated inside the file (currently we don't look for this)
+        default_collection_type = collection_type
         auto_postcode = "will" if guess_postcodes else "will not"
         filename = os.path.split(csv_file.name)[1]
-        msg = "importing from CSV file: %s (as %s unless explicitly specified), %s guess missing postcodes" % (filename, collection_type, auto_postcode)
+        msg = "importing from CSV file: %s (as %s unless explicitly specified), %s guess missing postcodes" % (filename, default_collection_type, auto_postcode)
         log_lines = DataImport._add_to_log_lines([], msg, want_onscreen_log)
         reader=csv.reader(csv_file, delimiter=',', quotechar='"')
         regexp_alpha_check = re.compile('\w')
-        found_data = False
+        found_data = None
         day_number_offset = 0
         n_collections = 0
         n_new_streets = 0
         n_lines = 0
         for row in reader: 
             n_lines += 1
-            if found_data:
+            if found_data == 'native':
+                street_name = row[0]
+                partial_postcode = row[1]
+                try:
+                    collection_type = BinCollectionType.objects.get(friendly_id=row[2])
+                except ObjectDoesNotExist:
+                    collection_type = default_collection_type # default
+                this_day = BinCollection.day_of_week_string_to_number(row[3])
+                try:
+                    street, was_created, did_guess_postcode = Street.objects.get_or_create_street(street_name, partial_postcode, guess_postcodes=guess_postcodes)
+                except IntegrityError, e: # e.g., ambiguous postcode: exception may contain suggested value
+                    msg = "line %s: did not update street: %s" % (n_lines, e)
+                    log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+                    continue
+                if did_guess_postcode:
+                    did_guess_postcode = "(guessed postcode %s)" % street.partial_postcode
+                else:
+                    did_guess_postcode = ""
+                if was_created:
+                    msg = 'line %s: made a new street "%s" %s' % (n_lines, street, did_guess_postcode)
+                    log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+                    n_new_streets += 1
+                collection_change_msg = street.add_collection(collection_type, this_day)
+                msg = 'line %s: street %s: %s %s' % (n_lines, street, collection_change_msg, did_guess_postcode)
+                log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log) 
+                n_collections += 1 
+            elif found_data == 'barnet':
                 for day in range(len(row)): #   for this_day in 0..4 (actually monday-friday)
                     # note: here we are making these assumptions, based on current provided data:
                     #       index position is day (i.e., col 0 is on Monday)
@@ -323,11 +350,13 @@ class DataImport(models.Model):
                     n_collections += 1
             else:
                 # lazy for now: the title line is "Monday,Tuesday,...,Friday"
-                if len(row)>=5:
-                    found_data = (row[0] == 'Monday' and row[4] == 'Friday')
+                if len(row)==4 and row[0]=='street' and row[1]=='postcode' and row[2]=='type' and row[3]=='days':
+                    found_data = 'native'
+                elif len(row)>=5 and row[0] == 'Monday' and row[4] == 'Friday':
+                    found_data = 'barnet'
                     day_number_offset = 1 # because row 0 is Monday, which is 1
         if not found_data:
-            msg = 'found no data in "%s". Is there a title line with Monday,Tuesday,Wednesday... in it?' % csv_file_name
+            msg = 'found no data in "%s". Check that the file has the right title line in it.' % filename
             log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
         else:
             msg = "lines read from import file: %s" % n_lines
