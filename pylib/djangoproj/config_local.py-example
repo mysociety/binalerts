@@ -10,8 +10,14 @@ class LocalConfig(dict):
         else:
             raise Exception, "No value for '%s' in LocalConfig (config_local.py), and no default specified" % key
 
-        
+
 config = LocalConfig(
+
+    BINS_SITENAME = 'barnet',
+
+    BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = True,
+    BINS_STREETS_MUST_HAVE_POSTCODE = True,
+
     BINS_DB_HOST='localhost',
     BINS_DB_PORT=5432,
     BINS_DB_NAME='local-bins',
