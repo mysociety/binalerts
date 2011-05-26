@@ -4,7 +4,7 @@
   <p>
     You can bulk-update bin collection data by uploading a file containing street names and days. 
     <br/>
-    Currently, two formats are supported:     
+    Currently, two types of import file are supported:     
   </p>
   <ul>
     <li>
@@ -14,13 +14,26 @@
       <tt>"pdftohtml&nbsp;-xml"</tt>
     </li>
     <li>
-      a comma-separated file with this format:
-      <div style="font-family:monospace;padding:1em 1em 1em 2em;">
-          initial lines are ignored until this one is found: <br/>
-          Monday,Tuesday,Wednesday,Thursday,Friday <br/>
-          Horse Street,Dog Road,Cat Close,Donkey Drive,Llama Lane <br/>
-          ,Panda Place,,,Cobra Crescent
-      </div>
+      a comma-separated file in one of two formats. Note both <b>must</b> contain the titles line as shown:
+      <!-- <span id="show_csv_details" style="display:none;">[details]</span> -->
+      <div id="csv_details">
+          <ul style="margin-top:1em;">
+            <li> "native" format: one row per collection:
+              <div style="font-family:monospace;padding:1em 1em 1em 2em;">
+                street,postcode,type,days <br/>
+                Shetland Street,NW1,D,Tuesday
+              </div>
+            </li>
+            <li>
+              "day columns" format (used by Barnet): listing only street names, Mon-Fri:
+              <div style="font-family:monospace;padding:1em 1em 1em 2em;">
+                Monday,Tuesday,Wednesday,Thursday,Friday <br/>
+                Horse Street,Dog Road,Cat Close,Donkey Drive,Llama Lane <br/>
+                ,Panda Place,,,Cobra Crescent
+              </div>
+            </li>
+          </ul>
+       </div>
     </li>
   </ul>
   <p>
@@ -29,4 +42,5 @@
   <p>
       The file is deleted once the import has been completed.
   </p>
+  <!--  <script> $('#show_csv_details').click(function() { $('#csv_details').slideToggle('slow'); }); </script> -->
 {% endblock %}
