@@ -5,16 +5,19 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
 import re
+import hashlib
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
 from binalerts.forms import LocationForm, CollectionAlertForm
-from binalerts.models import BinCollection, Street
+from binalerts.models import BinCollection, Street, CollectionAlert
 
 from emailconfirmation.models import EmailConfirmation
+
+from settings import SECRET_KEY
 
 # note: hardcoded daynames here must match binalerts.models.DAY_OF_WEEK_CHOICES (e.g. Sunday has index 0 (not Monday))
 DISPLAY_DAYS_OF_WEEK =  ['SUN', 'MON', 'TUE', 'WED', 'THURS', 'FRI', 'SAT']
@@ -102,3 +105,16 @@ def show_street(request, url_name):
 def alert_confirmed(request, id):
     return render_to_response('alert_confirmed.html', { })
 
+def unsubscribe_collection_alert(request, alert_id, alert_hash):
+    alert = CollectionAlert.objects.get(id=alert_id)
+
+    m = hashlib.sha1()
+    m.update("%s%s" %(alert_id, SECRET_KEY))
+
+    if not m.hexdigest() == alert_hash:
+        raise Http404
+
+    context = {'street_name': alert.street.name, 'email': alert.email}
+    alert.delete()
+
+    return render_to_response('alert_unsubscribed.html', context)

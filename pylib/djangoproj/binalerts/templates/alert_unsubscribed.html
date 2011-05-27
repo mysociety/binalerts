@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Bin alerts{% endblock %}
+
+{% block content %}
+
+<h1>Bin alerts</h1>
+
+<div class="mysoc-bin-main">
+    
+  <p>
+    Bin alerts for {{ street_name }} will no longer be sent to {{ email }}.
+  </p>
+
+
+  <div class="mysoc-bin-links">
+    <p>
+      More information about bins in Barnet:
+    </p>
+    <ul>
+      <li>
+        <a href="http://www.barnet.gov.uk/index/environment-planning/rubbish-waste-recycling.htm">rubbish, waste and recycling</a>
+      </li>
+    </ul>
+  </div>
+</div>
+    
+{% endblock %}
+

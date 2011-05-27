@@ -15,21 +15,17 @@ import re
 import datetime
 import sys
 from StringIO import StringIO
-
-import mysociety
-
-try:
-    from config_local import config  # put settings in config_local if you're not running in a full mysociety vhost
-except ImportError:
-    from mysociety import config
+import hashlib
 
 from django.test import TestCase
 from django.test import Client
 from django.core import mail
+from django.http import Http404
 
 from binalerts.models import BinCollectionType, BinCollection, CollectionAlert, Street, DataImport
 from emailconfirmation.models import EmailConfirmation
 
+import settings
 import binalerts
 
 class BinAlertsTestCase(TestCase):
@@ -164,7 +160,7 @@ class AlertsTest(BinAlertsTestCase):
 
         self.assertEquals(len(mail.outbox), 1)
         self.assertEquals(mail.outbox[0].subject, 'Alert confirmation')
-        self.assertEquals(mail.outbox[0].from_email, 'Barnet Bin Alerts <%s>' % config.get('BUGS_EMAIL'))
+        self.assertEquals(mail.outbox[0].from_email, 'Barnet Bin Alerts <%s>' %settings.SERVER_EMAIL)
         assert mail.outbox[0].body.find("The Bin Team") != -1, '"The Bin Team" wasn\'t in the email body; using wrong emailconfirmation template?'
 
     def test_url_in_confirmation_email_works(self):
@@ -242,7 +238,36 @@ class AlertsTest(BinAlertsTestCase):
             mail.outbox = []
         # the (only) collection alert should remember when the last email was sent
         assert CollectionAlert.objects.all()[0].last_sent_date == datetime.date(2010, 01, 11)
-                    
+
+    def test_unsubscribe_successful(self):
+        street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
+        alert = CollectionAlert.objects.create(street=street, email='francis@mysociety.org')
+        
+        m = hashlib.sha1()
+        m.update("%s%s" %(alert.id, settings.SECRET_KEY))
+
+        response = self.c.get('/unsubscribe/%d/%s/' %(alert.id, m.hexdigest()))
+        
+        self.assertTemplateUsed(response, 'alert_unsubscribed.html')
+        self.assertContains(response, "Alyth")
+        self.assertContains(response, 'francis@mysociety.org')
+
+        # There should now be no email alert for francis and Alyth Gardens.
+        self.assertRaises(
+            CollectionAlert.DoesNotExist, 
+            CollectionAlert.objects.get, 
+            street=street, 
+            email='francis@mysociety.org',
+            )
+
+    def test_unsubscribe_badhash(self):
+        street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
+        alert = CollectionAlert.objects.create(street=street, email='francis@mysociety.org')
+
+        response = self.c.get('/unsubscribe/%d/FIXME/' %alert.id)
+        self.assertTemplateUsed(response, '404.html')
+
+
 # Check data loading functions
 class LoadDataTest(BinAlertsTestCase):
             
