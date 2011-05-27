@@ -24,7 +24,7 @@ urlpatterns = patterns('',
      url(r'^admin/', include(admin.site.urls)),
 
      # Unsubscribe
-     url(r'^unsubscribe/(\d+)/([^/]+)/', binalerts.views.unsubscribe_collection_alert),
+     url(r'^unsubscribe/(\d+)/([^/]+)/', 'binalerts.views.unsubscribe_collection_alert'),
 
      # Email confirmation
      (r'^', include('emailconfirmation.urls')),

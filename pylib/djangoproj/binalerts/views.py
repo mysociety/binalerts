@@ -5,7 +5,6 @@
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
 import re
-import hashlib
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
@@ -108,10 +107,7 @@ def alert_confirmed(request, id):
 def unsubscribe_collection_alert(request, alert_id, alert_hash):
     alert = CollectionAlert.objects.get(id=alert_id)
 
-    m = hashlib.sha1()
-    m.update("%s%s" %(alert_id, SECRET_KEY))
-
-    if not m.hexdigest() == alert_hash:
+    if not alert.get_digest() == alert_hash:
         raise Http404
 
     context = {'street_name': alert.street.name, 'email': alert.email}

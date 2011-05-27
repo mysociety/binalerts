@@ -15,7 +15,6 @@ import re
 import datetime
 import sys
 from StringIO import StringIO
-import hashlib
 
 from django.test import TestCase
 from django.test import Client
@@ -243,10 +242,7 @@ class AlertsTest(BinAlertsTestCase):
         street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
         alert = CollectionAlert.objects.create(street=street, email='francis@mysociety.org')
         
-        m = hashlib.sha1()
-        m.update("%s%s" %(alert.id, settings.SECRET_KEY))
-
-        response = self.c.get('/unsubscribe/%d/%s/' %(alert.id, m.hexdigest()))
+        response = self.c.get('/unsubscribe/%d/%s/' %(alert.id, alert.get_digest()))
         
         self.assertTemplateUsed(response, 'alert_unsubscribed.html')
         self.assertContains(response, "Alyth")

@@ -10,13 +10,16 @@ import xml.dom.minidom
 import re
 import csv
 import os.path
+import hashlib
 
 from settings import BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
 from settings import BINS_STREETS_MUST_HAVE_POSTCODE
+from settings import SECRET_KEY
 
 from django.db import models
 from django.db import IntegrityError
 from django.contrib.contenttypes import generic
+from django.core.urlresolvers import reverse
 
 from emailconfirmation.models import EmailConfirmation
 from emailconfirmation.utils import send_email
@@ -207,7 +210,10 @@ class CollectionAlertManager(models.Manager):
                         'street_name': collection_alert.street.__unicode__(),
                         'tomorrow_day_name': tomorrow_day_name,
                         'collection_alert': collection_alert,
-                        'unsubscribe_url': "http://NOT_YET_IMPLEMENTED"
+                        'unsubscribe_url': reverse(
+                            'binalerts.views.unsubscribe_collection_alert', 
+                            args=(collection_alert.id, collection_alert.get_digest()),
+                            ),
                     }, collection_alert.email
                 )
                 collection_alert.last_sent_date = today
@@ -229,6 +235,11 @@ class CollectionAlert(models.Model):
         confirmeds = self.confirmed.all()
         assert len(confirmeds) == 1
         return confirmeds[0].confirmed
+
+    def get_digest(self):
+        m = hashlib.sha1()
+        m.update("%s%s" %(self.id, SECRET_KEY))
+        return m.hexdigest()
 
     class Meta:
         ordering = ('email',)
