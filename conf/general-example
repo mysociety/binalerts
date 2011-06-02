@@ -19,7 +19,8 @@
  */
 
 /*
-define('OPTION_BINS_SITENAME', 'barnet');
+define('OPTION_BINS_SITENAME', 'bins test site');
+define('OPTION_DOMAIN_NAME', 'example.com');
 
 define('OPTION_BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK', True);
 define('OPTION_BINS_STREETS_MUST_HAVE_POSTCODE' True);
