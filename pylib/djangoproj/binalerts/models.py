@@ -19,10 +19,13 @@ from settings import SECRET_KEY
 from django.db import models
 from django.db import IntegrityError
 from django.contrib.contenttypes import generic
-from django.core.urlresolvers import reverse
+from django.contrib.sites.models import Site
+from django.template import Context
 
 from emailconfirmation.models import EmailConfirmation
 from emailconfirmation.utils import send_email
+
+from unsubscribe.models import Unsubscribeable
 
 DAY_OF_WEEK_CHOICES = (
     (0, 'Sunday'),
@@ -205,23 +208,24 @@ class CollectionAlertManager(models.Manager):
                 bin_collection_types_subject = " + ".join(bc.get_collection_type_display() for bc in collections)
                 bin_collection_types_list = "\n".join("  * %s\n" % bc.get_collection_type_display() for bc in collections)
                 send_email(None, 'Bin collection tomorrow, %s! (%s)' % (tomorrow_day_name, bin_collection_types_subject),
-                    'email-alert.txt', {
-                        'bin_collection_types_list': bin_collection_types_list,
-                        'street_name': collection_alert.street.__unicode__(),
-                        'tomorrow_day_name': tomorrow_day_name,
-                        'collection_alert': collection_alert,
-                        'unsubscribe_url': reverse(
-                            'binalerts.views.unsubscribe_collection_alert', 
-                            args=(collection_alert.id, collection_alert.get_digest()),
-                            ),
-                    }, collection_alert.email
+                           'email-alert.txt', 
+                           Context({
+                            'bin_collection_types_list': bin_collection_types_list,
+                            'street_name': collection_alert.street.__unicode__(),
+                            'tomorrow_day_name': tomorrow_day_name,
+                            'collection_alert': collection_alert,
+                            'domain': Site.objects.get_current().domain,
+                            }, 
+                                   collection_alert.instance_namespace,
+                                   ), 
+                           collection_alert.email,
                 )
                 collection_alert.last_sent_date = today
                 
             collection_alert.last_checked_date = today
             collection_alert.save()
 
-class CollectionAlert(models.Model):
+class CollectionAlert(models.Model, Unsubscribeable):
     email = models.EmailField()
     street = models.ForeignKey(Street, null=True)
     
@@ -231,15 +235,20 @@ class CollectionAlert(models.Model):
     
     objects = CollectionAlertManager()
 
+    unsubscribe_success_template = 'alert_unsubscribed.html'
+    unsubscribe_email_subject = 'You have been unsubscribed from Barnet Bin Alerts'
+
+    instance_namespace = 'unsubscribe_binalerts'
+
     def is_confirmed(self):
         confirmeds = self.confirmed.all()
         assert len(confirmeds) == 1
         return confirmeds[0].confirmed
 
-    def get_digest(self):
-        m = hashlib.sha1()
-        m.update("%s%s" %(self.id, SECRET_KEY))
-        return m.hexdigest()
+    def get_success_template_context(self):
+        ret = super(CollectionAlert, self).get_success_template_context()
+        ret.update({'street_name': self.street.name, 'email': self.email})
+        return ret
 
     class Meta:
         ordering = ('email',)

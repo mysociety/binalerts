@@ -104,13 +104,3 @@ def show_street(request, url_name):
 def alert_confirmed(request, id):
     return render_to_response('alert_confirmed.html', { })
 
-def unsubscribe_collection_alert(request, alert_id, alert_hash):
-    alert = CollectionAlert.objects.get(id=alert_id)
-
-    if not alert.get_digest() == alert_hash:
-        raise Http404
-
-    context = {'street_name': alert.street.name, 'email': alert.email}
-    alert.delete()
-
-    return render_to_response('alert_unsubscribed.html', context)

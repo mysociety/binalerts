@@ -17,4 +17,4 @@ Barnet Council
 ============================================================
 
 To stop receiving these emails follow this link:
-    {{ unsubscribe_url }}
+    http://{{ domain }}{{ collection_alert.get_unsubscribe_url }}

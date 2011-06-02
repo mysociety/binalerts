@@ -211,6 +211,7 @@ class AlertsTest(BinAlertsTestCase):
         bin_collection2 = BinCollection.objects.create(collection_day=2, collection_type=collection_type, street=street)
         alert = CollectionAlert.objects.create(street=street, email = 'francis@mysociety.org')
         email_confirmation = EmailConfirmation.objects.create(confirmed = True, content_object = alert)
+
         assert alert.is_confirmed() == True
         
         # In production, the cron job (conf/crontab.ugly) is called at 9am
@@ -232,6 +233,9 @@ class AlertsTest(BinAlertsTestCase):
                 assert "Domestic" in m.body
                 assert "Tuesday" in m.body
                 assert "Alyth Gardens" in m.body
+
+                # Check that there is an unsubscribe link in the email
+                assert 'http://example.com/unsubscribe' in m.body, 'No unsubscribe link in email body'
             else:
                 self.assertEquals(len(mail.outbox), 0)
             mail.outbox = []
@@ -239,22 +243,35 @@ class AlertsTest(BinAlertsTestCase):
         assert CollectionAlert.objects.all()[0].last_sent_date == datetime.date(2010, 01, 11)
 
     def test_unsubscribe_successful(self):
+        test_email = 'duncan@mysociety.org'
+        
         street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
-        alert = CollectionAlert.objects.create(street=street, email='francis@mysociety.org')
+        alert = CollectionAlert.objects.create(street=street, email=test_email)
         
         response = self.c.get('/unsubscribe/%d/%s/' %(alert.id, alert.get_digest()))
         
         self.assertTemplateUsed(response, 'alert_unsubscribed.html')
         self.assertContains(response, "Alyth")
-        self.assertContains(response, 'francis@mysociety.org')
+        self.assertContains(response, test_email)
 
         # There should now be no email alert for francis and Alyth Gardens.
         self.assertRaises(
             CollectionAlert.DoesNotExist, 
             CollectionAlert.objects.get, 
             street=street, 
-            email='francis@mysociety.org',
+            email=test_email,
             )
+
+        # There should be a confirmation message in the outbox
+        self.assertEquals(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEquals(message.subject, 'You have been unsubscribed from Barnet Bin Alerts')
+        assert message.body.index(test_email) != -1, \
+            'The email should contain the address it was sent to.'
+
+    def test_unsubscribe_badid(self):
+        response = self.c.get('/unsubscribe/1/HASH/')
+        self.assertTemplateUsed(response, '404.html')
 
     def test_unsubscribe_badhash(self):
         street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 

@@ -123,5 +123,6 @@ INSTALLED_APPS = (
     #'django.contrib.gis',
     'djangoproj.binalerts',
     'emailconfirmation',
+    'unsubscribe',
     'south'
 )
