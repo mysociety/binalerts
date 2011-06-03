@@ -4,15 +4,17 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
+from django.contrib import admin
+from django.contrib.contenttypes import generic
+
 from binalerts.models import BinCollection, BinCollectionType, Street, CollectionAlert, DataImport
 from emailconfirmation.models import EmailConfirmation
 
-from django.contrib import admin
-
 class BinCollectionAdmin(admin.ModelAdmin):
     readonly_fields = ('last_updated',)
-    list_display = ('street', 'collection_day', 'collection_type', 'last_updated')    
-    list_display_links = ('street', 'collection_day', 'collection_type')
+    list_display = ('street', 'collection_day', 'collection_type', 'last_updated')
+    list_editable = ('collection_day',)
+    list_display_links = ('street',)
     search_fields = ['street__name']
         
 class StreetAdmin(admin.ModelAdmin):
