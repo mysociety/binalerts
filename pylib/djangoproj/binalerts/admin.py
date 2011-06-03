@@ -22,7 +22,7 @@ class StreetAdmin(admin.ModelAdmin):
 
     def save_model(self, request, street, form, change):
         street.url_name = street.url_name.replace("-", "_") # fix hyphens from django slug magic
-        street.save() # TODO: really URL name should be unqiue as a db constraint, no?
+        street.save() # TODO: really URL name should be unique as a db constraint, no?
 
         
 class DataImportAdmin(admin.ModelAdmin):
