@@ -15,6 +15,7 @@ class BinCollectionAdmin(admin.ModelAdmin):
     list_display = ('street', 'collection_day', 'collection_type', 'last_updated')
     list_editable = ('collection_day',)
     list_display_links = ('street',)
+    list_filter = ('collection_day', 'collection_type')
     search_fields = ['street__name']
         
 class StreetAdmin(admin.ModelAdmin):
