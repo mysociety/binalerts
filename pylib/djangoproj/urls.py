@@ -21,17 +21,12 @@ urlpatterns = patterns('',
          binalerts.views.show_street, name='show_street'),
      url(r'^confirmed/(\d+)$', 
          binalerts.views.alert_confirmed, name='alert_confirmed'),
+     url(r'^unsubscribed/(\d+)$', 
+         binalerts.views.alert_unsubscribed, name='alert_unsubscribed'),
 
      # Admin
      url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
      url(r'^admin/', include(admin.site.urls)),
-
-     # Unsubscribe
-     (r'^unsubscribe/', 
-      include('unsubscribe.urls', 
-              namespace=binalerts.models.CollectionAlert.instance_namespace, 
-              app_name='unsubscribe'), 
-      {'model': binalerts.models.CollectionAlert}),
 
      # Email confirmation
      (r'^', include('emailconfirmation.urls')),

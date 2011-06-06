@@ -25,8 +25,6 @@ from django.template import Context
 from emailconfirmation.models import EmailConfirmation
 from emailconfirmation.utils import send_email
 
-from unsubscribe.models import Unsubscribeable
-
 DAY_OF_WEEK_CHOICES = (
     (0, 'Sunday'),
     (1, 'Monday'),
@@ -207,7 +205,7 @@ class CollectionAlertManager(models.Manager):
             if collections:
                 bin_collection_types_subject = " + ".join(bc.get_collection_type_display() for bc in collections)
                 bin_collection_types_list = "\n".join("  * %s\n" % bc.get_collection_type_display() for bc in collections)
-                send_email(None, 'Bin collection tomorrow, %s! (%s)' % (tomorrow_day_name, bin_collection_types_subject),
+                send_email('Bin collection tomorrow, %s! (%s)' % (tomorrow_day_name, bin_collection_types_subject),
                            'email-alert.txt', 
                            Context({
                             'bin_collection_types_list': bin_collection_types_list,
@@ -216,7 +214,6 @@ class CollectionAlertManager(models.Manager):
                             'collection_alert': collection_alert,
                             'domain': Site.objects.get_current().domain,
                             }, 
-                                   collection_alert.instance_namespace,
                                    ), 
                            collection_alert.email,
                 )
@@ -225,7 +222,7 @@ class CollectionAlertManager(models.Manager):
             collection_alert.last_checked_date = today
             collection_alert.save()
 
-class CollectionAlert(models.Model, Unsubscribeable):
+class CollectionAlert(models.Model):
     email = models.EmailField()
     street = models.ForeignKey(Street, null=True)
     
@@ -234,11 +231,6 @@ class CollectionAlert(models.Model, Unsubscribeable):
     last_sent_date = models.DateField(default=None, blank=True, null=True) 
     
     objects = CollectionAlertManager()
-
-    unsubscribe_success_template = 'alert_unsubscribed.html'
-    unsubscribe_email_subject = 'You have been unsubscribed from Barnet Bin Alerts'
-
-    instance_namespace = 'unsubscribe_binalerts'
 
     def is_confirmed(self):
         confirmeds = self.confirmed.all()
@@ -249,6 +241,9 @@ class CollectionAlert(models.Model, Unsubscribeable):
         ret = super(CollectionAlert, self).get_success_template_context()
         ret.update({'street_name': self.street.name, 'email': self.email})
         return ret
+
+    def get_unsubscribe_url(self):
+        return self.confirmed.all()[0].path_for_unsubscribe()
 
     class Meta:
         ordering = ('email',)

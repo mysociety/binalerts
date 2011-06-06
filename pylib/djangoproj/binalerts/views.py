@@ -7,7 +7,7 @@
 import re
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -69,7 +69,7 @@ def show_street(request, url_name):
             alert = form.save(commit=False)
             alert.street = street
             alert.save()
-            EmailConfirmation.objects.confirm(request, alert, 'alert_confirmed')
+            EmailConfirmation.objects.confirm(alert, 'alert_confirmed', 'alert_unsubscribed')
             return render_to_response('check_email.html')
 
     # prepare the data to keep things as simple as possible in the template
@@ -102,5 +102,9 @@ def show_street(request, url_name):
         'daynames': DISPLAY_DAYS_OF_WEEK })
 
 def alert_confirmed(request, id):
-    return render_to_response('alert_confirmed.html', { })
+    return render_to_response('alert_confirmed.html', {})
 
+def alert_unsubscribed(request, id):
+    alert = get_object_or_404(CollectionAlert, id=id)
+    
+    return render_to_response('alert_unsubscribed.html', {'alert': alert})
