@@ -68,6 +68,7 @@ class CollectionAlertAdmin(admin.ModelAdmin):
     inlines = (EmailConfirmationInline,)
     list_display = ('email', 'street', 'is_confirmed')
     search_fields = ('email', 'street__name')
+    readonly_fields = ('last_checked_date', 'last_sent_date')
 
 class CollectionTypeAdmin(admin.ModelAdmin):
     list_display = ('description', 'friendly_id', 'detail_text')
