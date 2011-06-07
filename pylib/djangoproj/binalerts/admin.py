@@ -16,10 +16,10 @@ class BinCollectionAdmin(admin.ModelAdmin):
     list_editable = ('collection_day',)
     list_display_links = ('street',)
     list_filter = ('collection_day', 'collection_type')
-    search_fields = ['street__name']
+    search_fields = ('street__name',)
         
 class StreetAdmin(admin.ModelAdmin):
-    search_fields = ['name']
+    search_fields = ('name', 'partial_postcode')
     fields = ('name', 'partial_postcode', 'url_name')
     list_display = ('name', 'partial_postcode', 'url_name')
     prepopulated_fields = {"url_name": ("name","partial_postcode")} # gah! django uses - not _ for slugs
@@ -30,7 +30,7 @@ class StreetAdmin(admin.ModelAdmin):
 
         
 class DataImportAdmin(admin.ModelAdmin):
-    actions = ['execute_import_data']
+    actions = ('execute_import_data',)
     list_display = ('upload_file', 'timestamp', 'implicit_collection_type', 'guess_postcodes')
 
     # for historic (Barnet) reasons, hardwire implicit collection types for now: use can always override
