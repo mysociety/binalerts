@@ -69,7 +69,6 @@ class CollectionAlertAdmin(admin.ModelAdmin):
 admin.site.register(BinCollection, BinCollectionAdmin)
 admin.site.register(BinCollectionType)
 admin.site.register(CollectionAlert, CollectionAlertAdmin)
-admin.site.register(EmailConfirmation)
 admin.site.register(Street, StreetAdmin)
 admin.site.register(DataImport, DataImportAdmin)
 
