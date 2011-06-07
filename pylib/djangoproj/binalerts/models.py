@@ -25,6 +25,9 @@ from django.template import Context
 from emailconfirmation.models import EmailConfirmation
 from emailconfirmation.utils import send_email
 
+EmailConfirmation.after_confirm = 'alert_confirmed'
+EmailConfirmation.after_unsubscribe = 'alert_unsubscribed'
+
 DAY_OF_WEEK_CHOICES = (
     (0, 'Sunday'),
     (1, 'Monday'),

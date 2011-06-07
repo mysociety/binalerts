@@ -1,11 +1,11 @@
 # admin.py:
 # Administration pages for Bin Alerts.
 #
-# Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
-# Email: francis@mysociety.org; WWW: http://www.mysociety.org/
+# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
+# Email: duncan@mysociety.org; WWW: http://www.mysociety.org/
 
 from django.contrib import admin
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.generic import GenericTabularInline
 
 from binalerts.models import BinCollection, BinCollectionType, Street, CollectionAlert, DataImport
 from emailconfirmation.models import EmailConfirmation
@@ -56,9 +56,19 @@ class DataImportAdmin(admin.ModelAdmin):
                 self.message_user(request, rl)
     execute_import_data.short_description = "Import data from file"
 
+class EmailConfirmationInline(GenericTabularInline):
+    model = EmailConfirmation
+    extra = 1
+    max_num = 1
+    can_delete = False
+    fields = ('confirmed',)
+
+class CollectionAlertAdmin(admin.ModelAdmin):
+    inlines = (EmailConfirmationInline,)
+
 admin.site.register(BinCollection, BinCollectionAdmin)
 admin.site.register(BinCollectionType)
-admin.site.register(CollectionAlert)
+admin.site.register(CollectionAlert, CollectionAlertAdmin)
 admin.site.register(EmailConfirmation)
 admin.site.register(Street, StreetAdmin)
 admin.site.register(DataImport, DataImportAdmin)

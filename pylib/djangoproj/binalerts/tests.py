@@ -243,11 +243,7 @@ class AlertsTest(BinAlertsTestCase):
         
         street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
         alert = CollectionAlert.objects.create(street=street, email=test_email)
-        alert.confirmed.create(
-            confirmed=True,
-            after_confirm='alert_confirmed',
-            after_unsubscribe='alert_unsubscribed',
-            )
+        alert.confirmed.create(confirmed=True)
 
         unsubscribe_path = alert.confirmed.all()[0].path_for_unsubscribe()
         
