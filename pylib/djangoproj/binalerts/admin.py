@@ -66,10 +66,14 @@ class EmailConfirmationInline(GenericTabularInline):
 class CollectionAlertAdmin(admin.ModelAdmin):
     inlines = (EmailConfirmationInline,)
     list_display = ('email', 'street', 'is_confirmed')
+    search_fields = ('email', 'street__name')
 
-admin.site.register(BinCollection, BinCollectionAdmin)
-admin.site.register(BinCollectionType)
+class CollectionTypeAdmin(admin.ModelAdmin):
+    list_display = ('description', 'friendly_id', 'detail_text')
+
 admin.site.register(CollectionAlert, CollectionAlertAdmin)
+admin.site.register(BinCollection, BinCollectionAdmin)
+admin.site.register(BinCollectionType, CollectionTypeAdmin)
 admin.site.register(Street, StreetAdmin)
 admin.site.register(DataImport, DataImportAdmin)
 
