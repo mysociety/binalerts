@@ -65,6 +65,7 @@ class EmailConfirmationInline(GenericTabularInline):
 
 class CollectionAlertAdmin(admin.ModelAdmin):
     inlines = (EmailConfirmationInline,)
+    list_display = ('email', 'street', 'is_confirmed')
 
 admin.site.register(BinCollection, BinCollectionAdmin)
 admin.site.register(BinCollectionType)
