@@ -1,0 +1,63 @@
+# encoding: utf-8
+import datetime
+from south.db import db
+from south.v2 import SchemaMigration
+from django.db import models
+
+class Migration(SchemaMigration):
+
+    def forwards(self, orm):
+        
+        # Adding field 'CollectionAlert.confirmed'
+        db.add_column('binalerts_collectionalert', 'confirmed', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+
+
+    def backwards(self, orm):
+        
+        # Deleting field 'CollectionAlert.confirmed'
+        db.delete_column('binalerts_collectionalert', 'confirmed')
+
+
+    models = {
+        'binalerts.bincollection': {
+            'Meta': {'ordering': "['street__name', 'collection_day', 'collection_type__friendly_id']", 'object_name': 'BinCollection'},
+            'collection_day': ('django.db.models.fields.IntegerField', [], {}),
+            'collection_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['binalerts.BinCollectionType']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'last_updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
+            'street': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'bin_collections'", 'to': "orm['binalerts.Street']"})
+        },
+        'binalerts.bincollectiontype': {
+            'Meta': {'object_name': 'BinCollectionType'},
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'detail_text': ('django.db.models.fields.TextField', [], {'default': "''", 'max_length': '1024', 'blank': 'True'}),
+            'friendly_id': ('django.db.models.fields.CharField', [], {'max_length': '4'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+        },
+        'binalerts.collectionalert': {
+            'Meta': {'ordering': "('email',)", 'object_name': 'CollectionAlert'},
+            'confirmed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'last_checked_date': ('django.db.models.fields.DateField', [], {'default': 'datetime.date(2000, 1, 1)'}),
+            'last_sent_date': ('django.db.models.fields.DateField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
+            'street': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['binalerts.Street']", 'null': 'True'})
+        },
+        'binalerts.dataimport': {
+            'Meta': {'object_name': 'DataImport'},
+            'guess_postcodes': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'implicit_collection_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['binalerts.BinCollectionType']", 'null': 'True', 'blank': 'True'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
+            'upload_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'})
+        },
+        'binalerts.street': {
+            'Meta': {'ordering': "['name', 'partial_postcode']", 'object_name': 'Street'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'partial_postcode': ('django.db.models.fields.CharField', [], {'max_length': '5'}),
+            'url_name': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'})
+        }
+    }
+
+    complete_apps = ['binalerts']
