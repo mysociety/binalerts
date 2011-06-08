@@ -69,7 +69,7 @@ def show_street(request, url_name):
             alert = form.save(commit=False)
             alert.street = street
             alert.save()
-            EmailConfirmation.objects.confirm(alert)
+            alert.confirm()
             return render_to_response('check_email.html')
 
     # prepare the data to keep things as simple as possible in the template

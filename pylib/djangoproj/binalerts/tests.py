@@ -173,10 +173,10 @@ class AlertsTest(BinAlertsTestCase):
         self.assertEquals(collection_alert.email, 'francis@mysociety.org')
         self.assertEquals(collection_alert.street.url_name, 'alyth_gardens')
         # ... and it is not confirmed
-        self.assertEquals(collection_alert.is_confirmed(), False)
+        self.assertEquals(collection_alert.confirmed, False)
 
         # get the URL from the email
-        url = re.search("\nhttp://example.com(/C/.*)", body).groups()[0]
+        url = re.search("\nhttp://%s(/C/.*)" %(settings.DOMAIN_NAME), body).groups()[0]
         #print "confirmation URL is: ", url
 
         # follow the URL and make sure..
@@ -184,15 +184,15 @@ class AlertsTest(BinAlertsTestCase):
         # ... user is redirected to the right page
         self.assertRedirects(response, '/confirmed/%d' % collection_alert.id)
         # ... alert is now confirmed
-        self.assertEquals(collection_alert.is_confirmed(), True)
+
+        new_alert = CollectionAlert.objects.get(id=collection_alert.id)
+        assert new_alert.confirmed
 
     # def test_wrong_token_does_not_confirm_email(self):
 
     def test_no_alerts_sent_if_not_confirmed_alert(self):
         street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
-        alert = CollectionAlert.objects.create(street=street, email='francis@mysociety.org')
-        EmailConfirmation.objects.create(confirmed = False, content_object = alert)
-        assert alert.is_confirmed() == False
+        alert = CollectionAlert.objects.create(street=street, email='francis@mysociety.org', confirmed=False)
 
         for day_of_month in range(3, 12):
             CollectionAlert.objects.send_pending_alerts(now = datetime.datetime(2010, 1, day_of_month, 9, 00, 00))
@@ -205,10 +205,7 @@ class AlertsTest(BinAlertsTestCase):
         bin_collection = BinCollection.objects.create(collection_day=2, collection_type=collection_type, street=street)
         collection_type = BinCollectionType.objects.get(friendly_id='D')
         bin_collection2 = BinCollection.objects.create(collection_day=2, collection_type=collection_type, street=street)
-        alert = CollectionAlert.objects.create(street=street, email = 'francis@mysociety.org')
-        email_confirmation = EmailConfirmation.objects.create(confirmed = True, content_object = alert)
-
-        assert alert.is_confirmed() == True
+        alert = CollectionAlert.objects.create(street=street, email = 'francis@mysociety.org', confirmed=True)
         
         # In production, the cron job (conf/crontab.ugly) is called at 9am
         # every day. This test simulates as if the cron ran for an arbitary
@@ -231,7 +228,7 @@ class AlertsTest(BinAlertsTestCase):
                 assert "Alyth Gardens" in m.body
 
                 # Check that there is an unsubscribe link in the email
-                assert 'http://example.com/D/' in m.body, 'No unsubscribe link in email body'
+                assert 'http://%s/D/' %(settings.DOMAIN_NAME) in m.body, 'No unsubscribe link in email body'
             else:
                 self.assertEquals(len(mail.outbox), 0)
             mail.outbox = []
@@ -242,10 +239,9 @@ class AlertsTest(BinAlertsTestCase):
         test_email = 'duncan@mysociety.org'
         
         street = Street.objects.create(name='Alyth Gardens', url_name='alyth_gardens', partial_postcode='XX0') 
-        alert = CollectionAlert.objects.create(street=street, email=test_email)
-        alert.confirmed.create(confirmed=True)
+        alert = CollectionAlert.objects.create(street=street, email=test_email, confirmed=True)
 
-        unsubscribe_path = alert.confirmed.all()[0].path_for_unsubscribe()
+        unsubscribe_path = alert.path_for_unsubscribe()
         
         response = self.client.get(unsubscribe_path, follow=True)
 
@@ -255,7 +251,8 @@ class AlertsTest(BinAlertsTestCase):
         self.assertContains(response, "Alyth")
         self.assertContains(response, test_email)
 
-        assert not alert.is_confirmed()
+        alert = CollectionAlert.objects.get(id=alert.id)
+        assert not alert.confirmed
         
 
 # Check data loading functions
