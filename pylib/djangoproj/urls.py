@@ -29,7 +29,7 @@ urlpatterns = patterns('',
      url(r'^admin/', include(admin.site.urls)),
 
      # Email confirmation
-     (r'^', include('emailconfirmation.urls')),
+     (r'^', include('emailconfirmation.urls'), {'model_type': binalerts.models.CollectionAlert}),
      )
      
 if djangoproj.settings.SERVE_STATIC_FILES:

@@ -25,9 +25,6 @@ from django.template import Context
 from emailconfirmation.models import EmailConfirmation
 from emailconfirmation.utils import send_email
 
-EmailConfirmation.after_confirm = 'alert_confirmed'
-EmailConfirmation.after_unsubscribe = 'alert_unsubscribed'
-
 DAY_OF_WEEK_CHOICES = (
     (0, 'Sunday'),
     (1, 'Monday'),
@@ -203,7 +200,7 @@ class CollectionAlertManager(models.Manager):
         tomorrow_day_of_week = (today_day_of_week + 1) % 7
         tomorrow_day_name = BinCollection.number_to_day_name(tomorrow_day_of_week)
         
-        for collection_alert in CollectionAlert.objects.filter(confirmed__confirmed=True).filter(last_checked_date__lt=today):
+        for collection_alert in CollectionAlert.objects.filter(confirmed=True).filter(last_checked_date__lt=today):
             collections = collection_alert.street.bin_collections.filter(collection_day__exact=tomorrow_day_of_week)
             if collections:
                 bin_collection_types_subject = " + ".join(bc.get_collection_type_display() for bc in collections)
@@ -225,20 +222,16 @@ class CollectionAlertManager(models.Manager):
             collection_alert.last_checked_date = today
             collection_alert.save()
 
-class CollectionAlert(models.Model):
+class CollectionAlert(EmailConfirmation):
     email = models.EmailField()
     street = models.ForeignKey(Street, null=True)
-    
-    confirmed = generic.GenericRelation(EmailConfirmation)
     last_checked_date = models.DateField(default=datetime.date(2000, 01, 01)) # always long in the past
     last_sent_date = models.DateField(default=None, blank=True, null=True) 
     
     objects = CollectionAlertManager()
 
-    def is_confirmed(self):
-        confirmeds = self.confirmed.all()
-        assert len(confirmeds) == 1
-        return confirmeds[0].confirmed
+    after_confirm = 'alert_confirmed'
+    after_unsubscribe = 'alert_unsubscribed'
 
     def get_success_template_context(self):
         ret = super(CollectionAlert, self).get_success_template_context()
@@ -246,13 +239,13 @@ class CollectionAlert(models.Model):
         return ret
 
     def get_unsubscribe_url(self):
-        return self.confirmed.all()[0].path_for_unsubscribe()
+        return self.path_for_unsubscribe()
 
     class Meta:
         ordering = ('email',)
     
     def __unicode__(self):
-        return 'Alert for %s, street %s, confirmed %s' % (self.email, self.street.url_name, self.is_confirmed())
+        return 'Alert for %s, street %s, confirmed %s' % (self.email, self.street.url_name, self.confirmed)
 
 class DataImport(models.Model):
     upload_file = models.FileField(upload_to='uploads')

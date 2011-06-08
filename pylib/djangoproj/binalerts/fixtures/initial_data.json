@@ -324,33 +324,6 @@
         }
     }, 
     {
-        "pk": 25, 
-        "model": "auth.permission", 
-        "fields": {
-            "codename": "add_emailconfirmation", 
-            "name": "Can add email confirmation", 
-            "content_type": 9
-        }
-    }, 
-    {
-        "pk": 26, 
-        "model": "auth.permission", 
-        "fields": {
-            "codename": "change_emailconfirmation", 
-            "name": "Can change email confirmation", 
-            "content_type": 9
-        }
-    }, 
-    {
-        "pk": 27, 
-        "model": "auth.permission", 
-        "fields": {
-            "codename": "delete_emailconfirmation", 
-            "name": "Can delete email confirmation", 
-            "content_type": 9
-        }
-    }, 
-    {
         "pk": 16, 
         "model": "auth.permission", 
         "fields": {
