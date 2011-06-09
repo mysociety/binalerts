@@ -70,10 +70,15 @@ class StreetManager(models.Manager):
                 if postcodes:
                     msg += ' (my guess from existing data is: %s)' % ' or '.join(postcodes)
                 raise IntegrityError(msg)
-        if candidate_streets.filter(partial_postcode=partial_postcode):
-            return (candidate_streets[0], False, did_guess_postcode)
-        elif len(candidate_streets) > 1:
-            msg = '"%s"" is ambiguous, %s possibilities: %s' % (name, len(candidate_streets), " or ".join('"' + s.__unicode__() + '"' for s in candidate_streets))
+        try:
+            return (candidate_streets.get(partial_postcode=partial_postcode), False, did_guess_postcode)
+        except Street.DoesNotExist:
+            pass
+        except Street.MultipleObjectsReturned:
+            msg = '"%s" with postcode "%s" found multiple matches, should only be one' % (name, partial_postcode) 
+            raise IntegrityError(msg)
+        if len(candidate_streets) > 1:
+            msg = '"%s" is ambiguous, %s possibilities: %s' % (name, len(candidate_streets), " or ".join('"' + s.__unicode__() + '"' for s in candidate_streets))
             raise IntegrityError(msg)
         else:
             url_name = Street.make_url_name(name, partial_postcode)
