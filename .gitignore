@@ -1,2 +1,5 @@
 *.pyc
 .*.swp
+*~
+web/down.html
+*#*#

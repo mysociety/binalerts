@@ -1,32 +1,36 @@
 # admin.py:
 # Administration pages for Bin Alerts.
 #
-# Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
-# Email: francis@mysociety.org; WWW: http://www.mysociety.org/
+# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
+# Email: duncan@mysociety.org; WWW: http://www.mysociety.org/
+
+from django.contrib import admin
+from django.contrib.contenttypes.generic import GenericTabularInline
 
 from binalerts.models import BinCollection, BinCollectionType, Street, CollectionAlert, DataImport
 from emailconfirmation.models import EmailConfirmation
 
-from django.contrib import admin
-
 class BinCollectionAdmin(admin.ModelAdmin):
     readonly_fields = ('last_updated',)
-    list_display = ('street', 'collection_day', 'collection_type', 'last_updated')    
-    list_display_links = ('street', 'collection_day', 'collection_type')
-    search_fields = ['street__name']
+    list_display = ('street', 'collection_day', 'collection_type', 'last_updated')
+    list_editable = ('collection_day',)
+    list_display_links = ('street',)
+    list_filter = ('collection_day', 'collection_type')
+    search_fields = ('street__name',)
         
 class StreetAdmin(admin.ModelAdmin):
-    search_fields = ['name']
+    search_fields = ('name', 'partial_postcode')
+    fields = ('name', 'partial_postcode', 'url_name')
     list_display = ('name', 'partial_postcode', 'url_name')
     prepopulated_fields = {"url_name": ("name","partial_postcode")} # gah! django uses - not _ for slugs
 
     def save_model(self, request, street, form, change):
         street.url_name = street.url_name.replace("-", "_") # fix hyphens from django slug magic
-        street.save() # TODO: really URL name should be unqiue as a db constraint, no?
+        street.save() # TODO: really URL name should be unique as a db constraint, no?
 
         
 class DataImportAdmin(admin.ModelAdmin):
-    actions = ['execute_import_data']
+    actions = ('execute_import_data',)
     list_display = ('upload_file', 'timestamp', 'implicit_collection_type', 'guess_postcodes')
 
     # for historic (Barnet) reasons, hardwire implicit collection types for now: use can always override
@@ -53,10 +57,25 @@ class DataImportAdmin(admin.ModelAdmin):
                 self.message_user(request, rl)
     execute_import_data.short_description = "Import data from file"
 
+class EmailConfirmationInline(GenericTabularInline):
+    model = EmailConfirmation
+    extra = 1
+    max_num = 1
+    can_delete = False
+    fields = ('confirmed',)
+
+class CollectionAlertAdmin(admin.ModelAdmin):
+    inlines = (EmailConfirmationInline,)
+    list_display = ('email', 'street', 'is_confirmed')
+    search_fields = ('email', 'street__name')
+    readonly_fields = ('last_checked_date', 'last_sent_date')
+
+class CollectionTypeAdmin(admin.ModelAdmin):
+    list_display = ('description', 'friendly_id', 'detail_text')
+
+admin.site.register(CollectionAlert, CollectionAlertAdmin)
 admin.site.register(BinCollection, BinCollectionAdmin)
-admin.site.register(BinCollectionType)
-admin.site.register(CollectionAlert)
-admin.site.register(EmailConfirmation)
+admin.site.register(BinCollectionType, CollectionTypeAdmin)
 admin.site.register(Street, StreetAdmin)
 admin.site.register(DataImport, DataImportAdmin)
 

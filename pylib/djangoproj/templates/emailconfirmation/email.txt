@@ -4,8 +4,7 @@ Thanks for signing up to your Barnet bin alert -- we'll email you the day before
 
 To confirm, please visit the following link:
 
-http://{{ host }}{% url emailconfirmation-check-token id=id, token=token %}
-
+http://{{ host }}{% url emailconfirmation-confirm id=id, token=token %}
 
 Yours,
 The Bin Team

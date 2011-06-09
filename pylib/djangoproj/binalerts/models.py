@@ -10,16 +10,23 @@ import xml.dom.minidom
 import re
 import csv
 import os.path
+import hashlib
 
 from settings import BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
 from settings import BINS_STREETS_MUST_HAVE_POSTCODE
+from settings import SECRET_KEY
 
 from django.db import models
 from django.db import IntegrityError
 from django.contrib.contenttypes import generic
+from django.contrib.sites.models import Site
+from django.template import Context
 
 from emailconfirmation.models import EmailConfirmation
 from emailconfirmation.utils import send_email
+
+EmailConfirmation.after_confirm = 'alert_confirmed'
+EmailConfirmation.after_unsubscribe = 'alert_unsubscribed'
 
 DAY_OF_WEEK_CHOICES = (
     (0, 'Sunday'),
@@ -206,14 +213,17 @@ class CollectionAlertManager(models.Manager):
             if collections:
                 bin_collection_types_subject = " + ".join(bc.get_collection_type_display() for bc in collections)
                 bin_collection_types_list = "\n".join("  * %s\n" % bc.get_collection_type_display() for bc in collections)
-                send_email(None, 'Bin collection tomorrow, %s! (%s)' % (tomorrow_day_name, bin_collection_types_subject),
-                    'email-alert.txt', {
-                        'bin_collection_types_list': bin_collection_types_list,
-                        'street_name': collection_alert.street.__unicode__(),
-                        'tomorrow_day_name': tomorrow_day_name,
-                        'collection_alert': collection_alert,
-                        'unsubscribe_url': "http://NOT_YET_IMPLEMENTED"
-                    }, collection_alert.email
+                send_email('Bin collection tomorrow, %s! (%s)' % (tomorrow_day_name, bin_collection_types_subject),
+                           'email-alert.txt', 
+                           Context({
+                            'bin_collection_types_list': bin_collection_types_list,
+                            'street_name': collection_alert.street.__unicode__(),
+                            'tomorrow_day_name': tomorrow_day_name,
+                            'collection_alert': collection_alert,
+                            'domain': Site.objects.get_current().domain,
+                            }, 
+                                   ), 
+                           collection_alert.email,
                 )
                 collection_alert.last_sent_date = today
                 
@@ -234,6 +244,14 @@ class CollectionAlert(models.Model):
         confirmeds = self.confirmed.all()
         assert len(confirmeds) == 1
         return confirmeds[0].confirmed
+
+    def get_success_template_context(self):
+        ret = super(CollectionAlert, self).get_success_template_context()
+        ret.update({'street_name': self.street.name, 'email': self.email})
+        return ret
+
+    def get_unsubscribe_url(self):
+        return self.confirmed.all()[0].path_for_unsubscribe()
 
     class Meta:
         ordering = ('email',)

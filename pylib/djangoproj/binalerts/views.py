@@ -6,15 +6,17 @@
 
 import re
 
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
 from binalerts.forms import LocationForm, CollectionAlertForm
-from binalerts.models import BinCollection, Street
+from binalerts.models import BinCollection, Street, CollectionAlert
 
 from emailconfirmation.models import EmailConfirmation
+
+from settings import SECRET_KEY
 
 # note: hardcoded daynames here must match binalerts.models.DAY_OF_WEEK_CHOICES (e.g. Sunday has index 0 (not Monday))
 DISPLAY_DAYS_OF_WEEK =  ['SUN', 'MON', 'TUE', 'WED', 'THURS', 'FRI', 'SAT']
@@ -67,7 +69,7 @@ def show_street(request, url_name):
             alert = form.save(commit=False)
             alert.street = street
             alert.save()
-            EmailConfirmation.objects.confirm(request, alert, 'alert_confirmed')
+            EmailConfirmation.objects.confirm(alert)
             return render_to_response('check_email.html')
 
     # prepare the data to keep things as simple as possible in the template
@@ -100,5 +102,9 @@ def show_street(request, url_name):
         'daynames': DISPLAY_DAYS_OF_WEEK })
 
 def alert_confirmed(request, id):
-    return render_to_response('alert_confirmed.html', { })
+    return render_to_response('alert_confirmed.html', {})
 
+def alert_unsubscribed(request, id):
+    alert = get_object_or_404(CollectionAlert, id=id)
+    
+    return render_to_response('alert_unsubscribed.html', {'alert': alert})

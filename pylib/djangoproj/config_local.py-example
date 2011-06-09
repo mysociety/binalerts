@@ -14,6 +14,7 @@ class LocalConfig(dict):
 config = LocalConfig(
 
     BINS_SITENAME = 'barnet',
+    DOMAIN_NAME = 'example.com' 
 
     BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = True,
     BINS_STREETS_MUST_HAVE_POSTCODE = True,

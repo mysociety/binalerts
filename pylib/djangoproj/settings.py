@@ -49,6 +49,9 @@ DATABASE_PASSWORD = config.get('BINS_DB_PASS')
 DATABASE_HOST = config.get('BINS_DB_HOST')
 DATABASE_PORT = config.get('BINS_DB_PORT')
 
+BINS_SITENAME = config.get('BINS_SITENAME')
+DOMAIN_NAME = config.get('DOMAIN_NAME')
+
 # True if the *same type of collection* can occur at a given address more than once a week
 # (False may be common: e.g., recycling is only collected once a week)
 # If false, it means if the a new collection day is read from the import, the old one will be deleted
@@ -123,5 +126,6 @@ INSTALLED_APPS = (
     #'django.contrib.gis',
     'djangoproj.binalerts',
     'emailconfirmation',
+    'unsubscribe',
     'south'
 )
