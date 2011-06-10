@@ -264,43 +264,51 @@ class LoadDataTest(BinAlertsTestCase):
     def test_load_data_from_pdf_xml(self):
         # garden_sample_pdf.xml was converted with "pdftohtml -xml" from this file:
         # http://www.barnet.gov.uk/garden-and-kitchen-waste-collection-streets.pdf
+
+        old_BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = settings.BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
+        settings.BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = False
         
-        LoadDataTest.old_stdout = sys.stdout
-        sys.stdout = StringIO()
-
-        collection_type = BinCollectionType.objects.get(friendly_id='G')
+        try:
         
-        garden_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/sample_garden_from_pdf.xml')
-        DataImport.load_from_pdf_xml(garden_sample_file, collection_type=collection_type)
+            LoadDataTest.old_stdout = sys.stdout
+            sys.stdout = StringIO()
 
-        # first item in sample file
-        response = self.client.post('/', { 'query': 'Ibsley Way' })
-        self.assertRedirects(response, '/street/ibsley_way_en4')
+            collection_type = BinCollectionType.objects.get(friendly_id='G')
+        
+            garden_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/sample_garden_from_pdf.xml')
+            DataImport.load_from_pdf_xml(garden_sample_file, collection_type=collection_type)
 
-        # one in the middle
-        response = self.client.post('/', { 'query': 'Jade Close' })
-        self.assertRedirects(response, '/street/jade_close_nw2')
+            # first item in sample file
+            response = self.client.post('/', { 'query': 'Ibsley Way' })
+            self.assertRedirects(response, '/street/ibsley_way_en4')
 
-        # last item in sample file
-        response = self.client.post('/', { 'query': 'Juniper Close' })
-        self.assertRedirects(response, '/street/juniper_close_en5')
+            # one in the middle
+            response = self.client.post('/', { 'query': 'Jade Close' })
+            self.assertRedirects(response, '/street/jade_close_nw2')
 
-        # check that postcodes are indeed being loaded (and not simply being put into the url_name)
-        a_street = Street.objects.get(name="Juniper Close")
-        self.assertEquals(a_street.partial_postcode, 'EN5')
+            # last item in sample file
+            response = self.client.post('/', { 'query': 'Juniper Close' })
+            self.assertRedirects(response, '/street/juniper_close_en5')
 
-        # multiple partial postcodes e.g. EN5/N20 are ignored for now
-        response = self.client.post('/', { 'query': 'Barnet Lane' })
-        self.assertContains(response, "No street found with that name.")
+            # check that postcodes are indeed being loaded (and not simply being put into the url_name)
+            a_street = Street.objects.get(name="Juniper Close")
+            self.assertEquals(a_street.partial_postcode, 'EN5')
 
-        # need BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK set to false to test this TODO
-        # multiple days of week e.g Tuesday/Thursday are ignored for now
-        # response = self.client.post('/', { 'query': 'Athenaeum Road' })
-        # self.assertContains(response, "No street found with that name.")
+            # multiple partial postcodes e.g. EN5/N20 are ignored for now
+            response = self.client.post('/', { 'query': 'Barnet Lane' })
+            self.assertContains(response, "No street found with that name.")
 
-        # they are green/garden waste (the default for xml import)
-        response = self.client.get('/street/juniper_close_en5')
-        self.assertContains(response, 'Green Garden')
+            # multiple days of week e.g Tuesday/Thursday are ignored for now
+            # would be better to test the output (stdout?) from the import task, but this is its consequence
+            response = self.client.post('/', { 'query': 'Athenaeum Road' })
+            self.assertContains(response, "No street found with that name.")
+            
+            # they are green/garden waste (the default for xml import)
+            response = self.client.get('/street/juniper_close_en5')
+            self.assertContains(response, 'Green Garden')
+
+        finally:
+            settings.BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = old_BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
 
     def test_load_data_from_pdf_xml_with_multiple_days(self):
         old_BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = settings.BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
