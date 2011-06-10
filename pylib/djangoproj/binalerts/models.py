@@ -12,9 +12,9 @@ import csv
 import os.path
 import hashlib
 
-from settings import BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
-from settings import BINS_STREETS_MUST_HAVE_POSTCODE
-from settings import SECRET_KEY
+import settings # from which we get
+                 # BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
+                 # BINS_STREETS_MUST_HAVE_POSTCODE
 
 from django.db import models
 from django.db import IntegrityError
@@ -72,7 +72,7 @@ class StreetManager(models.Manager):
             if len(postcodes) == 1 and guess_postcodes:
                 partial_postcode = postcodes[0]
                 did_guess_postcode = True
-            elif BINS_STREETS_MUST_HAVE_POSTCODE:
+            elif settings.BINS_STREETS_MUST_HAVE_POSTCODE:
                 msg = '"%s" has no postcode' % name
                 if postcodes:
                     msg += ' (my guess from existing data is: %s)' % ' or '.join(postcodes)
@@ -107,7 +107,7 @@ class Street(models.Model):
         msg = ""
         deleted_days = []
         collection_day_name = BinCollection.number_to_day_name(collection_day)
-        if not BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK:
+        if not settings.BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK:
             # delete all other collections (of this type), on all days, then create a new one
             for bc in self.bin_collections.filter(collection_type=collection_type).order_by('collection_day'):
                 if bc.collection_day != collection_day:
@@ -439,7 +439,7 @@ class DataImport(models.Model):
                 else:
                     street_name = (street_name_1 + " " + street_name_2).strip()
                     days_of_week = re.split('\W', day_of_week)
-                    if len(days_of_week) > 1 and not BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK:
+                    if len(days_of_week) > 1 and not settings.BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK:
                         msg = 'Can\'t parse "%s" into a single day: ignoring row "%s"' % (day_of_week, row)
                         log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                     else:

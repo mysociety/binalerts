@@ -303,15 +303,20 @@ class LoadDataTest(BinAlertsTestCase):
         self.assertContains(response, 'Green Garden')
 
     def test_load_data_from_pdf_xml_with_multiple_days(self):
-        collection_type = BinCollectionType.objects.get(friendly_id='G') 
+        old_BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = settings.BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
+        settings.BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = True
+        try:
+            collection_type = BinCollectionType.objects.get(friendly_id='G') 
         
-        garden_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/sample_garden_from_pdf.xml')
-        DataImport.load_from_pdf_xml(garden_sample_file, collection_type=collection_type)
+            garden_sample_file = os.path.join(os.path.dirname(binalerts.__file__), 'fixtures/sample_garden_from_pdf.xml')
+            DataImport.load_from_pdf_xml(garden_sample_file, collection_type=collection_type)
 
-        # multiple days of week e.g Tuesday/Thursday are handled OK
-        response = self.client.get('/street/athenaeum_road_n20')
-        #import pdb; pdb.set_trace()
-        self.assertContains(response, "Kitchen Waste</strong> collection days are <strong>Tuesday &amp; Thursday")
+            # multiple days of week e.g Tuesday/Thursday are handled OK
+            response = self.client.get('/street/athenaeum_road_n20')
+            #import pdb; pdb.set_trace()
+            self.assertContains(response, "Kitchen Waste</strong> collection days are <strong>Tuesday &amp; Thursday")
+        finally:
+            settings.BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = old_BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK
 
 
     def test_load_data_from_csv_without_postcodes(self):
