@@ -9,7 +9,6 @@ import re
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ObjectDoesNotExist
 
 from binalerts.forms import LocationForm, CollectionAlertForm
 from binalerts.models import BinCollection, Street, CollectionAlert
@@ -44,7 +43,7 @@ def frontpage(request):
 def show_street(request, url_name):
     try:
         street = Street.objects.get(url_name=url_name)
-    except ObjectDoesNotExist:
+    except Street.DoesNotExist:
         # Policy for failing to find a street:
         #   break the name down, strip off a trailing postcode (if there is one) and search for
         #   the new name: redirect if there's a single hit, otherwise show the front page

@@ -318,7 +318,11 @@ class DataImport(models.Model):
         partial_postcode_check = re.compile('^[A-Z]{1,2}[0-9]{1,2}[A-Z]?$')
         for row in reader: 
             n_lines += 1
+            if row and row[0].startswith("#"): # skip comments
+                continue
             if found_data == 'native':
+                if len(row) < 2: # skip non-conforming lines: they have no postcode or collection day
+                    continue
                 street_name = row[0] # capitalisation?
                 partial_postcode= re.sub(r'^([A-Z]+[0-9]+) *[0-9][A-Z]{2}.*', r'\1', canonicalise_postcode(row[1]) )
                 if len(partial_postcode)>0 and not partial_postcode_check.match(partial_postcode):
@@ -327,9 +331,8 @@ class DataImport(models.Model):
                     continue                    
                 try:
                     collection_type = BinCollectionType.objects.get(friendly_id=row[2])
-                except ObjectDoesNotExist:
+                except BinCollectionType.DoesNotExist:
                     collection_type = default_collection_type # default
-                this_day = BinCollection.day_of_week_string_to_number(row[3])
                 try:
                     street, was_created, did_guess_postcode = Street.objects.get_or_create_street(street_name, partial_postcode, guess_postcodes=guess_postcodes)
                 except IntegrityError, e: # e.g., ambiguous postcode: exception may contain suggested value
@@ -344,10 +347,12 @@ class DataImport(models.Model):
                     msg = 'line %s: made a new street "%s" %s' % (n_lines, street, did_guess_postcode)
                     log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
                     n_new_streets += 1
-                collection_change_msg = street.add_collection(collection_type, this_day)
-                msg = 'line %s: street %s: %s %s' % (n_lines, street, collection_change_msg, did_guess_postcode)
-                log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log) 
-                n_collections += 1 
+                if len(row)==4:
+                    this_day = BinCollection.day_of_week_string_to_number(row[3])
+                    collection_change_msg = street.add_collection(collection_type, this_day)
+                    msg = 'line %s: street %s: %s %s' % (n_lines, street, collection_change_msg, did_guess_postcode)
+                    log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log) 
+                    n_collections += 1 
             elif found_data == 'barnet':
                 for day in range(len(row)): #   for this_day in 0..4 (actually monday-friday)
                     # note: here we are making these assumptions, based on current provided data:
