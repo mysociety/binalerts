@@ -25,6 +25,8 @@ from django.template import Context
 from emailconfirmation.models import EmailConfirmation
 from emailconfirmation.utils import send_email
 
+from utils import canonicalise_postcode
+
 EmailConfirmation.after_confirm = 'alert_confirmed'
 EmailConfirmation.after_unsubscribe = 'alert_unsubscribed'
 
@@ -313,11 +315,16 @@ class DataImport(models.Model):
         n_collections = 0
         n_new_streets = 0
         n_lines = 0
+        partial_postcode_check = re.compile('^[A-Z]{1,2}[0-9]{1,2}[A-Z]?$')
         for row in reader: 
             n_lines += 1
             if found_data == 'native':
-                street_name = row[0]
-                partial_postcode = row[1]
+                street_name = row[0] # capitalisation?
+                partial_postcode= re.sub(r'^([A-Z]+[0-9]+) *[0-9][A-Z]{2}.*', r'\1', canonicalise_postcode(row[1]) )
+                if len(partial_postcode)>0 and not partial_postcode_check.match(partial_postcode):
+                    msg = "line %s: did not update street: bad partial postcode %s" % (n_lines, partial_postcode)
+                    log_lines = DataImport._add_to_log_lines(log_lines, msg, want_onscreen_log)
+                    continue                    
                 try:
                     collection_type = BinCollectionType.objects.get(friendly_id=row[2])
                 except ObjectDoesNotExist:
