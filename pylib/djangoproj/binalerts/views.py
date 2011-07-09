@@ -126,7 +126,7 @@ def admin_street_report(request):
                 num_collections += c
                 num_types += 1
                 if c > 1:
-                    is_mutlti = True
+                    is_multi = True
             counts.append(c)
         street_data.append((street, num_collections, num_types, is_multi, counts))
         if num_types == len(types):
