@@ -6,6 +6,8 @@
 
 from django.contrib import admin
 from django.contrib.contenttypes.generic import GenericTabularInline
+from django.db.models import Count
+
 
 from binalerts.models import BinCollection, BinCollectionType, Street, CollectionAlert, DataImport
 from emailconfirmation.models import EmailConfirmation
@@ -21,9 +23,16 @@ class BinCollectionAdmin(admin.ModelAdmin):
 class StreetAdmin(admin.ModelAdmin):
     search_fields = ('name', 'partial_postcode')
     fields = ('name', 'partial_postcode', 'url_name')
-    list_display = ('name', 'partial_postcode', 'url_name')
+    list_display = ('name', 'partial_postcode', 'url_name', 'collection_count')
     prepopulated_fields = {"url_name": ("name","partial_postcode")} # gah! django uses - not _ for slugs
+    
+    def queryset(self, request):
+        return Street.objects.annotate(collection_count=Count('bin_collections'))
 
+    def collection_count(self, inst):
+        return inst.collection_count
+    collection_count.admin_order_field = 'collection_count'
+    
     def save_model(self, request, street, form, change):
         street.url_name = street.url_name.replace("-", "_") # fix hyphens from django slug magic
         street.save() # TODO: really URL name should be unique as a db constraint, no?

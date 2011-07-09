@@ -9,9 +9,10 @@ import re
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
+from django.contrib.admin.views.decorators import staff_member_required
 
 from binalerts.forms import LocationForm, CollectionAlertForm
-from binalerts.models import BinCollection, Street, CollectionAlert
+from binalerts.models import BinCollection, BinCollectionType, Street, CollectionAlert
 
 from emailconfirmation.models import EmailConfirmation
 
@@ -107,3 +108,34 @@ def alert_unsubscribed(request, id):
     alert = get_object_or_404(CollectionAlert, id=id)
     
     return render_to_response('alert_unsubscribed.html', {'alert': alert})
+
+@staff_member_required
+def admin_street_report(request):
+    num_all_types = 0 # count all streets which have all types of collection
+    percent_all_types = "0"
+    types = BinCollectionType.objects.all().order_by('friendly_id')
+    street_data = []
+    for street in Street.objects.all().order_by('name', 'partial_postcode'):
+        counts = []
+        num_collections = 0
+        num_types = 0
+        is_multi = False
+        for t in types:
+            c = street.bin_collections.filter(collection_type=t).count()
+            if c > 0:
+                num_collections += c
+                num_types += 1
+                if c > 1:
+                    is_mutlti = True
+            counts.append(c)
+        street_data.append((street, num_collections, num_types, is_multi, counts))
+        if num_types == len(types):
+            num_all_types += 1
+    if len(street_data) > 0:
+        percent_all_types = int(100 * num_all_types/len(street_data))
+    return render_to_response('admin_street_report.html', {
+        'street_data':street_data, 
+        'bin_types':types, 
+        'num_all_types':num_all_types,
+        'percent_all_types':percent_all_types})
+

@@ -1,0 +1,100 @@
+{% extends 'admin/base_site.html' %}
+{% block content %}
+<style>
+    .data-zero{color:#9a9a9a;}
+</style>
+<h1>
+    Binalerts Street/Location Report
+</h1>
+<p style="margin:1em 0; font-weight: bold">
+    Total number of locations: {{ street_data|length }} of which {{ percent_all_types }}% ({{ num_all_types }}) 
+    have <em>all {{ bin_types|length }} type{{ bin_types|length|pluralize }}</em> of collection.
+</p>
+
+<dl>
+    <dt>Total types</dt>
+    <dd>The number of different <em>types</em> of collection being made at this location.
+        <br/>
+        The {{ bin_types|length }} type{{ bin_types|length|pluralize }}</em> of collection {{ bin_types|length|pluralize:"is,are" }}:
+        <ul>
+        {% for ct in bin_types %}
+            <li><em>{{ ct.friendly_id }}</em>: {{ ct.description }}</li>
+        {% endfor %}
+        </ul>        
+    </dd>
+    <dt>All types?</dt>
+    <dd>Is "yes" if there is at least one of every type of collection at this location.</dd>
+    <dt>Total collections</dt>
+    <dd>The number of collections made at this location.</dd>
+    <dt>Multiple collections?</dt>
+    <dd>Is "yes" if any type of collection here is made <em>more</em> than once in the (weekly) cycle.</dd>
+</dl>
+
+<div class="results" style="margin-top:2em;">
+    <table cellspacing="0" id="result_list">
+        <thead>
+            <tr>
+                <th scope="col">
+                        Street or<br/>location
+                </th>
+                <th scope="col">
+                        Partial<br/>postcode
+                </th>
+                <th scope="col">
+                        Total<br/>types
+                </th>
+                <th scope="col">
+                        All<br/>types?
+                </th>                
+                {% for ct in bin_types %}
+                    <th scope="col">
+                        <abbr title="{{ct.description}}">{{ ct.friendly_id }}
+                        <br/>
+                        {{ ct.description|truncatewords:1 }}</abbr>
+                    </th>
+                {% endfor %}
+                <th scope="col">
+                        Total<br/>collections
+                </th>
+                <th scope="col">
+                        Multiple<br/>collections?
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for street, num_collections, num_types, is_multi, counts in street_data %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                    <th>
+                        <a href="/admin/binalerts/street/{{ street.id }}/">{{ street.name}}</a>
+                    </th>
+                    <td>
+                        {{ street.partial_postcode }}
+                    </td>
+                    <td align="right">
+                        {{ num_types }}
+                    </td>
+                    <td align="center">
+                        {% ifequal num_types bin_types|length %}
+                            yes
+                        {% endifequal %}
+                    </td>
+                    {% for val in counts %}
+                        <td align="right" {% ifequal val 0 %}class="data-zero"{% endifequal %}>
+                            {{ val }}
+                        </td>
+                    {% endfor %}
+                    <td align="right">
+                       {{ num_collections }}
+                    </td>
+                    <td align="center">
+                        {% if is_multi %}
+                            yes
+                        {% endif %}
+                    </td>
+                </tr>            
+            {% endfor %}
+            
+        </tbody>
+    </table>
+</div>
+{% endblock %}

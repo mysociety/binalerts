@@ -25,6 +25,7 @@ urlpatterns = patterns('',
          binalerts.views.alert_unsubscribed, name='alert_unsubscribed'),
 
      # Admin
+     url(r'^admin/binalerts/street_report/', binalerts.views.admin_street_report, name='admin_street_report'),
      url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
      url(r'^admin/', include(admin.site.urls)),
 
