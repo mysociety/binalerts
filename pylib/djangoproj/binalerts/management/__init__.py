@@ -31,9 +31,13 @@ def update_default_site(app, **kwargs):
     domain = settings.DOMAIN_NAME
     name = settings.BINS_SITENAME
     
-    s = Site.objects.all()[0]
-    s.domain = domain
-    s.name = name
+    s = Site.objects.all()
+    if s:
+        s = s[0]
+        s.domain = domain
+        s.name = name
+    else:
+        s = Site(domain=domain, name=name)
     s.save()
     Site.objects.clear_cache()
 
