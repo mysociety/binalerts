@@ -594,24 +594,6 @@
         }
     }, 
     {
-        "pk": 1, 
-        "model": "auth.user", 
-        "fields": {
-            "username": "admin", 
-            "first_name": "", 
-            "last_name": "", 
-            "is_active": true, 
-            "is_superuser": true, 
-            "is_staff": true, 
-            "last_login": "2011-06-07 14:08:38", 
-            "groups": [], 
-            "user_permissions": [], 
-            "password": "sha1$acf3d$c4162879909141cb7ead9a8784f8a25b8ebd1327", 
-            "email": "duncan@mysociety.org", 
-            "date_joined": "2011-06-03 13:15:25"
-        }
-    }, 
-    {
         "pk": 2, 
         "model": "auth.user", 
         "fields": {
