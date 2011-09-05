@@ -23,8 +23,8 @@
 }	
 
 .mysoc-bin-form{
-  border: 1px solid #ffA3A4;
-  background-color: #ffEBEB;
+  border: 1px solid #333333;
+  background-color: #cccccc;
   padding: 1em 1em 1em 1em;
   margin: 1em 4em;
 }
@@ -43,7 +43,7 @@
 }
 .mysoc-suggestions h2{
 	font-size: 100%;
-	color: #34A3A4;
+	color: #666666;
 	border-bottom:none;
 }
 
@@ -97,13 +97,20 @@
   width: 12%;
   margin: 0 4px 0 0;
   text-align: center;
-  padding: 100px 0 8px 0;
+  padding: 100px 0 0 0;
   font-weight:bold;
   font-size: 20px;
-  background-color: #ffEBEB;
+  background-color: #ebebeb;
   border: 2% solid #ffffff;
   color: #ffffff;
   
+}
+
+.mysoc-bin-day p {
+  margin: 8px 0 0 0;
+  padding: 0.2em 0;
+  text-align: center;
+  background-color: #cccccc;
 }
 
 /*
@@ -118,7 +125,7 @@
 .mysoc-bin-collection-g,
 .mysoc-bin-collection-gr,
 .mysoc-bin-collection-r {
-  background-color: #D8EBEB;
+  background-color: #D8ffcc;
   color: #34A3A4;
   background-repeat: no-repeat;
   background-position:50% 46px;
@@ -131,6 +138,17 @@
 .mysoc-bin-collection-g   { background-image: url(/static/images/wheeliebin_g.png); }
 .mysoc-bin-collection-gr  { background-image: url(/static/images/wheeliebin_gr.png); }
 .mysoc-bin-collection-r   { background-image: url(/static/images/wheeliebin_r.png); }
+
+.mysoc-bin-collection-d p,
+.mysoc-bin-collection-dg p,
+.mysoc-bin-collection-dr p,
+.mysoc-bin-collection-dgr p,
+.mysoc-bin-collection-g p,
+.mysoc-bin-collection-gr p,
+.mysoc-bin-collection-r p {
+  background-color: #666666;
+  color: #ffffff;
+}
 
 .mysoc-bin-end {
   clear:both;
