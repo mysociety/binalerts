@@ -1,0 +1,31 @@
+/* ========/ demo bins: first section just dressing for the demo site /=========== */
+
+body {
+    font-family: "Segoe UI", Candara, "Bitstream Vera Sans", "DejaVu Sans", "Trebuchet MS", Verdana, "Verdana Ref", sans-serif;
+	margin: 0;
+	padding: 0;
+	background-color: #aaffaa;
+}
+
+.page-container {
+	background-color: #ffffff;
+}
+
+#header {
+	margin:0;
+	padding: 10px;
+	border-bottom:1px solid green;
+	background-color: #aaffaa;
+}
+
+
+#footer {
+	clear: both;
+	padding: 10px;
+	border-top:1px solid green;
+	background-color: #aaffaa;
+}
+
+#content {
+	padding: 10px 20px;
+}

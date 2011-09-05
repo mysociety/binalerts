@@ -6,10 +6,21 @@
     <title>{% block title %}{% endblock %}</title>
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/binalerts.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/mysociety.css"/>
   </head>
   <body>
-    <div id="content">
-      {% block content %}{% endblock %}
-    </div><!-- end content -->
+    <div class="page-container">
+      <div id="header">
+        <a href="/">Bin Alerts</a>
+      </div>
+    
+      <div id="content">
+        {% block content %}{% endblock %}
+      </div><!-- end content -->
+    
+      <div id="footer">
+        <a href="http://www.mysociety.org/">mySociety</a>
+      </div>
+    </div>
   </body>
 </html>
