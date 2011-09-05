@@ -26,14 +26,36 @@ from emailconfirmation.models import EmailConfirmation
 import settings
 import binalerts
 
+package_dir = os.path.abspath(os.path.realpath(os.path.dirname(__file__)))
+
 class BinAlertsTestCase(TestCase):
     fixtures = ['test_data.json']
 
-# Cobranding style
+# site-specific styling
 class BarnetStylingTest(BinAlertsTestCase):
-    def test_looks_like_barnet_site(self):
+    def test_barnet_site_uses_barnet_styling(self):
+        old_sitename = settings.BINS_SITENAME
+        old_template_dirs = settings.TEMPLATE_DIRS
+        settings.BINS_SITENAME = 'barnet'
+        settings.TEMPLATE_DIRS = (
+            os.path.join(package_dir, "binalerts/templates/" + settings.BINS_SITENAME),
+            os.path.join(package_dir, "binalerts/templates"),
+            os.path.join(package_dir, "templates/" + settings.BINS_SITENAME),
+            os.path.join(package_dir, "templates"),
+        )
+        
+        try:
+            response = self.client.get('/')
+            self.assertContains(response, "/barnet/css/basic.css")
+        finally:
+            settings.BINS_SITENAME = old_sitename
+            settings.BINS_TEMPLATE_DIRS = old_template_dirs
+
+    def test_default_site_uses_default_styling(self):
         response = self.client.get('/')
-        self.assertContains(response, "/barnet/css/basic.css")
+        self.assertNotContains(response, "/barnet/css/basic.css")
+        self.assertContains(response, '<link rel="stylesheet" type="text/css" href="/static/css/binalerts.css"')
+        
 
 # Searching for a street
 class StreetSearchTest(BinAlertsTestCase):

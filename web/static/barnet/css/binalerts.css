@@ -1,22 +1,3 @@
-/* ========/ demo bins: first section just dressing for the demo site /=========== */
-
-body {
-    font-family: "Segoe UI", Candara, "Bitstream Vera Sans", "DejaVu Sans", "Trebuchet MS", Verdana, "Verdana Ref", sans-serif;
-}
-
-h1 {
-	text-align: center;
-}
-
-/* ========/ demo bins: end of section dressing for the demo site     /=========== */
-
-
-/* binalerts styling: 
- * CSS declarations below this are items in the core HTML that can be styled in all sites.
- * If you're making changes for an implementation, make a copy in web/static/SITENAME/css/ 
- * and style appropriately. Remember to link to it explictly from templates/SITENAME/base.html
- */
-
 .mysoc-bin-front, .mysoc-bin-main {
 	font-size: 120%;	
 }
@@ -36,8 +17,8 @@ h1 {
 }	
 
 .mysoc-bin-form{
-  border: 1px solid #ffA3A4;
-  background-color: #ffEBEB;
+  border: 1px solid #34A3A4;
+  background-color: #D8EBEB;
   padding: 1em 1em 1em 1em;
   margin: 1em 4em;
 }
@@ -113,7 +94,7 @@ h1 {
   padding: 100px 0 8px 0;
   font-weight:bold;
   font-size: 20px;
-  background-color: #ffEBEB;
+  background-color: #D8EBEB;
   border: 2% solid #ffffff;
   color: #ffffff;
   

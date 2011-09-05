@@ -4,6 +4,7 @@
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.
 # Email: francis@mysociety.org; WWW: http://www.mysociety.org/
 
+import os
 import re
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -17,6 +18,7 @@ from binalerts.models import BinCollection, BinCollectionType, Street, Collectio
 from emailconfirmation.models import EmailConfirmation
 
 from settings import SECRET_KEY
+from settings import BINS_SITENAME
 
 # note: hardcoded daynames here must match binalerts.models.DAY_OF_WEEK_CHOICES (e.g. Sunday has index 0 (not Monday))
 DISPLAY_DAYS_OF_WEEK =  ['SUN', 'MON', 'TUE', 'WED', 'THURS', 'FRI', 'SAT']
@@ -59,7 +61,8 @@ def show_street(request, url_name):
         if len(streets)==1:
             return HttpResponseRedirect('/street/' + streets[0].url_name) # careful of looping here
         else:
-            return render_to_response('frontpage.html', { 
+            template_name = get_site_template_name('frontpage.html')
+            return render_to_response(template_name, { 
                 'form': LocationForm({'query':lost_street_name}), 
                 'streets': Street.objects.find_by_name(lost_street_name)  })
         
@@ -93,7 +96,7 @@ def show_street(request, url_name):
 
     day_by_day_collections = zip(DISPLAY_DAYS_OF_WEEK, collection_types_as_strings)
     collection_types_with_days = [(collection_types[x], collection_days_by_type[x]) for x in sorted(collection_types.keys())]
-    return render_to_response('street.html', {
+    return render_to_response(get_site_template_name('street.html'), {
         'street': street, 
         'form': form,  
         'day_by_day_collections': day_by_day_collections, 
@@ -102,7 +105,7 @@ def show_street(request, url_name):
         'daynames': DISPLAY_DAYS_OF_WEEK })
 
 def alert_confirmed(request, id):
-    return render_to_response('alert_confirmed.html', {})
+    return render_to_response('alert_confirmed.html')
 
 def alert_unsubscribed(request, id):
     alert = get_object_or_404(CollectionAlert, id=id)
@@ -139,3 +142,12 @@ def admin_street_report(request):
         'num_all_types':num_all_types,
         'percent_all_types':percent_all_types})
 
+# use a site-name template if it exists
+def get_site_template_name(template_name):
+    return template_name
+    confirmed_template_name = template_name
+    if BINS_SITENAME == 'barnet':
+        confirmed_template_name = BINS_SITENAME + '/' + template_name
+        if not os.path.exists(confirmed_template_name):
+            confirmed_template_name = template_name
+    return confirmed_template_name
