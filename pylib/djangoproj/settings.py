@@ -116,9 +116,6 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(package_dir, "binalerts/templates/" + BINS_SITENAME),
     os.path.join(package_dir, "binalerts/templates"),
-
-    os.path.join(package_dir, "templates/" + BINS_SITENAME),
-    os.path.join(package_dir, "templates"),
 )
 
 INSTALLED_APPS = (
