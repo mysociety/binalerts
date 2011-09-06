@@ -38,7 +38,7 @@ SERVER_EMAIL = config.get('BUGS_EMAIL')
 ADMINS = (
     ('mySociety bugs', config.get('BUGS_EMAIL')),
 )
-DEFAULT_FROM_EMAIL = 'Barnet Bin Alerts <%s>' % config.get('BUGS_EMAIL')
+DEFAULT_FROM_EMAIL = 'Bin Alerts <%s>' % config.get('BUGS_EMAIL')
 
 MANAGERS = ADMINS
 
