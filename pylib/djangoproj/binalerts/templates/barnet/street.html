@@ -13,7 +13,7 @@
     <div id="mysoc-bin-lorry"></div>
     {% for dayname, collection_string in day_by_day_collections %}
       <div class="mysoc-bin-day {% if collection_string %}mysoc-bin-collection-{{ collection_string|lower }}{% endif %}"> 
-      {{ dayname }}
+        <p>{{ dayname }}</p>
       </div>
     {% endfor %}
   </div>
