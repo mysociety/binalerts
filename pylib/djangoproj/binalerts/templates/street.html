@@ -13,10 +13,21 @@
     <div id="mysoc-bin-lorry"></div>
     {% for dayname, collection_string in day_by_day_collections %}
       <div class="mysoc-bin-day {% if collection_string %}mysoc-bin-collection-{{ collection_string|lower }}{% endif %}"> 
-        <p>{{ dayname }}</p>
+        <p class="mysoc-date">19</p>
+        <p class="mysoc-dayname">{{ dayname }}</p>
       </div>
     {% endfor %}
   </div>
+  <div class="mysoc-bin-week">
+    {% for dayname, collection_string in day_by_day_collections %}
+      <div class="mysoc-bin-day {% if collection_string %}mysoc-bin-collection-{{ collection_string|lower }}{% endif %}"> 
+        <p class="mysoc-date">19</p>
+        <p class="mysoc-dayname">{{ dayname }}</p>
+      </div>
+    {% endfor %}
+  </div>
+
+
   <script type="text/javascript">
     var mySocCollectionDays = [ {{ collection_days|join:", "}} ];
   </script>

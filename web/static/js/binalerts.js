@@ -4,6 +4,11 @@
 // Monday is 0 a la Python
 
 function mySocParkLorryAtDepot(delayType){
+  // switch to next line
+  if (delayType == 'repeat') {
+    mySocLineIndex = (mySocLineIndex+1) % mySocLines.size();
+    $('#mysoc-bin-lorry').detach().prependTo(mySocLines[mySocLineIndex]);
+  }
   $('#mysoc-bin-lorry').css('left', -2 * mySocLorryWidth);
   $('#mysoc-bin-lorry').show();
   setTimeout("mySocDriveLorry(0)", mySocDelays[delayType])
@@ -32,6 +37,8 @@ function mySocDriveLorry(nextStop){
 
 var mySocDelays = { 'init': 1000, 'busy': 1200, 'drive1px': 7, 'repeat': 5000 };
 var mySocLorryWidth;
+var mySocLines = []; // lines of days of the week
+var mySocLineIndex = 0;
 
 $(function() {
   if (mySocCollectionDays.length > 0){
@@ -41,6 +48,7 @@ $(function() {
       }
     }
     mySocLorryWidth = $('#mysoc-bin-lorry').width();
+	mySocLines = $('.mysoc-bin-week');
     mySocParkLorryAtDepot('init')
   }
  });

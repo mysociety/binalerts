@@ -94,19 +94,25 @@
 
 .mysoc-bin-day {
   float:left;
-  width: 12%;
+  width: 13%;
   margin: 0 4px 0 0;
   text-align: center;
-  padding: 100px 0 0 0;
+  padding: 0 0 0 0;
   font-weight:bold;
   font-size: 20px;
   background-color: #ebebeb;
   border: 2% solid #ffffff;
   color: #ffffff;
-  
+  position: relative; /* contains mysoc-bin-date */
 }
 
-.mysoc-bin-day p {
+.mysoc-bin-day p.mysoc-date {
+  margin: 0 0 100px 0;
+  padding: 0.2em;
+  text-align: left;
+}
+
+.mysoc-bin-day p.mysoc-dayname {
   margin: 8px 0 0 0;
   padding: 0.2em 0;
   text-align: center;
@@ -126,9 +132,9 @@
 .mysoc-bin-collection-gr,
 .mysoc-bin-collection-r {
   background-color: #D8ffcc;
-  color: #34A3A4;
+  color: #666666;
   background-repeat: no-repeat;
-  background-position:50% 46px;
+  background-position:50% 70px;
 }
 
 .mysoc-bin-collection-d   { background-image: url(/static/images/wheeliebin_d.png); }
@@ -139,13 +145,13 @@
 .mysoc-bin-collection-gr  { background-image: url(/static/images/wheeliebin_gr.png); }
 .mysoc-bin-collection-r   { background-image: url(/static/images/wheeliebin_r.png); }
 
-.mysoc-bin-collection-d p,
-.mysoc-bin-collection-dg p,
-.mysoc-bin-collection-dr p,
-.mysoc-bin-collection-dgr p,
-.mysoc-bin-collection-g p,
-.mysoc-bin-collection-gr p,
-.mysoc-bin-collection-r p {
+.mysoc-bin-collection-d p.mysoc-dayname,
+.mysoc-bin-collection-dg p.mysoc-dayname,
+.mysoc-bin-collection-dr p.mysoc-dayname,
+.mysoc-bin-collection-dgr p.mysoc-dayname,
+.mysoc-bin-collection-g p.mysoc-dayname,
+.mysoc-bin-collection-gr p.mysoc-dayname,
+.mysoc-bin-collection-r p.mysoc-dayname {
   background-color: #666666;
   color: #ffffff;
 }
@@ -156,7 +162,7 @@
 
 #mysoc-bin-lorry {
   position:absolute;
-  top:10px;
+  top:35px;
   left:-352px; /* that's lorry width x -2 */
   width: 176px;
   height: 86px;
@@ -164,6 +170,7 @@
   background-image: url(../images/lorry.png);
   background-repeat: no-repeat;
   background-position:0px 0px;
+  z-index: 100;
 }
 
 .mysoc-bin-links{
@@ -192,3 +199,4 @@ ul.errorlist li{
   border:0;
   background-color:#ffffff;
 }
+
