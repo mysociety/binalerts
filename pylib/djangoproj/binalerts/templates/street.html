@@ -9,24 +9,19 @@
 </h1>
 <div class="mysoc-bin-main">
 
-  <div class="mysoc-bin-week">
-    <div id="mysoc-bin-lorry"></div>
-    {% for dayname, collection_string in day_by_day_collections %}
-      <div class="mysoc-bin-day {% if collection_string %}mysoc-bin-collection-{{ collection_string|lower }}{% endif %}"> 
-        <p class="mysoc-date">19</p>
-        <p class="mysoc-dayname">{{ dayname }}</p>
-      </div>
-    {% endfor %}
-  </div>
-  <div class="mysoc-bin-week">
-    {% for dayname, collection_string in day_by_day_collections %}
-      <div class="mysoc-bin-day {% if collection_string %}mysoc-bin-collection-{{ collection_string|lower }}{% endif %}"> 
-        <p class="mysoc-date">19</p>
-        <p class="mysoc-dayname">{{ dayname }}</p>
-      </div>
-    {% endfor %}
-  </div>
-
+  {% for display_days in display_weeks %}  
+    <div class="mysoc-bin-week">
+      {% if forloop.first %}
+        <div id="mysoc-bin-lorry"></div>
+      {% endif %}
+      {% for dd_date, dd_type in display_days %}
+          <div class="mysoc-bin-day {% if dd_type %}mysoc-bin-collection-{{ dd_type|lower }}{% endif %}"> 
+            <p class="mysoc-date">{{ dd_date|date:"j" }}</p>
+            <p class="mysoc-dayname">{{ dd_date|date:"D"|upper }}</p>
+          </div>  
+      {% endfor %}    
+    </div>
+  {% endfor %}
 
   <script type="text/javascript">
     var mySocCollectionDays = [ {{ collection_days|join:", "}} ];

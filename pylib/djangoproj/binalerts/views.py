@@ -6,6 +6,7 @@
 
 import os
 import re
+import datetime
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
@@ -19,9 +20,17 @@ from emailconfirmation.models import EmailConfirmation
 
 from settings import SECRET_KEY
 from settings import BINS_SITENAME
+from settings import BINS_DISPLAY_FIRST_DAY
+from settings import BINS_DISPLAY_DAYS_SHOWN
 
 # note: hardcoded daynames here must match binalerts.models.DAY_OF_WEEK_CHOICES (e.g. Sunday has index 0 (not Monday))
 DISPLAY_DAYS_OF_WEEK =  ['SUN', 'MON', 'TUE', 'WED', 'THURS', 'FRI', 'SAT']
+
+# XXX this array preferred because Monday has index 0, which is what Python expects
+DAYS_OF_WEEK_TRUNCATED = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+
+CSS_DAY_IN_PAST = 'xxx' # used for style in past: should not collide with a collection friendly_id
+DAYS_PER_DISPLAY_WEEK = 7 # CSS expects this to be 7: if you change it, change width: XX% in CSS for .mysoc-bin-day
 
 def frontpage(request):
     streets = None
@@ -82,6 +91,51 @@ def show_street(request, url_name):
     collection_types = {}        # collect unique instances of bin_collection
     collection_types_as_strings = ['' for x in DISPLAY_DAYS_OF_WEEK] # friendly_ids, concatted and sorted, for each day
     
+    #=======================================================================================
+    # big change: do this day-by-day from start date to end date (DISPLAY_* settings)
+    #
+    
+    display_weeks = []
+    dd_dates = []           # days to be displayed: dates
+    dd_types = []           # days to be displayed: tpyes as string (e.g., DG for Domestic and Garden)
+    
+    # calculate date of BINS_DISPLAY_FIRST_DAY: if it's a day of the week, then it's the most recent one (past)
+    todays_date = datetime.date.today()
+    start_date = todays_date
+    if BINS_DISPLAY_FIRST_DAY == 'tomorrow':
+        start_date = start_date + datetime.timedelta(days+1)
+    elif BINS_DISPLAY_FIRST_DAY == 'yesterday':
+        start_date = start_date - datetime.timedelta(days+1)
+    elif BINS_DISPLAY_FIRST_DAY != 'today':
+        try:
+            start_day_of_week =  DAYS_OF_WEEK_TRUNCATED.index(BINS_DISPLAY_FIRST_DAY.upper()[:3])
+        except ValueError:
+            raise ValueError("config error: setting BINS_DISPLAY_FIRST_DAY=\"%s\" seems wrong, expected a day name (e.g., \"Sunday\"), or \"today\", \"tomorrow\" or \"yesterday\"" % BINS_DISPLAY_FIRST_DAY)
+        for i in range(7):
+            if start_date.weekday() == start_day_of_week:
+                break
+            start_date = start_date - datetime.timedelta(days=1) # go *back* a day and try again
+
+    for day_count in range(BINS_DISPLAY_DAYS_SHOWN):
+        collection_date = start_date +  datetime.timedelta(days=day_count)
+        bins_day_of_week = (collection_date.weekday() + 1) % 7 # XXX annoying fudge: bins's Monday=0, Python's Monday=1
+        #display_days[day_count] = collection_date # FIXME just a test
+        #display_days[day_count] = street.bin_collections.filter(collection_day=bins_day_of_week).count()
+        dd_dates.append(collection_date)
+        dd_types.append('')
+        if collection_date < todays_date:
+            dd_types[day_count] = CSS_DAY_IN_PAST
+        else:
+            for bc in  street.bin_collections.filter(collection_day=bins_day_of_week).order_by('collection_type__friendly_id'):
+                if dd_types[day_count].find(bc.collection_type.friendly_id) == -1: # haven't got this type already
+                    dd_types[day_count] += bc.collection_type.friendly_id
+
+    for day_count in range(BINS_DISPLAY_DAYS_SHOWN):
+        if day_count % DAYS_PER_DISPLAY_WEEK == 0:
+            display_weeks.append(zip(dd_dates[day_count:day_count+DAYS_PER_DISPLAY_WEEK], dd_types[day_count:day_count+DAYS_PER_DISPLAY_WEEK]))
+    import pdb; pdb.set_trace()
+    
+    
     for bc in street.bin_collections.all().order_by('collection_type__friendly_id', 'collection_day'):
         collection_days[bc.collection_day] = True
         collection_types[bc.collection_type.friendly_id] = bc.collection_type
@@ -96,9 +150,10 @@ def show_street(request, url_name):
 
     day_by_day_collections = zip(DISPLAY_DAYS_OF_WEEK, collection_types_as_strings)
     collection_types_with_days = [(collection_types[x], collection_days_by_type[x]) for x in sorted(collection_types.keys())]
-    return render_to_response(get_site_template_name('street.html'), {
+    return render_to_response(get_site_template_name('newstreet.html'), {
         'street': street, 
         'form': form,  
+        'display_weeks': display_weeks,
         'day_by_day_collections': day_by_day_collections, 
         'collection_days': sorted(collection_days.keys()), 
         'collection_types_with_days': collection_types_with_days,

@@ -61,6 +61,22 @@ BINS_ALLOW_MULTIPLE_COLLECTIONS_PER_WEEK = config.get('BINS_ALLOW_MULTIPLE_COLLE
 # But just in case there's a place with no duplicate street names, allow it to be optional
 BINS_STREETS_MUST_HAVE_POSTCODE = config.get('BINS_STREETS_MUST_HAVE_POSTCODE', True)
 
+# Total number of days displayed on 'street' view: 
+# probably should be a multiple of 7 since this is the number of days shown per row ("week") in default CSS
+# 7 = one week (sensible for councils with weekly schedules)
+# 14 = two weeks
+BINS_DISPLAY_DAYS_SHOWN = config.get('BINS_DISPLAY_DAYS_SHOWN', 7)
+
+# The day of the week the should be the first day displayed on 'street' view
+# specify a day name ('Sunday') or 'today'
+# For councils with a stricly weekly schedule, 'Sunday' makes some sense
+BINS_DISPLAY_FIRST_DAY = config.get('BINS_DISPLAY_TOTAL_DAYS', 'Sunday')
+
+# Should dates be displayed in street view? 
+# False: no dates displayed (sensible for councils running weekly collections, i.e. 7-day cycles)
+# True: dates displayed (councils on fortnightly collections)
+BINS_DISPLAY_SHOW_DATES = config.get('BINS_DISPLAY_SHOW_DATES', False)
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
