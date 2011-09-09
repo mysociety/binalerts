@@ -29,7 +29,7 @@ DISPLAY_DAYS_OF_WEEK =  ['SUN', 'MON', 'TUE', 'WED', 'THURS', 'FRI', 'SAT']
 # XXX this array preferred because Monday has index 0, which is what Python expects
 DAYS_OF_WEEK_TRUNCATED = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
-CSS_DAY_IN_PAST = 'xxx' # used for style in past: should not collide with a collection friendly_id
+CSS_DAY_IN_PAST = 'past' # used for style in past: should not collide with a collection friendly_id
 DAYS_PER_DISPLAY_WEEK = 7 # CSS expects this to be 7: if you change it, change width: XX% in CSS for .mysoc-bin-day
 
 def frontpage(request):
@@ -103,9 +103,9 @@ def show_street(request, url_name):
     todays_date = datetime.date.today()
     start_date = todays_date
     if BINS_DISPLAY_FIRST_DAY == 'tomorrow':
-        start_date = start_date + datetime.timedelta(days+1)
+        start_date = start_date + datetime.timedelta(days=1)
     elif BINS_DISPLAY_FIRST_DAY == 'yesterday':
-        start_date = start_date - datetime.timedelta(days+1)
+        start_date = start_date - datetime.timedelta(days=1)
     elif BINS_DISPLAY_FIRST_DAY != 'today':
         try:
             start_day_of_week =  DAYS_OF_WEEK_TRUNCATED.index(BINS_DISPLAY_FIRST_DAY.upper()[:3])
@@ -115,17 +115,15 @@ def show_street(request, url_name):
             if start_date.weekday() == start_day_of_week:
                 break
             start_date = start_date - datetime.timedelta(days=1) # go *back* a day and try again
-
+    
     for day_count in range(BINS_DISPLAY_DAYS_SHOWN):
         collection_date = start_date +  datetime.timedelta(days=day_count)
         bins_day_of_week = (collection_date.weekday() + 1) % 7 # XXX annoying fudge: bins's Monday=0, Python's Monday=1
-        #display_days[day_count] = collection_date # FIXME just a test
-        #display_days[day_count] = street.bin_collections.filter(collection_day=bins_day_of_week).count()
         dd_dates.append(collection_date)
         dd_types.append('')
         if collection_date < todays_date:
-            dd_types[day_count] = CSS_DAY_IN_PAST
-        else:
+            dd_types[day_count] = CSS_DAY_IN_PAST # currently: don't show (ghost?) collections in the past
+        else: # note currently this is based *only* on day of week, not dates etc
             for bc in  street.bin_collections.filter(collection_day=bins_day_of_week).order_by('collection_type__friendly_id'):
                 if dd_types[day_count].find(bc.collection_type.friendly_id) == -1: # haven't got this type already
                     dd_types[day_count] += bc.collection_type.friendly_id
@@ -133,6 +131,9 @@ def show_street(request, url_name):
     for day_count in range(BINS_DISPLAY_DAYS_SHOWN):
         if day_count % DAYS_PER_DISPLAY_WEEK == 0:
             display_weeks.append(zip(dd_dates[day_count:day_count+DAYS_PER_DISPLAY_WEEK], dd_types[day_count:day_count+DAYS_PER_DISPLAY_WEEK]))
+    
+    # end of new (display) stuff: original code follows; drives lorry, etc
+    #=========================================================================
     
     for bc in street.bin_collections.all().order_by('collection_type__friendly_id', 'collection_day'):
         collection_days[bc.collection_day] = True

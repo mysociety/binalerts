@@ -70,7 +70,7 @@ BINS_DISPLAY_DAYS_SHOWN = config.get('BINS_DISPLAY_DAYS_SHOWN', 7)
 # The day of the week the should be the first day displayed on 'street' view
 # specify a day name ('Sunday') or 'today'
 # For councils with a stricly weekly schedule, 'Sunday' makes some sense
-BINS_DISPLAY_FIRST_DAY = config.get('BINS_DISPLAY_TOTAL_DAYS', 'Sunday')
+BINS_DISPLAY_FIRST_DAY = config.get('BINS_DISPLAY_FIRST_DAY', 'Sunday')
 
 # Should dates be displayed in street view? 
 # False: no dates displayed (sensible for councils running weekly collections, i.e. 7-day cycles)

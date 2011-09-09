@@ -156,6 +156,11 @@
   color: #ffffff;
 }
 
+.mysoc-bin-collection-past, .mysoc-bin-collection-past p.mysoc-dayname {
+  background: #fafafa;
+  color: #ccc;
+}
+
 .mysoc-bin-end {
   clear:both;
 }
