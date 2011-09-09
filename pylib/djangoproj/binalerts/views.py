@@ -133,8 +133,6 @@ def show_street(request, url_name):
     for day_count in range(BINS_DISPLAY_DAYS_SHOWN):
         if day_count % DAYS_PER_DISPLAY_WEEK == 0:
             display_weeks.append(zip(dd_dates[day_count:day_count+DAYS_PER_DISPLAY_WEEK], dd_types[day_count:day_count+DAYS_PER_DISPLAY_WEEK]))
-    import pdb; pdb.set_trace()
-    
     
     for bc in street.bin_collections.all().order_by('collection_type__friendly_id', 'collection_day'):
         collection_days[bc.collection_day] = True
@@ -150,7 +148,7 @@ def show_street(request, url_name):
 
     day_by_day_collections = zip(DISPLAY_DAYS_OF_WEEK, collection_types_as_strings)
     collection_types_with_days = [(collection_types[x], collection_days_by_type[x]) for x in sorted(collection_types.keys())]
-    return render_to_response(get_site_template_name('newstreet.html'), {
+    return render_to_response(get_site_template_name('street.html'), {
         'street': street, 
         'form': form,  
         'display_weeks': display_weeks,
