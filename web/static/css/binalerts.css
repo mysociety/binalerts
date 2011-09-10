@@ -85,11 +85,18 @@
 	margin: 0.666em 0;
 }
 
-.mysoc-bin-week {
+ul.mysoc-bin-week {
+  clear:both;
+  padding: 0;
   position: relative; 
   margin: 12px auto;
   overflow:hidden;
   width:100%;
+  list-style: none;
+}
+
+ul.mysoc-bin-week li {
+  text-indent: 0;
 }
 
 .mysoc-bin-day {
@@ -106,13 +113,15 @@
   position: relative; /* contains mysoc-bin-date */
 }
 
-.mysoc-bin-day p.mysoc-date {
+.mysoc-bin-day span.mysoc-date {
+  display: block;
   margin: 0 0 100px 0;
   padding: 0.2em;
   text-align: left;
 }
 
-.mysoc-bin-day p.mysoc-dayname {
+.mysoc-bin-day span.mysoc-dayname {
+  display: block;
   margin: 8px 0 0 0;
   padding: 0.2em 0;
   text-align: center;
@@ -192,5 +201,9 @@ ul.errorlist li{
   color:#ffffff;
   border:0;
   background-color:#ffffff;
+}
+
+.mysoc-hidden {
+  display: none;
 }
 
