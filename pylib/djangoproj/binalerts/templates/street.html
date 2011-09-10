@@ -15,7 +15,7 @@
         <div id="mysoc-bin-lorry"></div>
       {% endif %}
       {% for dd_date, dd_type in display_days %}
-          <div class="mysoc-bin-day {% if dd_type %}mysoc-bin-collection-{{ dd_type|lower }}{% endif %}"> 
+          <div class="mysoc-bin-day {% if dd_type %}mysoc-bin-collection-{{ dd_type|lower }} mysoc-bin-collection{% endif %}"> 
             <p class="mysoc-date">{{ dd_date|date:"j" }}</p>
             <p class="mysoc-dayname">{{ dd_date|date:"D"|upper }}</p>
           </div>  
