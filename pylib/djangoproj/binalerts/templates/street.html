@@ -10,12 +10,12 @@
 <div class="mysoc-bin-main">
 
   {% for display_days in display_weeks %}  
-    <ul class="mysoc-bin-week">
+    <ul class="mysoc-bin-week" id="mysoc-bin-week-{{ forloop.counter0 }}">
       {% if forloop.first %}
         <div id="mysoc-bin-lorry"></div>
       {% endif %}
       {% for dd_date, dd_type in display_days %}
-          <li class="mysoc-bin-day {% if dd_type %}mysoc-bin-collection-{{ dd_type|lower }} mysoc-bin-collection{% endif %}"> 
+          <li class="mysoc-bin-day {% if dd_type %}mysoc-bin-collection-{{ dd_type|lower }}{% ifnotequal dd_type 'past' %} mysoc-bin-collection{%endifnotequal%}{% endif %}"> 
             <span class="mysoc-date">{{ dd_date|date:"j" }}</span>
             <span class="mysoc-dayname">{{ dd_date|date:"D"|upper }}</span>
             {% if dd_type %}
@@ -26,9 +26,6 @@
     </ul>
   {% endfor %}
 
-  <script type="text/javascript">
-    var mySocCollectionDays = [ {{ collection_days|join:", "}} ];
-  </script>
   <script src="/static/js/binalerts.js" type="text/javascript"></script>
 
   <hr class="mysoc-ie6-fixer"/>

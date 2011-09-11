@@ -1,32 +1,41 @@
 // binalerts js for dustbin lorry animation
 
-// mySocCollectionDays is declared in the body of the page
-// Monday is 0 a la Python
+var mySocDelays = { 'init': 1000, 'busy': 1200, 'drive1px': 7, 'repeat': 5000, 'continue': 20 };
+var $mySocLines; // usually, 1 line == 1 week 
+var mySocLineIndex = 0;
+var $mySocCollectionDays;
+var $mySocLorry;
 
-function mySocParkLorryAtDepot(delayType){
-  // switch to next line
-  if (delayType == 'repeat') {
-    mySocLineIndex = (mySocLineIndex+1) % mySocLines.size();
-    $('#mysoc-bin-lorry').detach().prependTo(mySocLines[mySocLineIndex]);
+function mySocParkLorryAtDepot(nextStop, delayType){
+  if (delayType == 'init') { // XXX should create the lorry div here
+    $mySocLorry = $('#mysoc-bin-lorry');
+  } else  { // switch to next line
+    mySocLineIndex = (mySocLineIndex+1) % $mySocLines.size();
+    $mySocLorry.detach().prependTo($mySocLines[mySocLineIndex]);
   }
-  $('#mysoc-bin-lorry').css('left', -2 * mySocLorryWidth);
-  $('#mysoc-bin-lorry').show();
-  setTimeout("mySocDriveLorry(0)", mySocDelays[delayType])
+  $mySocLorry.css('left', -$mySocLorry.width());
+  $mySocLorry.show();
+  setTimeout("mySocDriveLorry(" + nextStop + ")", mySocDelays[delayType])
 }
 
 function mySocDriveLorry(nextStop){
-  var targetLeft = 0;
-  var nextAction = "";
-  if (nextStop == mySocCollectionDays.length){ // end of the week
-    targetLeft = $('.mysoc-bin-week').width() + 2 * mySocLorryWidth;
-    nextAction = "mySocParkLorryAtDepot('repeat')";
+  var targetLeft = 0; // left position of lorry's next destination
+  var nextAction = ""; // what to do when it gets there
+  if (nextStop == $mySocCollectionDays.size()){ // end of all collections
+    nextAction = "mySocParkLorryAtDepot(0, 'repeat')";
+    targetLeft = $mySocLorry.parent().width();
   } else {
-    var targetDiv = $('.mysoc-bin-day')[mySocCollectionDays[nextStop]];
-    targetLeft = $(targetDiv).position().left - Math.round((mySocLorryWidth-$(targetDiv).width())/2);
-    nextAction = "mySocDriveLorry("+ (nextStop+1) +")";
+    var targetDiv = $($mySocCollectionDays[nextStop]);
+    if (targetDiv.parent().attr('id') != $mySocLorry.parent().attr('id')) {
+      nextAction = "mySocParkLorryAtDepot(" + nextStop + ",'continue')";
+      targetLeft = $mySocLorry.parent().width();
+    } else {
+      nextAction = "mySocDriveLorry("+ (nextStop+1) +")";
+      targetLeft = $(targetDiv).position().left - Math.round(($mySocLorry.width()-$(targetDiv).width())/2);
+    }
   }
-  var journeyDistance = targetLeft - $('#mysoc-bin-lorry').position().left;
-  $('#mysoc-bin-lorry').animate(
+  var journeyDistance = targetLeft - $mySocLorry.position().left;
+  $mySocLorry.animate(
     {'left' : targetLeft },
     journeyDistance * mySocDelays['drive1px'],
     function() {
@@ -35,20 +44,10 @@ function mySocDriveLorry(nextStop){
   )
 }
 
-var mySocDelays = { 'init': 1000, 'busy': 1200, 'drive1px': 7, 'repeat': 5000 };
-var mySocLorryWidth;
-var mySocLines = []; // lines of days of the week
-var mySocLineIndex = 0;
-
 $(function() {
-  if (mySocCollectionDays.length > 0){
-    for (day in mySocCollectionDays){
-      if (mySocCollectionDays[day] < 0 || mySocCollectionDays[day] > 6){
-        return // bad day of week
-      }
-    }
-    mySocLorryWidth = $('#mysoc-bin-lorry').width();
-	mySocLines = $('.mysoc-bin-week');
-    mySocParkLorryAtDepot('init')
+  $mySocCollectionDays = $('.mysoc-bin-collection');
+  if ($mySocCollectionDays.size() > 0){
+    $mySocLines = $('.mysoc-bin-week');
+    mySocParkLorryAtDepot(0, 'init')
   }
  });
