@@ -15,9 +15,13 @@
         <div id="mysoc-bin-lorry"></div>
       {% endif %}
       {% for dd_date, dd_type in display_days %}
-          <li class="mysoc-bin-day {% if dd_type %}mysoc-bin-collection-{{ dd_type|lower }}{% ifnotequal dd_type 'past' %} mysoc-bin-collection{%endifnotequal%}{% endif %}"> 
-            <span class="mysoc-date">{{ dd_date|date:"j" }}</span>
-            {% ifchanged dd_date.month %}<span class="mysoc-month">{{ dd_date|date:"F" }}</span>{% endifchanged %}
+          <li class="mysoc-bin-day {% if dd_type %}mysoc-bin-collection-{{ dd_type|lower }}{% ifnotequal dd_type 'past' %} mysoc-bin-collection{%endifnotequal%}{% endif %}">
+            <span class="mysoc-date">
+              {% if show_dates %}{{ dd_date|date:"j" }}{% else %} &nbsp; {% endif %}
+            </span>
+            {% if show_dates %}
+              {% ifchanged dd_date.month %}<span class="mysoc-month">{{ dd_date|date:"F" }}</span>{% endifchanged %}
+            {% endif %}
             <span class="mysoc-dayname">{{ dd_date|date:"D"|upper }}</span>
             {% if dd_type %}
               {% ifnotequal dd_type 'past' %}<span class="mysoc-hidden">collection: {{ dd_type|upper }}</span>{% endifnotequal %}

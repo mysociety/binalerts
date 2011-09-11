@@ -22,6 +22,7 @@ from settings import SECRET_KEY
 from settings import BINS_SITENAME
 from settings import BINS_DISPLAY_FIRST_DAY
 from settings import BINS_DISPLAY_DAYS_SHOWN
+from settings import BINS_DISPLAY_SHOW_DATES
 
 # note: hardcoded daynames here must match binalerts.models.DAY_OF_WEEK_CHOICES (e.g. Sunday has index 0 (not Monday))
 DISPLAY_DAYS_OF_WEEK =  ['SUN', 'MON', 'TUE', 'WED', 'THURS', 'FRI', 'SAT']
@@ -151,7 +152,8 @@ def show_street(request, url_name):
     collection_types_with_days = [(collection_types[x], collection_days_by_type[x]) for x in sorted(collection_types.keys())]
     return render_to_response(get_site_template_name('street.html'), {
         'street': street, 
-        'form': form,  
+        'form': form, 
+        'show_dates': BINS_DISPLAY_SHOW_DATES,
         'display_weeks': display_weeks,
         'day_by_day_collections': day_by_day_collections, 
         'collection_days': sorted(collection_days.keys()), 
