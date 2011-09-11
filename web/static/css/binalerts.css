@@ -149,12 +149,12 @@ ul.mysoc-bin-week li {
 .mysoc-bin-collection-gr  { background-image: url(/static/images/wheeliebin_gr.png); }
 .mysoc-bin-collection-r   { background-image: url(/static/images/wheeliebin_r.png); }
 
-.mysoc-bin-collection p.mysoc-dayname {
+.mysoc-bin-collection span.mysoc-dayname {
   background-color: #666666;
   color: #ffffff;
 }
 
-.mysoc-bin-collection-past, .mysoc-bin-collection-past p.mysoc-dayname {
+.mysoc-bin-collection-past, .mysoc-bin-collection-past span.mysoc-dayname {
   background: #fafafa;
   color: #ccc;
 }
