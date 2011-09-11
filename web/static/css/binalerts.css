@@ -110,7 +110,7 @@ ul.mysoc-bin-week li {
   background-color: #ebebeb;
   border: 2% solid #ffffff;
   color: #ffffff;
-  position: relative; /* contains mysoc-bin-date */
+  position: relative; /* contains mysoc-bin-date etc */
 }
 
 .mysoc-bin-day span.mysoc-date {
@@ -118,6 +118,16 @@ ul.mysoc-bin-week li {
   margin: 0 0 100px 0;
   padding: 0.2em;
   text-align: left;
+}
+
+.mysoc-bin-day span.mysoc-month {
+  display: block;
+  position: absolute;
+  top: 1.5em;
+  left: 0.2em;
+  text-align: left;
+  padding: 0;
+  overflow: visible;
 }
 
 .mysoc-bin-day span.mysoc-dayname {
