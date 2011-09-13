@@ -194,11 +194,14 @@ ul.mysoc-bin-week li {
 	padding-left:2em;
 }
 
-.errorlist{
-	text-align: left;
+}
+
+ul.errorlist {
+  list-style: none;
+  text-align: left;
 }
 ul.errorlist li{
-	background: url(../images/tiny_warning.png) no-repeat 0px 3px !important; /* force ovveride of #content ul li */
+	background: url(../images/tiny_warning.png) no-repeat 0px 3px;
 	padding-left: 20px;
 	color: #aa0000;
 }

@@ -9,17 +9,28 @@
 </h1>
 <div class="mysoc-bin-main">
 
-  <div class="mysoc-bin-week">
-    <div id="mysoc-bin-lorry"></div>
-    {% for dayname, collection_string in day_by_day_collections %}
-      <div class="mysoc-bin-day {% if collection_string %}mysoc-bin-collection-{{ collection_string|lower }}{% endif %}"> 
-        <p>{{ dayname }}</p>
-      </div>
-    {% endfor %}
-  </div>
-  <script type="text/javascript">
-    var mySocCollectionDays = [ {{ collection_days|join:", "}} ];
-  </script>
+  {% for display_days in display_weeks %}  
+    <ul class="mysoc-bin-week" id="mysoc-bin-week-{{ forloop.counter0 }}">
+      {% if forloop.first %}
+        <div id="mysoc-bin-lorry"></div>
+      {% endif %}
+      {% for dd_date, dd_type in display_days %}
+          <li class="mysoc-bin-day {% if dd_type %}mysoc-bin-collection-{{ dd_type|lower }}{% ifnotequal dd_type 'past' %} mysoc-bin-collection{%endifnotequal%}{% endif %}">
+            <span class="mysoc-date">
+              {% if show_dates %}{{ dd_date|date:"j" }}{% else %} &nbsp; {% endif %}
+            </span>
+            {% if show_dates %}
+              {% ifchanged dd_date.month %}<span class="mysoc-month">{{ dd_date|date:"F" }}</span>{% endifchanged %}
+            {% endif %}
+            <span class="mysoc-dayname">{{ dd_date|date:"D"|upper }}</span>
+            {% if dd_type %}
+              {% ifnotequal dd_type 'past' %}<span class="mysoc-hidden">collection: {{ dd_type|upper }}</span>{% endifnotequal %}
+            {% endif %}
+          </li>  
+      {% endfor %}    
+    </ul>
+  {% endfor %}
+
   <script src="/static/js/binalerts.js" type="text/javascript"></script>
 
   <hr class="mysoc-ie6-fixer"/>
@@ -33,14 +44,14 @@
       </p>
     </div>
   {% else %}
-    {% for bin_collection_type, collection_day_array in collection_types_with_days %}
-      <div class="mysoc-bin-summary mysoc-bin-summary-{{ bin_collection_type.friendly_id|lower }}">
+    {% for collection_summary in collection_summaries %}
+      <div class="mysoc-bin-summary mysoc-bin-summary-{{ collection_summary.bctype.friendly_id|lower }}">
         <p>
           {# note: tests expect this to be one one line in the generated HTML source #}
-          <strong>{{ bin_collection_type.description}}</strong> collection {% ifequal collection_day_array|length 1 %}day is{% else %}days are{% endifequal %} <strong>{{ collection_day_array|join:" &amp; " }}</strong>.
+          <strong>{{ collection_summary.bctype.description}}</strong> collection {% ifequal collection_summary.when_array|length 1 %}day is{% else %}days are{% endifequal %} <strong>{{ collection_summary.when_array|join:" &amp; " }}</strong>.
         </p>
         <p class="mysoc-bin-collect-details">
-            {{ bin_collection_type.detail_text|safe }}
+            {{ collection_summary.bctype.detail_text|safe }}
         </p>
       </div>
     {% endfor %}
@@ -79,3 +90,7 @@
 </div>
 
 {% endblock %}
+
+
+
+

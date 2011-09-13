@@ -1,188 +1,59 @@
-.mysoc-bin-front, .mysoc-bin-main {
-	font-size: 120%;	
-}
-
-.mysoc-bin-front {
-	margin: 1em auto;
-	text-align: center;
-}
-
-.mysoc-bin-title {
-	font-size:140%;
-	font-weight: bold;	
-}	
-
-.mysoc-bin-tagline {
-	font-size:120%;	
-}	
+/* overriding specifics in binarts styling */
 
 .mysoc-bin-form{
   border: 1px solid #34A3A4;
   background-color: #D8EBEB;
-  padding: 1em 1em 1em 1em;
-  margin: 1em 4em;
-}
-.mysoc-bin-form input{
-  margin-top:0.5em;
 }
 
-.mysoc-bin-form p{
-	margin: 0.5em 0;
-}
-
-.mysoc-suggestions{
-	text-align:left;
-	padding:0 0.5em 0 0.5em;
-	margin: 0 auto;
-}
 .mysoc-suggestions h2{
-	font-size: 100%;
 	color: #34A3A4;
-	border-bottom:none;
-}
-
-.mysoc-bin-summary {
-	background-repeat: no-repeat;
-	background-position: 10px 10px;
-	padding:10px 0 0 70px;
-	min-height: 50px;
-    clear: both;
-    font-size: 120%;
-    margin: 1em 0 2em 0;
-} 
-
-.mysoc-bin-summary-d { background-image: url(/static/images/wheeliebin_d.png); }
-.mysoc-bin-summary-g { background-image: url(/static/images/wheeliebin_g.png); }
-.mysoc-bin-summary-r { background-image: url(/static/images/wheeliebin_r.png); }
-
-.mysoc-bin-summary p{
-	margin: 0;
 }
 
 .mysoc-bin-collect-details{
-	display: block;
-	margin: 0;
-	font-size: 80%;
 	background-image: url(http://barnet.fixmystreet.com/cobrands/barnet/images/arrow-green-small.gif);
-	background-repeat: no-repeat;
-	background-position: center left;
-	padding-left: 12px;
 }
 
-.mysoc-bin-reminder-breakout{
-    padding: 12px 12px 12px 80px;
-	background-image: url(/static/images/lightbulb.png);
-	background-position:10px 10px;
-	background-repeat: no-repeat;
-}
-.mysoc-bin-reminder-breakout p{
-	margin: 0.666em 0;
-}
-
-.mysoc-bin-week {
-  position: relative; 
-  margin: 12px auto;
-  overflow:hidden;
-  width:100%;
-}
-
-.mysoc-bin-day {
+/* NB explicit qualification of these styles to force override of Barnet's #content ul li */
+#content ul.mysoc-bin-week li.mysoc-bin-day {
   float:left;
-  width: 12%;
+  width: 13%;
   margin: 0 4px 0 0;
   text-align: center;
-  padding: 100px 0 0 0;
+  padding: 0 0 0 0;
   font-weight:bold;
   font-size: 20px;
-  background-color: #D8EBEB;
   border: 2% solid #ffffff;
   color: #ffffff;
-  
+  position: relative; /* contains mysoc-bin-date etc */
+  background-image: none;
+  background-color: #D8EBEB; /* Barnet */
 }
 
-.mysoc-bin-day p {
-  margin: 8px 0 0 0;
-  padding: 0.2em 0;
-  text-align: center;
-  background-color: #cccccc;
-}
+#content ul.mysoc-bin-week li.mysoc-bin-collection-d   { background-image: url(/static/images/wheeliebin_d.png); }
+#content ul.mysoc-bin-week li.mysoc-bin-collection-dg  { background-image: url(/static/images/wheeliebin_dg.png); }
+#content ul.mysoc-bin-week li.mysoc-bin-collection-dr  { background-image: url(/static/images/wheeliebin_dr.png); }
+#content ul.mysoc-bin-week li.mysoc-bin-collection-dgr { background-image: url(/static/images/wheeliebin_dgr.png); }
+#content ul.mysoc-bin-week li.mysoc-bin-collection-g   { background-image: url(/static/images/wheeliebin_g.png); }
+#content ul.mysoc-bin-week li.mysoc-bin-collection-gr  { background-image: url(/static/images/wheeliebin_gr.png); }
+#content ul.mysoc-bin-week li.mysoc-bin-collection-r   { background-image: url(/static/images/wheeliebin_r.png); }
 
-/*
-    d   domestic waste
-    g   garden waste
-    r   recyclables
-*/
-.mysoc-bin-collection-d,
-.mysoc-bin-collection-dg,
-.mysoc-bin-collection-dr,
-.mysoc-bin-collection-dgr,
-.mysoc-bin-collection-g,
-.mysoc-bin-collection-gr,
-.mysoc-bin-collection-r {
+#content ul.mysoc-bin-week li.mysoc-bin-collection {
   background-color: #D8EBEB;
   color: #34A3A4;
   background-repeat: no-repeat;
-  background-position:50% 46px;
+  background-position:50% 70px;
 }
 
-.mysoc-bin-collection-d   { background-image: url(/static/images/wheeliebin_d.png); }
-.mysoc-bin-collection-dg  { background-image: url(/static/images/wheeliebin_dg.png); }
-.mysoc-bin-collection-dr  { background-image: url(/static/images/wheeliebin_dr.png); }
-.mysoc-bin-collection-dgr { background-image: url(/static/images/wheeliebin_dgr.png); }
-.mysoc-bin-collection-g   { background-image: url(/static/images/wheeliebin_g.png); }
-.mysoc-bin-collection-gr  { background-image: url(/static/images/wheeliebin_gr.png); }
-.mysoc-bin-collection-r   { background-image: url(/static/images/wheeliebin_r.png); }
-
-.mysoc-bin-collection-d p,
-.mysoc-bin-collection-dg p,
-.mysoc-bin-collection-dr p,
-.mysoc-bin-collection-dgr p,
-.mysoc-bin-collection-g p,
-.mysoc-bin-collection-gr p,
-.mysoc-bin-collection-r p {
+.mysoc-bin-collection span.mysoc-dayname {
   background-color: #34A3A4;
   color: #ffffff;
 }
 
-.mysoc-bin-end {
-  clear:both;
+#content ul.mysoc-bin-week li.mysoc-bin-collection-past, .mysoc-bin-collection-past span.mysoc-dayname {
+  background: #fafafa;
+  color: #ccc;
 }
 
 #mysoc-bin-lorry {
-  position:absolute;
-  top:10px;
-  left:-352px; /* that's lorry width x -2 */
-  width: 176px;
-  height: 86px;
-  display: none;
-  background-image: url(../images/lorry.png);
-  background-repeat: no-repeat;
-  background-position:0px 0px;
-}
-
-.mysoc-bin-links{
-	margin: 4em 1em 0 2em;
-}
-.mysoc-bin-links ul{
-	text-align: left;
-	padding-left:2em;
-}
-
-.errorlist{
-	text-align: left;
-}
-ul.errorlist li{
-	background: url(../images/tiny_warning.png) no-repeat 0px 3px !important; /* force ovveride of #content ul li */
-	padding-left: 20px;
-	color: #aa0000;
-}
-
-/* dirty bit of hackery in response to empirical testing in IE6 <sigh> */
-.mysoc-ie6-fixer{
-  clear:both;
-  height:1px;
-  margin:-8px 0 0 0;
-  color:#ffffff;
-  border:0;
-  background-color:#ffffff;
+  background-image: url(../images/lorry.png); /* barnet-branded lorry, relative to this file */
 }
