@@ -77,6 +77,11 @@ BINS_DISPLAY_FIRST_DAY = config.get('BINS_DISPLAY_FIRST_DAY', 'Sunday')
 # True: dates displayed (councils on fortnightly collections)
 BINS_DISPLAY_SHOW_DATES = config.get('BINS_DISPLAY_SHOW_DATES', False)
 
+# Should bin collections be shown differently if they are in the past?
+# False: no, display everything (sensible for councils running strictly weekly collections with no dates shown)
+# True: yes, ghost past collections and don't stop the lorry at them
+BINS_SHOW_PAST_DATES_DIFFERENTLY = config.get('BINS_SHOW_PAST_DATES_DIFFERENTLY', True)
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.

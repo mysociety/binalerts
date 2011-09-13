@@ -25,6 +25,7 @@ from settings import BINS_SITENAME
 from settings import BINS_DISPLAY_FIRST_DAY
 from settings import BINS_DISPLAY_DAYS_SHOWN
 from settings import BINS_DISPLAY_SHOW_DATES
+from settings import BINS_SHOW_PAST_DATES_DIFFERENTLY
 
 # note: hardcoded daynames here must match binalerts.models.DAY_OF_WEEK_CHOICES (e.g. Sunday has index 0 (not Monday))
 DISPLAY_DAYS_OF_WEEK =  ['SUN', 'MON', 'TUE', 'WED', 'THURS', 'FRI', 'SAT']
@@ -124,7 +125,7 @@ def show_street(request, url_name):
         bins_day_of_week = (collection_date.weekday() + 1) % 7 # XXX annoying fudge: bins's Monday=0, Python's Monday=1 ?
         dd_dates.append(collection_date)
         dd_types.append('')
-        if collection_date < todays_date:
+        if collection_date < todays_date and BINS_SHOW_PAST_DATES_DIFFERENTLY:
             dd_types[day_count] = CSS_DAY_IN_PAST # currently: don't show (ghost?) collections in the past
         else:
             # ================*** find collection dates in this date range here! ***====================== 
