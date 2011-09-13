@@ -135,8 +135,8 @@ def show_street(request, url_name):
                 this_day = bc.get_collection_day_name()
                 if not bc.collection_type.friendly_id in first_dates_dict:
                     first_dates_dict[bc.collection_type.friendly_id] = CollectionSummary(bc.collection_type, collection_date, [this_day])
-                elif not this_day in first_dates_dict[bc.collection_type.friendly_id].dates_string:
-                        first_dates_dict[bc.collection_type.friendly_id].dates_string.append(this_day)
+                elif not this_day in first_dates_dict[bc.collection_type.friendly_id].when_array:
+                        first_dates_dict[bc.collection_type.friendly_id].when_array.append(this_day)
 
     # break days down into weeks
     for day_count in range(0, BINS_DISPLAY_DAYS_SHOWN, DAYS_PER_DISPLAY_WEEK):

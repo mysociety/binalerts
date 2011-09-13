@@ -6,12 +6,22 @@ var mySocLineIndex = 0;
 var $mySocCollectionDays;
 var $mySocLorry;
 
+function createLorry(){
+  $($mySocLines[mySocLineIndex]).prepend('<div id="mysoc-bin-lorry"></div>');
+  return $('#mysoc-bin-lorry');
+}
+
 function mySocParkLorryAtDepot(nextStop, delayType){
   if (delayType == 'init') { // XXX should create the lorry div here
-    $mySocLorry = $('#mysoc-bin-lorry');
+    $mySocLorry = createLorry();
   } else  { // switch to next line
     mySocLineIndex = (mySocLineIndex+1) % $mySocLines.size();
-    $mySocLorry.detach().prependTo($mySocLines[mySocLineIndex]);
+    if ($mySocLorry.detach) { // jQuery 1.4+, not available from all councils
+      $mySocLorry.detach().prependTo($mySocLines[mySocLineIndex])
+    } else { 
+      $mySocLorry.remove();
+      $mySocLorry = createLorry();
+    }
   }
   $mySocLorry.css('left', -$mySocLorry.width());
   $mySocLorry.show();
