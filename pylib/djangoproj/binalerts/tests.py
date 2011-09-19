@@ -111,7 +111,7 @@ class StreetPageTest(BinAlertsTestCase):
  
         self.assertContains(response, '<title>Bin collection days for Alyth Gardens</title>')
         self.assertContains(response, 'Green Garden')
-        self.assertContains(response, '<div class="mysoc-bin-day mysoc-bin-collection-g">') 
+        self.assertContains(response, '<li class="mysoc-bin-day mysoc-bin-collection-g mysoc-bin-collection">') 
         self.assertContains(response, '<div class="mysoc-bin-summary mysoc-bin-summary-g">') 
 
         self.assertNotContains(response, 'Monday')
@@ -132,8 +132,8 @@ class StreetPageTest(BinAlertsTestCase):
         response = self.client.get('/street/ashurst_road_en4')
         self.assertContains(response, '<strong>Green Garden and Kitchen Waste</strong> collection day is <strong>Tuesday')
         self.assertContains(response, '<strong>Domestic Waste</strong> collection day is <strong>Thursday')
-        self.assertContains(response, '<div class="mysoc-bin-day mysoc-bin-collection-g">') 
-        self.assertContains(response, '<div class="mysoc-bin-day mysoc-bin-collection-d">') 
+        self.assertContains(response, '<li class="mysoc-bin-day mysoc-bin-collection-g mysoc-bin-collection">') 
+        self.assertContains(response, '<li class="mysoc-bin-day mysoc-bin-collection-d mysoc-bin-collection">') 
         
     def test_shows_message_when_street_has_no_collections(self):
         response = self.client.get('/street/no_collections_road')
@@ -177,7 +177,7 @@ class AlertsTest(BinAlertsTestCase):
 
         self.assertEquals(len(mail.outbox), 1)
         self.assertEquals(mail.outbox[0].subject, 'Alert confirmation')
-        self.assertEquals(mail.outbox[0].from_email, 'Barnet Bin Alerts <%s>' %settings.SERVER_EMAIL)
+        self.assertEquals(mail.outbox[0].from_email, 'Bin Alerts <%s>' %settings.SERVER_EMAIL)
         assert mail.outbox[0].body.find("The Bin Team") != -1, '"The Bin Team" wasn\'t in the email body; using wrong emailconfirmation template?'
 
     def test_url_in_confirmation_email_works(self):
